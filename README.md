@@ -1,6 +1,6 @@
 # Vedic Astrology Chart Generator
 
-A single-page React application that renders an accurate North Indian style D1 (Rashi) chart based on birth details. It uses the Swiss Ephemeris powered [`jyotish-calculations`](https://www.npmjs.com/package/jyotish-calculations) library for high precision and Geoapify for location autocompletion.
+A single-page React application that renders an accurate North Indian style D1 (Rashi) chart based on birth details. It uses the Swiss Ephemeris powered [`jyotish-calculations`](https://www.npmjs.com/package/jyotish-calculations) library for high precision and a local dataset or geocoder service for location autocompletion.
 
 ## Live Demo
 
@@ -9,7 +9,7 @@ A single-page React application that renders an accurate North Indian style D1 (
 ## Features
 
 - Collects name, date, time, and place of birth.
-- Autocomplete for birth location using Geoapify API.
+- Autocomplete for birth location using a local dataset or geocoder service.
 - Calculates Ascendant and planetary positions (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu).
 - Indicates retrograde (R) and combust (C) planets.
 - Renders responsive North Indian (diamond-style) chart.
@@ -20,7 +20,7 @@ A single-page React application that renders an accurate North Indian style D1 (
 - React + Vite
 - Tailwind CSS
 - jyotish-calculations (Swiss Ephemeris)
-- Geoapify Geocoding API
+- Local city dataset or self-hosted Nominatim/Pelias
 
 ## Prerequisites
 
@@ -32,17 +32,26 @@ A single-page React application that renders an accurate North Indian style D1 (
 # Clone the repository
 npm install
 
-# Create environment variables
-# GEOAPIFY_API_KEY=YOUR_API_KEY_HERE
-
 # Run in development
 npm run dev
 ```
 
 1. Clone this repository.
 2. Install dependencies with `npm install`.
-3. Create a `.env` file in the project root and define `GEOAPIFY_API_KEY` with your key.
-4. Start the development server using `npm run dev`.
+3. Start the development server using `npm run dev`.
+
+### Preparing the offline location dataset
+
+The app looks for a `public/cities.json` file containing objects with `name`, `lat` and `lon` fields. You can build this file from the [GeoNames](https://www.geonames.org/) database:
+
+```bash
+curl -L https://download.geonames.org/export/dump/cities5000.zip -o cities.zip
+unzip cities.zip cities5000.txt
+# Convert to JSON (requires Node.js)
+node -e "const fs=require('fs');fs.writeFileSync('public/cities.json',JSON.stringify(fs.readFileSync('cities5000.txt','utf8').split('\\n').map(l=>l.split('\\t')).filter(l=>l[1]).map(l=>({name:l[1]+', '+l[8],lat:+l[4],lon:+l[5]}))))"
+```
+
+Alternatively, point `src/lib/offlineGeocoder.js` to a locally hosted [Nominatim](https://nominatim.org/) or [Pelias](https://pelias.io/) server and query it instead of the JSON file.
 
 ## Deployment
 

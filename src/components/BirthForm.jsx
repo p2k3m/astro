@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-
-// Replace GEOAPIFY_API_KEY with your actual API key in a .env file.
-const GEOAPIFY_API_KEY = 'YOUR_API_KEY_HERE';
+import { searchPlaces } from '../lib/offlineGeocoder';
 
 export default function BirthForm({ onSubmit, loading }) {
   const [form, setForm] = useState({
@@ -19,23 +17,21 @@ export default function BirthForm({ onSubmit, loading }) {
       setSuggestions([]);
       return;
     }
-    const controller = new AbortController();
-    fetch(
-      `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(form.place)}&limit=5&apiKey=${GEOAPIFY_API_KEY}`,
-      { signal: controller.signal }
-    )
-      .then((res) => res.json())
-      .then((data) => setSuggestions(data.features || []))
-      .catch(() => {});
-    return () => controller.abort();
+    let active = true;
+    searchPlaces(form.place).then((results) => {
+      if (active) setSuggestions(results);
+    });
+    return () => {
+      active = false;
+    };
   }, [form.place]);
 
-  const handleSelect = (feature) => {
+  const handleSelect = (item) => {
     setForm({
       ...form,
-      place: feature.properties.formatted,
-      lat: feature.geometry.coordinates[1],
-      lon: feature.geometry.coordinates[0],
+      place: item.name,
+      lat: item.lat,
+      lon: item.lon,
     });
     setSuggestions([]);
   };
@@ -116,13 +112,13 @@ export default function BirthForm({ onSubmit, loading }) {
         />
         {suggestions.length > 0 && (
           <ul className="absolute z-10 bg-slate-800 border border-slate-700 w-full mt-1 max-h-40 overflow-auto rounded">
-            {suggestions.map((sug) => (
+            {suggestions.map((sug, idx) => (
               <li
-                key={sug.properties.place_id}
+                key={idx}
                 className="p-2 hover:bg-slate-700 cursor-pointer"
                 onClick={() => handleSelect(sug)}
               >
-                {sug.properties.formatted}
+                {sug.name}
               </li>
             ))}
           </ul>

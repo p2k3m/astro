@@ -1,0 +1,5 @@
+[
+  { "name": "New York, USA", "lat": 40.7128, "lon": -74.006 },
+  { "name": "London, UK", "lat": 51.5074, "lon": -0.1278 },
+  { "name": "Mumbai, India", "lat": 19.076, "lon": 72.8777 }
+]
