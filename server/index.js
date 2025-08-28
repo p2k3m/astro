@@ -1,8 +1,28 @@
 const express = require('express');
+const path = require('path');
 const jyotish = require('jyotish-calculations');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize jyotish-calculations with the Swiss Ephemeris path before
+// handling any requests. Exit with a clear error if initialization fails
+// so that errors don't surface later as silent 500 responses.
+const ephemerisPath = path.join(
+  __dirname,
+  '..',
+  'node_modules',
+  'swisseph',
+  'ephe'
+);
+
+async function initJyotish() {
+  if (typeof jyotish.setEphemerisPath === 'function') {
+    jyotish.setEphemerisPath(ephemerisPath);
+  } else if (typeof jyotish.init === 'function') {
+    await jyotish.init(ephemerisPath);
+  }
+}
 
 async function computeAscendant(date, lat, lon) {
   if (jyotish.getAscendant) {
@@ -65,7 +85,14 @@ app.get('/api/planet', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+initJyotish()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to initialize jyotish-calculations:', err);
+    process.exit(1);
+  });
 
