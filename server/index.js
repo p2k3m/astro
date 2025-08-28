@@ -22,16 +22,6 @@ if (!fs.existsSync(ephemerisPath)) {
   process.exit(1);
 }
 
-const initPromise = (async () => {
-  if (typeof jyotish.setEphemerisPath === 'function') {
-    jyotish.setEphemerisPath(ephemerisPath);
-  } else if (typeof jyotish.init === 'function') {
-    await jyotish.init(ephemerisPath);
-  } else {
-    throw new Error('jyotish-calculations missing initialization function');
-  }
-})();
-
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -78,14 +68,24 @@ app.get('/api/planet', async (req, res) => {
   }
 });
 
-initPromise
-  .then(() => {
+async function start() {
+  try {
+    if (typeof jyotish.setEphemerisPath === 'function') {
+      await jyotish.setEphemerisPath(ephemerisPath);
+    } else if (typeof jyotish.init === 'function') {
+      await jyotish.init(ephemerisPath);
+    } else {
+      throw new Error('jyotish-calculations missing initialization function');
+    }
+
     app.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('Failed to initialize jyotish-calculations:', err);
     process.exit(1);
-  });
+  }
+}
+
+start();
 
