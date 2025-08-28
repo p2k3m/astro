@@ -2,15 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function Chart({ data, children }) {
-  const invalidHouses =
-    !data ||
-    !Array.isArray(data.houses) ||
-    data.houses.some((h) => typeof h !== 'number' || Number.isNaN(h));
+  const isValidNumber = (val) => typeof val === 'number' && !Number.isNaN(val);
 
-  const invalidPlanets =
-    !data ||
-    !Array.isArray(data.planets) ||
-    data.planets.some((p) => typeof p.degree !== 'number' || Number.isNaN(p.degree));
+  const invalidHouses = !data || !Array.isArray(data.houses);
+
+  const invalidPlanets = !data || !Array.isArray(data.planets);
 
   if (invalidHouses || invalidPlanets) {
     return (
@@ -52,9 +48,13 @@ export default function Chart({ data, children }) {
 
   const planetByHouse = {};
   data.planets.forEach((p) => {
+    if (!isValidNumber(p.house)) return;
+
+    const degree = isValidNumber(p.degree) ? `${p.degree}°` : 'No data';
+
     planetByHouse[p.house] = planetByHouse[p.house] || [];
     planetByHouse[p.house].push(
-      `${p.abbr} ${p.degree}°${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}`
+      `${p.abbr} ${degree}${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}`
     );
   });
 
@@ -68,6 +68,9 @@ export default function Chart({ data, children }) {
         <div className="absolute inset-0 rotate-45 border-2 border-orange-500" />
         {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
           const pos = positions[house];
+          const houseValue = data.houses[house - 1];
+          const displayHouse = isValidNumber(houseValue) ? houseValue : 'No data';
+
           return (
             <div
               key={house}
@@ -82,7 +85,7 @@ export default function Chart({ data, children }) {
             >
               <div className="-rotate-45 flex flex-col items-center">
                 <span className="text-yellow-300 font-semibold">
-                  {data.houses[house - 1]}
+                  {displayHouse}
                 </span>
                 {planetByHouse[house] &&
                   planetByHouse[house].map((pl, idx) => (
