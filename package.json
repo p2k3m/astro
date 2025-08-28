@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node server/index.js"
   },
   "dependencies": {
+    "express": "^4.18.2",
+    "jyotish-calculations": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
