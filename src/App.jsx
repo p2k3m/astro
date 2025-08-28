@@ -11,6 +11,7 @@ export default function App() {
   const handleSubmit = async (form) => {
     setLoading(true);
     setError('');
+    setChartData(null);
     try {
       const data = await calculateChart(form);
       setChartData(data);
