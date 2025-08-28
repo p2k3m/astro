@@ -16,7 +16,7 @@ export default function App() {
       setChartData(data);
     } catch (err) {
       console.error(err);
-      setError('Failed to calculate chart.');
+      setError(err.message || 'Failed to calculate chart.');
     } finally {
       setLoading(false);
     }
