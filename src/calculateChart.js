@@ -13,7 +13,7 @@ async function getAscendant(jsDate, lat, lon) {
   const res = await fetch(`/api/ascendant?${params.toString()}`);
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || 'Failed to fetch ascendant');
+    throw new Error(data.error || 'Request failed');
   }
   return data.longitude;
 }
@@ -29,7 +29,7 @@ async function getPlanetPosition(jsDate, lat, lon, planet) {
   const res = await fetch(`/api/planet?${params.toString()}`);
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || `Failed to fetch ${planet} position`);
+    throw new Error(data.error || 'Request failed');
   }
   return data;
 }
