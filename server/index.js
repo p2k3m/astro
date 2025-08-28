@@ -1,6 +1,19 @@
 const express = require('express');
 const path = require('path');
-const jyotish = require('jyotish-calculations');
+
+let ascendant;
+let planet;
+let setEphemerisPath;
+let init;
+try {
+  ({ ascendant, planet, setEphemerisPath, init } = require('jyotish-calculations'));
+  if (typeof ascendant !== 'function' || typeof planet !== 'function') {
+    throw new Error('Missing required exports');
+  }
+} catch (err) {
+  console.error('Failed to load jyotish-calculations:', err);
+  process.exit(1);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,37 +30,22 @@ const ephemerisPath = path.join(
 );
 
 async function initJyotish() {
-  if (typeof jyotish.setEphemerisPath === 'function') {
-    jyotish.setEphemerisPath(ephemerisPath);
-  } else if (typeof jyotish.init === 'function') {
-    await jyotish.init(ephemerisPath);
+  if (typeof setEphemerisPath === 'function') {
+    setEphemerisPath(ephemerisPath);
+  } else if (typeof init === 'function') {
+    await init(ephemerisPath);
+  } else {
+    console.error('jyotish-calculations missing initialization function');
+    process.exit(1);
   }
 }
 
 async function computeAscendant(date, lat, lon) {
-  if (jyotish.getAscendant) {
-    return await jyotish.getAscendant(date, lat, lon);
-  }
-  if (jyotish.ascendant) {
-    return await jyotish.ascendant(date, lat, lon);
-  }
-  if (jyotish.getAscendantLongitude) {
-    return await jyotish.getAscendantLongitude(date, lat, lon);
-  }
-  throw new Error('Ascendant calculation not available');
+  return await ascendant(date, lat, lon);
 }
 
-async function computePlanet(date, lat, lon, planet) {
-  if (jyotish.getPlanetPosition) {
-    return await jyotish.getPlanetPosition(planet, date, lat, lon);
-  }
-  if (jyotish.getPlanet) {
-    return await jyotish.getPlanet(planet, date, lat, lon);
-  }
-  if (jyotish.planet) {
-    return await jyotish.planet(planet, date, lat, lon);
-  }
-  throw new Error('Planet calculation not available');
+async function computePlanet(date, lat, lon, planetName) {
+  return await planet(planetName, date, lat, lon);
 }
 
 app.get('/api/ascendant', async (req, res) => {
