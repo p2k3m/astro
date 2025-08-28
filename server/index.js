@@ -3,8 +3,8 @@ const express = require('express');
 const path = require('path');
 
 const jyotishModule = require('jyotish-calculations');
-const jyotish = jyotishModule.default || jyotishModule;
-console.log('jyotish methods:', Object.keys(jyotish));
+const jyotish = (jyotishModule.default || jyotishModule).utils;
+console.log('jyotish utilities:', Object.keys(jyotish));
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
