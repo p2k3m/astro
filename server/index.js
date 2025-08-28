@@ -2,16 +2,15 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-// Load the jyotish-calculations API. Depending on how the library was
-// published, its functions may live on the default export (ESM) or be
-// exported directly (CommonJS). Grab the functions from whichever is
-// available so the server works in either case.
+
 const jyotishModule = require('jyotish-calculations');
+
 const {
   setEphemerisPath,
   getAscendantLongitude,
   getPlanetPosition,
 } = jyotishModule.default || jyotishModule;
+} = require('jyotish-calculations');
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
