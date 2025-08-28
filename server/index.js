@@ -2,15 +2,9 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-
 const jyotishModule = require('jyotish-calculations');
-
-const {
-  setEphemerisPath,
-  getAscendantLongitude,
-  getPlanetPosition,
-} = jyotishModule.default || jyotishModule;
-} = require('jyotish-calculations');
+const { setEphemerisPath, getAscendantLongitude, getPlanetPosition } =
+  jyotishModule.default || jyotishModule;
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
