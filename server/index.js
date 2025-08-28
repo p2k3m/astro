@@ -2,7 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-const jyotishModule = require('jyotish-calculations');
+const jyotishModule = require('jyotish-calculations').utils;
 const jyotish = jyotishModule.default || jyotishModule;
 console.log('jyotish methods:', Object.keys(jyotish));
 
