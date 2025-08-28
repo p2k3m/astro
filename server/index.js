@@ -4,7 +4,7 @@ const path = require('path');
 
 // Load the jyotish-calculations API directly and use its documented
 // exports without any fallback logic.
-const jyotish = require('jyotish-calculations').default;
+const jyotish = require('jyotish-calculations');
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
