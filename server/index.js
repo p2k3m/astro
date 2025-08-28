@@ -2,19 +2,9 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-let ascendant;
-let planet;
-let setEphemerisPath;
-let init;
-try {
-  ({ ascendant, planet, setEphemerisPath, init } = require('jyotish-calculations'));
-  if (typeof ascendant !== 'function' || typeof planet !== 'function') {
-    throw new Error('Missing required exports');
-  }
-} catch (err) {
-  console.error('Failed to load jyotish-calculations:', err);
-  process.exit(1);
-}
+// Load the jyotish-calculations API directly and use its documented
+// exports without any fallback logic.
+const jyotish = require('jyotish-calculations');
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
@@ -33,10 +23,10 @@ if (!fs.existsSync(ephemerisPath)) {
 }
 
 const initPromise = (async () => {
-  if (typeof setEphemerisPath === 'function') {
-    setEphemerisPath(ephemerisPath);
-  } else if (typeof init === 'function') {
-    await init(ephemerisPath);
+  if (typeof jyotish.setEphemerisPath === 'function') {
+    jyotish.setEphemerisPath(ephemerisPath);
+  } else if (typeof jyotish.init === 'function') {
+    await jyotish.init(ephemerisPath);
   } else {
     throw new Error('jyotish-calculations missing initialization function');
   }
@@ -46,11 +36,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 async function computeAscendant(date, lat, lon) {
-  return await ascendant(date, lat, lon);
+  return await jyotish.getAscendantLongitude(date, lat, lon);
 }
 
 async function computePlanet(date, lat, lon, planetName) {
-  return await planet(planetName, date, lat, lon);
+  return await jyotish.getPlanetLongitude(planetName, date, lat, lon);
 }
 
 app.get('/api/ascendant', async (req, res) => {
