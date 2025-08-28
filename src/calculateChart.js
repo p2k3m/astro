@@ -1,9 +1,31 @@
-// Utility to compute ascendant and planetary positions using jyotish-calculations
-// The library wraps the Swiss Ephemeris for high precision.
-// Note: this code assumes jyotish-calculations exposes functions for ascendant
-// and planetary calculations. Adjust the API usage if the package differs.
+// Utility to compute ascendant and planetary positions.
+// The original implementation relied on the "jyotish-calculations" package
+// which is not compatible with the browser. Instead, calculations are now
+// delegated to a backend API so the frontend remains dependency-free.
 
-import { getAscendant, getPlanetPosition } from 'jyotish-calculations';
+async function getAscendant(jsDate, lat, lon) {
+  const params = new URLSearchParams({
+    date: jsDate.toISOString(),
+    lat: String(lat),
+    lon: String(lon),
+  });
+
+  const res = await fetch(`/api/ascendant?${params.toString()}`);
+  const data = await res.json();
+  return data.longitude;
+}
+
+async function getPlanetPosition(jsDate, lat, lon, planet) {
+  const params = new URLSearchParams({
+    date: jsDate.toISOString(),
+    lat: String(lat),
+    lon: String(lon),
+    planet,
+  });
+
+  const res = await fetch(`/api/planet?${params.toString()}`);
+  return res.json();
+}
 
 const PLANETS = [
   { key: 'sun', abbr: 'Su' },
