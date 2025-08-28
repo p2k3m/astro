@@ -26,11 +26,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 async function computeAscendant(date, lat, lon) {
-  return await jyotish.getAscendantLongitude(date, lat, lon);
+  return jyotish.getAscendantLongitude(date, lat, lon);
 }
 
 async function computePlanet(date, lat, lon, planetName) {
-  return await jyotish.getPlanetLongitude(planetName, date, lat, lon);
+  return jyotish.getPlanetPosition(planetName, date, lat, lon);
 }
 
 app.get('/api/ascendant', async (req, res) => {
@@ -41,8 +41,7 @@ app.get('/api/ascendant', async (req, res) => {
   }
   try {
     const jsDate = new Date(date);
-    const result = await computeAscendant(jsDate, parseFloat(lat), parseFloat(lon));
-    const longitude = typeof result === 'number' ? result : result.longitude;
+    const longitude = await computeAscendant(jsDate, parseFloat(lat), parseFloat(lon));
     res.json({ longitude });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -57,12 +56,13 @@ app.get('/api/planet', async (req, res) => {
   }
   try {
     const jsDate = new Date(date);
-    const result = await computePlanet(jsDate, parseFloat(lat), parseFloat(lon), planet);
-    res.json({
-      longitude: result.longitude ?? result.lng ?? result.lon ?? result.longitudeDeg,
-      retrograde: result.retrograde ?? result.isRetrograde ?? false,
-      combust: result.combust ?? result.isCombust ?? false,
-    });
+    const { longitude, retrograde, combust } = await computePlanet(
+      jsDate,
+      parseFloat(lat),
+      parseFloat(lon),
+      planet
+    );
+    res.json({ longitude, retrograde, combust });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
