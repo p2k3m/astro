@@ -8,4 +8,9 @@ export default defineConfig({
   define: {
     __dirname: JSON.stringify(new URL('.', import.meta.url).pathname),
   },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3001',
+    },
+  },
 });

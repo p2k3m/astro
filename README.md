@@ -33,12 +33,15 @@ A single-page React application that renders an accurate North Indian style D1 (
 npm install
 
 # Run in development
+# Start the backend in a separate terminal
+npm run server
+# Then launch the Vite dev server
 npm run dev
 ```
 
 1. Clone this repository.
 2. Install dependencies with `npm install`.
-3. Start the development server using `npm run dev`.
+3. Start the backend with `npm run server` and in another terminal run `npm run dev`.
 
 ### Preparing the offline location dataset
 
