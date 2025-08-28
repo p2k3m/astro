@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 
 const jyotishModule = require('jyotish-calculations');
-// Handle both CommonJS and ES module default exports
 const jyotish = jyotishModule.default || jyotishModule;
 console.log('jyotish methods:', Object.keys(jyotish));
 
