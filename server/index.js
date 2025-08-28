@@ -2,9 +2,14 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-// Load the jyotish-calculations API directly and use its documented
-// exports without any fallback logic.
-const jyotish = require('jyotish-calculations');
+// Load the jyotish-calculations API using its named exports.
+// The library exposes individual functions rather than a default object,
+// so grab the functions we need directly from the module.
+const {
+  setEphemerisPath,
+  getAscendantLongitude,
+  getPlanetPosition,
+} = require('jyotish-calculations');
 
 // Initialize jyotish-calculations with the Swiss Ephemeris path before
 // handling any requests. Exit with a clear error if initialization fails
@@ -23,7 +28,7 @@ if (!fs.existsSync(ephemerisPath)) {
 }
 
 try {
-  jyotish.setEphemerisPath(ephemerisPath);
+  setEphemerisPath(ephemerisPath);
 } catch (err) {
   console.error('Failed to initialize jyotish-calculations:', err);
   process.exit(1);
@@ -33,11 +38,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 async function computeAscendant(date, lat, lon) {
-  return jyotish.getAscendantLongitude(date, lat, lon);
+  return getAscendantLongitude(date, lat, lon);
 }
 
 async function computePlanet(date, lat, lon, planetName) {
-  return jyotish.getPlanetPosition(planetName, date, lat, lon);
+  return getPlanetPosition(planetName, date, lat, lon);
 }
 
 app.get('/api/ascendant', async (req, res) => {
