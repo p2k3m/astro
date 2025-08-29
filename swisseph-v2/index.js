@@ -2,29 +2,29 @@ const DEG2RAD = Math.PI / 180;
 const RAD2DEG = 180 / Math.PI;
 
 // Constants mimicking a subset of Swiss Ephemeris
-module.exports.SE_SUN = 0;
-module.exports.SE_MOON = 1;
-module.exports.SE_MERCURY = 2;
-module.exports.SE_VENUS = 3;
-module.exports.SE_MARS = 4;
-module.exports.SE_JUPITER = 5;
-module.exports.SE_SATURN = 6;
-module.exports.SE_TRUE_NODE = 7; // Rahu
-module.exports.SE_MEAN_NODE = 8; // Ketu approximated
+export const SE_SUN = 0;
+export const SE_MOON = 1;
+export const SE_MERCURY = 2;
+export const SE_VENUS = 3;
+export const SE_MARS = 4;
+export const SE_JUPITER = 5;
+export const SE_SATURN = 6;
+export const SE_TRUE_NODE = 7; // Rahu
+export const SE_MEAN_NODE = 8; // Ketu approximated
 
-module.exports.SEFLG_SPEED = 1 << 0;
-module.exports.SEFLG_SWIEPH = 1 << 1;
-module.exports.SEFLG_SIDEREAL = 1 << 2;
+export const SEFLG_SPEED = 1 << 0;
+export const SEFLG_SWIEPH = 1 << 1;
+export const SEFLG_SIDEREAL = 1 << 2;
 
-module.exports.SE_SIDM_LAHIRI = 0; // id for Lahiri mode
-module.exports.SE_GREG_CAL = 1;
+export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
+export const SE_GREG_CAL = 1;
 
 // no-op setters for path and sidereal mode
-module.exports.swe_set_ephe_path = function () {};
-module.exports.swe_set_sid_mode = function () {};
+export function swe_set_ephe_path() {}
+export function swe_set_sid_mode() {}
 
 // Julian day computation (Gregorian calendar only)
-module.exports.swe_julday = function (year, month, day, ut, calflag) {
+export function swe_julday(year, month, day, ut, calflag) {
   if (month <= 2) {
     year -= 1;
     month += 12;
@@ -172,20 +172,20 @@ function heliocentricXYZ(el) {
 }
 
 function planetLongitudeTropical(jd, planetId) {
-  if (planetId === module.exports.SE_SUN) {
+  if (planetId === SE_SUN) {
     return sunLongitude(jd);
   }
-  if (planetId === module.exports.SE_MOON) {
+  if (planetId === SE_MOON) {
     return moonLongitude(jd);
   }
   const d = jd - 2451545.0;
   const earth = heliocentricXYZ(elementsFor('earth', d));
   const idToName = {
-    [module.exports.SE_MERCURY]: 'mercury',
-    [module.exports.SE_VENUS]: 'venus',
-    [module.exports.SE_MARS]: 'mars',
-    [module.exports.SE_JUPITER]: 'jupiter',
-    [module.exports.SE_SATURN]: 'saturn',
+    [SE_MERCURY]: 'mercury',
+    [SE_VENUS]: 'venus',
+    [SE_MARS]: 'mars',
+    [SE_JUPITER]: 'jupiter',
+    [SE_SATURN]: 'saturn',
   };
   const name = idToName[planetId];
   if (!name) return 0;
@@ -198,7 +198,7 @@ function planetLongitudeTropical(jd, planetId) {
 
 function siderealLongitude(jd, planetId) {
   let tropical;
-  if (planetId === module.exports.SE_TRUE_NODE) {
+  if (planetId === SE_TRUE_NODE) {
     const days = jd - 2451545.0;
     tropical = normalizeAngle(125.04452 - 0.0529538083 * days);
   } else {
@@ -208,14 +208,14 @@ function siderealLongitude(jd, planetId) {
   return normalizeAngle(tropical - ayan);
 }
 
-module.exports.swe_calc_ut = function (jd, planetId, flags) {
+export function swe_calc_ut(jd, planetId, flags) {
   const lon = siderealLongitude(jd, planetId);
   const lon2 = siderealLongitude(jd + 1, planetId);
   let speed = lon2 - lon;
   if (speed > 180) speed -= 360;
   if (speed < -180) speed += 360;
   return { longitude: lon, longitudeSpeed: speed };
-};
+}
 
 function localSiderealTime(jd, lon) {
   const T = (jd - 2451545.0) / 36525;
@@ -241,9 +241,9 @@ function ascendantTropical(jd, lat, lon) {
   return normalizeAngle(asc * RAD2DEG);
 }
 
-module.exports.swe_houses_ex = function (jd, lat, lon, hsys, flags) {
+export function swe_houses_ex(jd, lat, lon, hsys, flags) {
   const ascTropical = ascendantTropical(jd, lat, lon);
   const ayan = lahiriAyanamsa(jd);
   const ascSid = normalizeAngle(ascTropical - ayan);
   return { ascendant: ascSid };
-};
+}
