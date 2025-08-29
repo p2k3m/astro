@@ -7,6 +7,10 @@ const test = require('node:test');
 function loadGetTimezoneOffset() {
   let code = fs.readFileSync(path.join(__dirname, '../src/calculateChart.js'), 'utf8');
   code = code.replace(
+    'export function longitudeToSign',
+    'function longitudeToSign'
+  );
+  code = code.replace(
     'export default async function calculateChart',
     'async function calculateChart'
   );
