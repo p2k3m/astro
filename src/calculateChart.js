@@ -84,7 +84,8 @@ const PLANETS = [
   { key: 'ketu', abbr: 'Ke' },
 ];
 
-function longitudeToSign(longitude) {
+export function longitudeToSign(longitude) {
+  longitude = ((longitude % 360) + 360) % 360;
   const sign = Math.floor(longitude / 30) + 1; // 1..12
   const degree = longitude % 30;
   // Return degree as a numeric value rounded to two decimals
