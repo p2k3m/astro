@@ -3,6 +3,8 @@
 // which is not compatible with the browser. Instead, calculations are now
 // delegated to a backend API so the frontend remains dependency-free.
 
+import { getTimezoneOffset } from './lib/timezone.js';
+
 async function getAscendant(jsDate, lat, lon) {
   const params = new URLSearchParams({
     date: jsDate.toISOString(),
@@ -50,27 +52,6 @@ async function getPlanetPosition(jsDate, lat, lon, planet) {
   }
 }
 
-// Attempt to determine the timezone offset (in minutes) for a location.
-// Uses an external API when available and falls back to a simple
-// approximation based on longitude if the request fails.
-async function getTimezoneOffset(lat, lon) {
-  try {
-    const url = `https://www.timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.currentUtcOffset) {
-        const { hours = 0, minutes = 0 } = data.currentUtcOffset;
-        return hours * 60 + minutes;
-      }
-    }
-  } catch (err) {
-    // Ignore network or parsing errors and use fallback below
-    console.error('Failed to fetch timezone offset', err);
-  }
-  // Fallback: crude estimate from longitude with half-hour precision
-  return Math.round(lon / 7.5) * 30;
-}
 
 const PLANETS = [
   { key: 'sun', abbr: 'Su' },
@@ -99,9 +80,9 @@ export default async function calculateChart({ date, time, lat, lon }) {
   let jsDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
   // Adjust for the location's timezone offset so the backend receives UTC
-  // timestamps. If the offset cannot be determined, the function falls back
-  // to using the provided time as-is.
-  const tzOffset = await getTimezoneOffset(lat, lon);
+  // timestamps. The offset is derived from historical timezone data and
+  // reflects daylight saving time where applicable.
+  const tzOffset = await getTimezoneOffset({ date, time, lat, lon });
   jsDate = new Date(jsDate.getTime() - tzOffset * 60000);
 
   // Ascendant calculation
