@@ -1,6 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SIGN_BOX_CENTERS, BOX_SIZE, diamondPath } from '../lib/astro.js';
+
+// Each entry defines the path and centre of a house polygon in the
+// fixed AstroSage-style layout. Houses are numbered counter-clockwise
+// starting from the left.
+export const HOUSE_POLYGONS = [
+  { d: 'M0 50 L25 25 L50 50 L25 75 Z', cx: 25, cy: 50 }, // 1
+  { d: 'M0 50 L25 75 L50 100 Z', cx: 25, cy: 75 }, // 2
+  { d: 'M25 75 L50 50 L50 100 Z', cx: 41.6667, cy: 75 }, // 3
+  { d: 'M50 100 L75 75 L50 50 L25 75 Z', cx: 50, cy: 75 }, // 4
+  { d: 'M50 100 L100 50 L75 75 Z', cx: 75, cy: 75 }, // 5
+  { d: 'M75 75 L50 50 L100 50 Z', cx: 75, cy: 58.3333 }, // 6
+  { d: 'M100 50 L75 25 L50 50 L75 75 Z', cx: 75, cy: 50 }, // 7
+  { d: 'M100 50 L50 0 L75 25 Z', cx: 75, cy: 25 }, // 8
+  { d: 'M75 25 L50 50 L50 0 Z', cx: 58.3333, cy: 25 }, // 9
+  { d: 'M50 0 L25 25 L50 50 L75 25 Z', cx: 50, cy: 25 }, // 10
+  { d: 'M50 0 L0 50 L25 25 Z', cx: 25, cy: 25 }, // 11
+  { d: 'M25 25 L50 50 L0 50 Z', cx: 25, cy: 41.6667 }, // 12
+];
 
 const SIGN_LABELS = [
   'Ar',
@@ -26,8 +43,16 @@ export default function Chart({ data, children }) {
     );
   }
 
-  const planetBySign = {};
+  const signToHouse = data.houses;
+  const houseToSign = {};
+  signToHouse.forEach((h, s) => {
+    if (h >= 1 && h <= 12) houseToSign[h] = s;
+  });
+
+  const planetByHouse = {};
   data.planets.forEach((p) => {
+    const houseNum = signToHouse[p.sign];
+    if (!houseNum) return;
     const degreeValue = Number(p.deg ?? p.degree);
     let degree = 'No data';
     if (!Number.isNaN(degreeValue)) {
@@ -36,8 +61,8 @@ export default function Chart({ data, children }) {
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
     const label = `${p.name} ${degree}${p.retro || p.retrograde ? ' R' : ''}`;
-    planetBySign[p.sign] = planetBySign[p.sign] || [];
-    planetBySign[p.sign].push(label);
+    planetByHouse[houseNum] = planetByHouse[houseNum] || [];
+    planetByHouse[houseNum].push(label);
   });
 
   const size = 300; // chart size
@@ -51,34 +76,41 @@ export default function Chart({ data, children }) {
           fill="none"
           stroke="currentColor"
         >
-          <path d={diamondPath(50, 50, 50)} strokeWidth="2" />
-          {SIGN_BOX_CENTERS.map((c, idx) => (
-            <path key={idx} d={diamondPath(c.cx, c.cy)} strokeWidth="1" />
+          <path d="M50 0 L100 50 L50 100 L0 50 Z" strokeWidth="2" />
+          <path d="M0 50 L100 50" strokeWidth="1" />
+          <path d="M50 0 L50 100" strokeWidth="1" />
+          <path d="M25 25 L75 75" strokeWidth="1" />
+          <path d="M75 25 L25 75" strokeWidth="1" />
+          {HOUSE_POLYGONS.map((p, idx) => (
+            <path key={idx} d={p.d} fill="transparent" stroke="none" aria-label={`house ${idx + 1}`} />
           ))}
         </svg>
-        {SIGN_BOX_CENTERS.map((c, idx) => {
-          const houseNum = data.houses[idx];
+        {HOUSE_POLYGONS.map((p, idx) => {
+          const houseNum = idx + 1;
+          const signIdx = houseToSign[houseNum];
           return (
             <div
-              key={idx}
+              key={houseNum}
               className="absolute flex flex-col items-center text-xs gap-0.5 p-1"
               style={{
-                top: `${c.cy}%`,
-                left: `${c.cx}%`,
+                top: `${p.cy}%`,
+                left: `${p.cx}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              {houseNum !== undefined && (
-                <span className="text-yellow-300 font-semibold text-[0.6rem] leading-none">
-                  {houseNum}
-                </span>
-              )}
-              {idx === data.ascSign && (
+              <span className="text-yellow-300/40 text-[0.6rem] leading-none">
+                {houseNum}
+              </span>
+              {signIdx === data.ascSign && (
                 <span className="text-yellow-300 text-[0.6rem] leading-none">Asc</span>
               )}
-              <span className="text-orange-300 font-semibold">{SIGN_LABELS[idx]}</span>
-              {planetBySign[idx] &&
-                planetBySign[idx].map((pl, i) => <span key={i}>{pl}</span>)}
+              {signIdx !== undefined && (
+                <span className="text-orange-300 font-semibold">
+                  {SIGN_LABELS[signIdx]}
+                </span>
+              )}
+              {planetByHouse[houseNum] &&
+                planetByHouse[houseNum].map((pl, i) => <span key={i}>{pl}</span>)}
             </div>
           );
         })}
