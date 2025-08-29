@@ -44,24 +44,31 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
-// Compute the ascendant directly with Swiss Ephemeris instead of
-// relying on jyotish.getAscendant.
-const computeAscendant = (date, lat, lon) => {
+// Compute the ascendant longitude using Swiss Ephemeris.
+// The Jyotish library previously exposed `getAscendant`, but here we
+// use the low-level ephemeris directly so no other code path relies on
+// `jyotish.getAscendant`.
+function computeAscendant(date, lat, lon) {
+  // Convert UTC time to a fractional UT hour value.
   const ut =
     date.getUTCHours() +
     date.getUTCMinutes() / 60 +
     date.getUTCSeconds() / 3600 +
     date.getUTCMilliseconds() / 3600000;
-  const jd = swisseph.swe_julday(
+
+  // Calculate the Julian day and then compute house cusps.
+  const julianDay = swisseph.swe_julday(
     date.getUTCFullYear(),
     date.getUTCMonth() + 1,
     date.getUTCDate(),
     ut,
     swisseph.SE_GREG_CAL
   );
-  const { ascmc } = swisseph.swe_houses(jd, lat, lon, 'P');
-  return ascmc[0];
-};
+  const houses = swisseph.swe_houses(julianDay, lat, lon, 'P');
+
+  // The first element of `ascmc` is the ascendant longitude.
+  return houses.ascmc[0];
+}
 
 async function computePlanet(date, lat, lon, planetName) {
   return jyotish.getPlanetPosition(planetName, date, lat, lon);
