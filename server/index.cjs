@@ -83,24 +83,6 @@ function computeAscendant(date, lat, lon) {
 // Replaced jyotish.getPlanetPosition with a direct swisseph implementation.
 // =======================================================================
 async function computePlanet(date, lat, lon, planetName) {
-  // Map planet names to swisseph constants
-  const planetMap = {
-    sun: swisseph.SE_SUN,
-    moon: swisseph.SE_MOON,
-    mercury: swisseph.SE_MERCURY,
-    venus: swisseph.SE_VENUS,
-    mars: swisseph.SE_MARS,
-    jupiter: swisseph.SE_JUPITER,
-    saturn: swisseph.SE_SATURN,
-    rahu: swisseph.SE_TRUE_NODE, // Rahu is the true north node
-    ketu: swisseph.SE_MEAN_NODE, // This is an approximation for Ketu, often calculated as 180 degrees from Rahu
-  };
-
-  const planetId = planetMap[planetName];
-  if (typeof planetId === 'undefined') {
-    throw new Error(`Invalid planet name: ${planetName}`);
-  }
-
   const ut =
     date.getUTCHours() +
     date.getUTCMinutes() / 60 +
@@ -117,22 +99,46 @@ async function computePlanet(date, lat, lon, planetName) {
     swisseph.SEFLG_SWIEPH |
     swisseph.SEFLG_SPEED |
     swisseph.SEFLG_SIDEREAL;
+
+  if (planetName === 'ketu') {
+    // Ketu is always opposite Rahu. Fetch Rahu once using the true node and derive
+    // Ketu's longitude and retrograde state from it to keep values coherent.
+    const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, flag);
+    if (!rahuData || typeof rahuData.longitude === 'undefined') {
+      throw new Error('Failed to calculate position for ketu');
+    }
+    return {
+      longitude: (rahuData.longitude + 180) % 360,
+      retrograde: rahuData.longitudeSpeed < 0,
+      combust: false,
+    };
+  }
+
+  // Map planet names to swisseph constants
+  const planetMap = {
+    sun: swisseph.SE_SUN,
+    moon: swisseph.SE_MOON,
+    mercury: swisseph.SE_MERCURY,
+    venus: swisseph.SE_VENUS,
+    mars: swisseph.SE_MARS,
+    jupiter: swisseph.SE_JUPITER,
+    saturn: swisseph.SE_SATURN,
+    rahu: swisseph.SE_TRUE_NODE, // Rahu is the true north node
+  };
+
+  const planetId = planetMap[planetName];
+  if (typeof planetId === 'undefined') {
+    throw new Error(`Invalid planet name: ${planetName}`);
+  }
+
   const planetData = swisseph.swe_calc_ut(julianDay, planetId, flag);
 
   if (!planetData || typeof planetData.longitude === 'undefined') {
     throw new Error(`Failed to calculate position for ${planetName}`);
   }
-  
-  let longitude = planetData.longitude;
-  // For Ketu, we calculate it as 180 degrees opposite Rahu
-  if (planetName === 'ketu') {
-      const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, flag);
-      longitude = (rahuData.longitude + 180) % 360;
-  }
-
 
   return {
-    longitude: longitude,
+    longitude: planetData.longitude,
     retrograde: planetData.longitudeSpeed < 0,
     // Note: 'combust' calculation is complex and depends on the Sun's position.
     // It is omitted here to fix the primary calculation error.
