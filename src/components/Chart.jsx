@@ -31,19 +31,24 @@ export default function Chart({ data, children }) {
     );
   }
 
+  // Coordinates for the 12 houses laid out on a 4x4 grid. Each house is
+  // represented by a square rotated 45 degrees, matching the traditional
+  // North Indian chart layout. Fractional values (e.g. 1.5) are used for
+  // the centre-aligned houses so that every house remains inside the
+  // chart boundary.
   const positions = {
-    1: { x: 2, y: 0 },
-    2: { x: 3, y: 1 },
-    3: { x: 3, y: 2 },
-    4: { x: 2, y: 3 },
-    5: { x: 1, y: 3 },
-    6: { x: 0, y: 2 },
-    7: { x: 0, y: 1 },
-    8: { x: 1, y: 0 },
-    9: { x: 1, y: 1 },
-    10: { x: 2, y: 1 },
-    11: { x: 2, y: 2 },
-    12: { x: 1, y: 2 },
+    1: { x: 1.5, y: 0 }, // top centre
+    2: { x: 3, y: 1 }, // top right
+    3: { x: 3, y: 2 }, // right
+    4: { x: 2, y: 3 }, // bottom right
+    5: { x: 1.5, y: 3 }, // bottom centre
+    6: { x: 0, y: 2 }, // bottom left
+    7: { x: 0, y: 1 }, // left
+    8: { x: 1, y: 0 }, // top left
+    9: { x: 1, y: 1 }, // inner top-left
+    10: { x: 2, y: 1 }, // inner top-right
+    11: { x: 2, y: 2 }, // inner bottom-right
+    12: { x: 1, y: 2 }, // inner bottom-left
   };
 
   const SIGN_MAP = {
@@ -76,7 +81,9 @@ export default function Chart({ data, children }) {
   });
 
   const size = 300; // chart size
-  const cell = size / 3;
+  // Divide the chart into a 4x4 grid so that all houses fit within the
+  // rotated outer square.
+  const cell = size / 4;
 
   return (
     <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
