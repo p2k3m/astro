@@ -49,13 +49,45 @@ test('Chart renders only with exactly 12 houses in natural order', () => {
   );
 });
 
-test('Chart SVG uses 12 rhombi with no inner polygon', () => {
+test('Chart SVG uses 12 distinct rhombi with no central cross', () => {
   const { SIGN_BOXES } = loadChart();
   assert.strictEqual(SIGN_BOXES.length, 12);
+  const unique = new Set(SIGN_BOXES.map((b) => b.points));
+  assert.strictEqual(unique.size, 12);
   const code = fs.readFileSync(
     path.join(__dirname, '../src/components/Chart.jsx'),
     'utf8'
   );
   assert.ok(!code.includes('<line'));
-  assert.ok(!code.includes('50,25 75,50 50,75 25,50'));
+});
+
+test('Planet labels are centred within sign boxes', () => {
+  const code = fs.readFileSync(
+    path.join(__dirname, '../src/components/Chart.jsx'),
+    'utf8'
+  );
+  assert.ok(code.includes("top: `${box.cy}%`"));
+  assert.ok(code.includes("left: `${box.cx}%`"));
+  assert.ok(code.includes("transform: 'translate(-50%, -50%)'"));
+  assert.ok(code.includes('planetBySign[box.sign] &&'));
+});
+
+test('Rhombi positions follow canonical North-Indian layout', () => {
+  const { SIGN_BOXES } = loadChart();
+  const expected = [
+    '50,0 62.5,12.5 50,25 37.5,12.5',
+    '87.5,25 100,37.5 87.5,50 75,37.5',
+    '87.5,50 100,62.5 87.5,75 75,62.5',
+    '62.5,75 75,87.5 62.5,100 50,87.5',
+    '50,75 62.5,87.5 50,100 37.5,87.5',
+    '12.5,50 25,62.5 12.5,75 0,62.5',
+    '12.5,25 25,37.5 12.5,50 0,37.5',
+    '37.5,0 50,12.5 37.5,25 25,12.5',
+    '37.5,25 50,37.5 37.5,50 25,37.5',
+    '62.5,25 75,37.5 62.5,50 50,37.5',
+    '62.5,50 75,62.5 62.5,75 50,62.5',
+    '37.5,50 50,62.5 37.5,75 25,62.5',
+  ];
+  const points = Array.from(SIGN_BOXES, (b) => b.points);
+  assert.deepStrictEqual(points, expected);
 });
