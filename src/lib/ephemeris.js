@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import swisseph from '../../swisseph-v2/index.js';
+import * as swisseph from '../../swisseph-v2/index.js';
 
 if (swisseph.swe_set_sid_mode) {
   try {
