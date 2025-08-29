@@ -80,11 +80,19 @@ export default async function calculateChart({ date, time, lat, lon }) {
   const houses = Array.from({ length: 12 }, (_, i) => ((asc.sign + i - 1) % 12) + 1);
 
   // Planetary calculations
-  const planets = [];
-  for (const p of PLANETS) {
-    const info = await getPlanetPosition(jsDate, lat, lon, p.key);
+  let planetData;
+  try {
+    planetData = await Promise.all(
+      PLANETS.map((p) => getPlanetPosition(jsDate, lat, lon, p.key))
+    );
+  } catch (err) {
+    throw new Error(`Failed to fetch planetary data: ${err.message}`);
+  }
+
+  const planets = planetData.map((info, idx) => {
+    const p = PLANETS[idx];
     const pos = longitudeToSign(info.longitude);
-    planets.push({
+    return {
       name: p.key,
       abbr: p.abbr,
       sign: pos.sign,
@@ -92,8 +100,8 @@ export default async function calculateChart({ date, time, lat, lon }) {
       retrograde: info.retrograde,
       combust: info.combust,
       house: ((pos.sign - asc.sign + 12) % 12) + 1,
-    });
-  }
+    };
+  });
 
   return { ascendant: asc, houses, planets };
 }
