@@ -102,13 +102,14 @@ async function computePlanet(date, lat, lon, planetName) {
 
   if (planetName === 'ketu') {
     // Ketu is always opposite Rahu. Fetch Rahu once using the true node and derive
-    // Ketu's longitude and retrograde state from it to keep values coherent.
+    // Ketu's longitude and speed from it to keep values coherent.
     const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, flag);
     if (!rahuData || typeof rahuData.longitude === 'undefined') {
       throw new Error('Failed to calculate position for ketu');
     }
     return {
       longitude: (rahuData.longitude + 180) % 360,
+      speed: rahuData.longitudeSpeed,
       retrograde: rahuData.longitudeSpeed < 0,
       combust: false,
     };
@@ -139,6 +140,7 @@ async function computePlanet(date, lat, lon, planetName) {
 
   return {
     longitude: planetData.longitude,
+    speed: planetData.longitudeSpeed,
     retrograde: planetData.longitudeSpeed < 0,
     // Note: 'combust' calculation is complex and depends on the Sun's position.
     // It is omitted here to fix the primary calculation error.
@@ -211,13 +213,13 @@ app.get('/api/planet', async (req, res) => {
       return res.status(400).json({ error: `Invalid planet parameter: ${planet}` });
     }
 
-    const { longitude, retrograde, combust } = await computePlanet(
+    const { longitude, speed, retrograde, combust } = await computePlanet(
       jsDate,
       latNum,
       lonNum,
       planetName
     );
-    res.json({ longitude, retrograde, combust });
+    res.json({ longitude, speed, retrograde, combust });
   } catch (err) {
     console.error('Error in /api/planet:', err);
     res.status(500).json({ error: err.message });

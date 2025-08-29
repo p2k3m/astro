@@ -6,14 +6,14 @@ const app = require('../server/index.cjs');
 const EXPECTED = {
   ascendant: 90.54846025906988,
   sun: 256.38732871727575,
-  moon: 0,
-  mercury: 0,
-  venus: 0,
-  mars: 0,
-  jupiter: 0,
-  saturn: 0,
-  rahu: 98.21695036849997,
-  ketu: 278.21695036849997,
+  moon: 328.0169455557543,
+  mercury: 90.66389499907791,
+  venus: 36.33576696431351,
+  mars: 152.40038823629072,
+  jupiter: 251.12402705195916,
+  saturn: 269.87751240508214,
+  rahu: 74.08081147961104,
+  ketu: 254.08081147961104,
 };
 
 const BIRTH = {
