@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { DateTime } from 'luxon';
 import { searchPlaces } from '../lib/offlineGeocoder';
 import { parseDateInput, parseTimeInput, monthFirst } from '../lib/parseDateTime';
 
@@ -12,8 +13,10 @@ export default function BirthForm({ onSubmit, loading }) {
     place: '',
     lat: null,
     lon: null,
+    timezone: 'Asia/Kolkata',
   });
   const [suggestions, setSuggestions] = useState([]);
+  const timezones = Intl.supportedValuesOf('timeZone');
 
   useEffect(() => {
     if (form.place.length < 3) {
@@ -45,12 +48,22 @@ export default function BirthForm({ onSubmit, loading }) {
 
   const parsedDate = parseDateInput(form.dateInput, locale);
   const parsedTime = parseTimeInput(form.timeInput, form.ampm);
-  const iso = parsedDate && parsedTime ? `${parsedDate}T${parsedTime}` : '';
+  const resolved =
+    parsedDate && parsedTime
+      ? `${DateTime.fromISO(`${parsedDate}T${parsedTime}`, {
+          zone: form.timezone,
+        }).toISO({ suppressMilliseconds: true })} [${form.timezone}]`
+      : '';
   const dateError = form.dateInput && !parsedDate ? 'Invalid date' : '';
   const timeError = form.timeInput && !parsedTime ? 'Invalid time' : '';
 
   const valid =
-    form.name && parsedDate && parsedTime && form.lat !== null && form.lon !== null;
+    form.name &&
+    parsedDate &&
+    parsedTime &&
+    form.lat !== null &&
+    form.lon !== null &&
+    form.timezone;
 
   const submit = (e) => {
     e.preventDefault();
@@ -62,6 +75,7 @@ export default function BirthForm({ onSubmit, loading }) {
       place: form.place,
       lat: form.lat,
       lon: form.lon,
+      timezone: form.timezone,
     });
   };
 
@@ -132,12 +146,12 @@ export default function BirthForm({ onSubmit, loading }) {
           {timeError && <p className="text-red-400 text-sm mt-1">{timeError}</p>}
         </div>
       </div>
-      {iso && (
+      {resolved && (
         <div>
           <label className="block mb-1">Resolved Date-Time (ISO)</label>
           <input
             type="text"
-            value={iso}
+            value={resolved}
             readOnly
             className="w-full p-2 rounded bg-slate-800 border border-slate-700"
           />
@@ -166,6 +180,21 @@ export default function BirthForm({ onSubmit, loading }) {
             ))}
           </ul>
         )}
+      </div>
+      <div>
+        <label className="block mb-1">Timezone</label>
+        <select
+          name="timezone"
+          value={form.timezone}
+          onChange={handleChange}
+          className="w-full p-2 rounded bg-slate-800 border border-slate-700"
+        >
+          {timezones.map((tz) => (
+            <option key={tz} value={tz}>
+              {tz}
+            </option>
+          ))}
+        </select>
       </div>
       <button type="submit" disabled={!valid || loading} className={buttonClasses}>
         {loading ? 'Calculating...' : 'Generate Chart'}

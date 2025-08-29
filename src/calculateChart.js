@@ -44,12 +44,14 @@ export function longitudeToSign(longitude) {
   return { sign, degree: +degree.toFixed(2) };
 }
 
-export default async function calculateChart({ date, time, lat, lon }) {
-  let tz;
-  try {
-    tz = getTimezoneName(lat, lon);
-  } catch {
-    tz = 'UTC';
+export default async function calculateChart({ date, time, lat, lon, timezone }) {
+  let tz = timezone;
+  if (!tz) {
+    try {
+      tz = getTimezoneName(lat, lon);
+    } catch {
+      tz = 'UTC';
+    }
   }
   const params = new URLSearchParams({
     datetime: `${date}T${time}`,

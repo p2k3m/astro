@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export function monthFirst(locale = 'en-US') {
   const parts = new Intl.DateTimeFormat(locale).formatToParts(new Date(2020, 11, 31));
   const idxMonth = parts.findIndex((p) => p.type === 'month');
@@ -7,37 +9,27 @@ export function monthFirst(locale = 'en-US') {
 
 export function parseDateInput(input, locale = 'en-US') {
   if (!input) return null;
-  const parts = input.trim().split(/[-/]/).map(Number);
-  if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
-  const [a, b, c] = parts;
-  const monthFirstOrder = monthFirst(locale);
-  const day = monthFirstOrder ? b : a;
-  const month = monthFirstOrder ? a : b;
-  const year = c;
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() + 1 !== month ||
-    date.getUTCDate() !== day
-  ) {
-    return null;
-  }
-  const mm = String(month).padStart(2, '0');
-  const dd = String(day).padStart(2, '0');
-  return `${year}-${mm}-${dd}`;
+  const pattern = monthFirst(locale) ? 'MM-dd-yyyy' : 'dd-MM-yyyy';
+  const dt = DateTime.fromFormat(input.trim(), pattern, {
+    zone: 'utc',
+    setZone: true,
+    locale: 'en',
+    strict: true,
+  });
+  return dt.isValid ? dt.toISODate() : null;
 }
 
 export function parseTimeInput(input, ampm = 'AM') {
   if (!input) return null;
-  const parts = input.trim().split(':').map(Number);
-  if (parts.length !== 2 || parts.some(Number.isNaN)) return null;
-  let [hour, minute] = parts;
-  if (hour < 1 || hour > 12 || minute < 0 || minute > 59) return null;
-  hour = hour % 12;
-  if (ampm === 'PM') hour += 12;
-  const hh = String(hour).padStart(2, '0');
-  const mm = String(minute).padStart(2, '0');
-  return `${hh}:${mm}`;
+  const raw = `${input.trim()} ${ampm}`.toUpperCase();
+  const dt = DateTime.fromFormat(raw, 'h:mm a', {
+    zone: 'utc',
+    setZone: true,
+    strict: true,
+  });
+  if (!dt.isValid) return null;
+  if (dt.toFormat('h:mm a').toUpperCase() !== raw) return null;
+  return dt.toFormat('HH:mm');
 }
 
 export function formatTime24To12(time24) {
