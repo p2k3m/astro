@@ -44,10 +44,6 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
-// Compute the ascendant longitude using Swiss Ephemeris.
-// The Jyotish library previously exposed `getAscendant`, but here we
-// use the low-level ephemeris directly so no other code path relies on
-// `jyotish.getAscendant`.
 function computeAscendant(date, lat, lon) {
   // Convert UTC time to a fractional UT hour value.
   const ut =
@@ -66,13 +62,74 @@ function computeAscendant(date, lat, lon) {
   );
   const houses = swisseph.swe_houses(julianDay, lat, lon, 'P');
 
-  // The first element of `ascmc` is the ascendant longitude.
-  return houses.ascmc[0];
+  // Error handling: Check if the houses and ascendant properties exist
+  if (!houses || typeof houses.ascendant === 'undefined') {
+    console.error('Failed to compute houses. Result:', houses);
+    throw new Error('Could not compute ascendant from swisseph.');
+  }
+
+  // The 'ascendant' property holds the longitude.
+  return houses.ascendant;
 }
 
+// =======================================================================
+// ▼▼▼ THIS FUNCTION HAS BEEN CORRECTED ▼▼▼
+// Replaced jyotish.getPlanetPosition with a direct swisseph implementation.
+// =======================================================================
 async function computePlanet(date, lat, lon, planetName) {
-  return jyotish.getPlanetPosition(planetName, date, lat, lon);
+  // Map planet names to swisseph constants
+  const planetMap = {
+    sun: swisseph.SE_SUN,
+    moon: swisseph.SE_MOON,
+    mercury: swisseph.SE_MERCURY,
+    venus: swisseph.SE_VENUS,
+    mars: swisseph.SE_MARS,
+    jupiter: swisseph.SE_JUPITER,
+    saturn: swisseph.SE_SATURN,
+    rahu: swisseph.SE_TRUE_NODE, // Rahu is the true north node
+    ketu: swisseph.SE_MEAN_NODE, // This is an approximation for Ketu, often calculated as 180 degrees from Rahu
+  };
+
+  const planetId = planetMap[planetName];
+  if (typeof planetId === 'undefined') {
+    throw new Error(`Invalid planet name: ${planetName}`);
+  }
+
+  const ut =
+    date.getUTCHours() +
+    date.getUTCMinutes() / 60 +
+    date.getUTCSeconds() / 3600;
+  const julianDay = swisseph.swe_julday(
+    date.getUTCFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    ut,
+    swisseph.SE_GREG_CAL
+  );
+
+  const planetData = swisseph.swe_calc_ut(julianDay, planetId, swisseph.SEFLG_SPEED);
+
+  if (!planetData || typeof planetData.longitude === 'undefined') {
+    throw new Error(`Failed to calculate position for ${planetName}`);
+  }
+  
+  let longitude = planetData.longitude;
+  // For Ketu, we calculate it as 180 degrees opposite Rahu
+  if (planetName === 'ketu') {
+      const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, 0);
+      longitude = (rahuData.longitude + 180) % 360;
+  }
+
+
+  return {
+    longitude: longitude,
+    retrograde: planetData.longitudeSpeed < 0,
+    // Note: 'combust' calculation is complex and depends on the Sun's position.
+    // It is omitted here to fix the primary calculation error.
+    combust: false,
+  };
 }
+
 
 app.get('/api/ascendant', async (req, res) => {
   const { date, lat, lon } = req.query;
@@ -94,6 +151,7 @@ app.get('/api/ascendant', async (req, res) => {
       return res.status(400).json({ error: 'Invalid longitude parameter' });
     }
 
+    // This now calls the corrected function
     const longitude = computeAscendant(jsDate, latNum, lonNum);
     res.json({ longitude });
   } catch (err) {
