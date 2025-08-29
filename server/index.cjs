@@ -45,9 +45,19 @@ const PORT = process.env.PORT || 3001;
 // --- API Endpoints ---
 
 async function computeAscendant(date, lat, lon) {
-  // The 'getAscendant' function returns an object with a longitude property.
-  const { longitude } = await jyotish.getAscendant(date, lat, lon);
-  return longitude;
+  const ut =
+    date.getUTCHours() +
+    date.getUTCMinutes() / 60 +
+    date.getUTCSeconds() / 3600;
+  const jd = swisseph.swe_julday(
+    date.getUTCFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    ut,
+    swisseph.SE_GREG_CAL
+  );
+  const { ascmc } = swisseph.swe_houses(jd, lat, lon, 'P');
+  return ascmc[0];
 }
 
 async function computePlanet(date, lat, lon, planetName) {
