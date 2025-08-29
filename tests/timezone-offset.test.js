@@ -7,8 +7,9 @@ const test = require('node:test');
 function loadGetTimezoneOffset() {
   let code = fs.readFileSync(path.join(__dirname, '../src/lib/timezone.js'), 'utf8');
   code = code.replace("import TimezoneFinder from 'timezonefinder';", '');
-  code = code.replace("import { DateTime } from 'luxon';", '');
-  code = code.replace('export function getTimezoneOffset', 'function getTimezoneOffset');
+  code = code.replace("import luxon from 'luxon';", '');
+  code = code.replace('const { DateTime } = luxon;', '');
+  code = code.replace(/export /g, '');
   code += '\nmodule.exports = { getTimezoneOffset };';
 
   // Stub TimezoneFinder to map coordinates used in tests to IANA zones
