@@ -88,9 +88,13 @@ export default function Chart({ data, children }) {
   data.planets.forEach((p) => {
     if (!isValidNumber(p.sign)) return;
 
-    // Convert degree to a number so numeric-like strings are treated as valid
     const degreeValue = Number(p.degree);
-    const degree = isValidNumber(degreeValue) ? `${degreeValue}°` : 'No data';
+    let degree = 'No data';
+    if (isValidNumber(degreeValue)) {
+      const d = Math.floor(degreeValue);
+      const m = Math.round((degreeValue - d) * 60);
+      degree = `${d}°${String(m).padStart(2, '0')}'`;
+    }
 
     planetBySign[p.sign] = planetBySign[p.sign] || [];
     planetBySign[p.sign].push(

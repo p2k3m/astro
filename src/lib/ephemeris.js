@@ -1,11 +1,22 @@
-import { toUTC } from './timezone.js';
+import { DateTime } from 'luxon';
 import swisseph from '../../swisseph-v2/index.js';
+
+if (swisseph.swe_set_sid_mode) {
+  try {
+    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
+  } catch {}
+}
 
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
   const sign = Math.floor(norm / 30) + 1; // 1..12
   const deg = +(norm % 30).toFixed(2);
   return { sign, deg };
+}
+
+function toUTC({ datetime, zone }) {
+  const dt = DateTime.fromISO(datetime, { zone });
+  return dt.toJSDate();
 }
 
 export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
