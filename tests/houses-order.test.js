@@ -13,12 +13,12 @@ test('calculateChart produces houses in natural zodiac order', async () => {
     lon: 0,
   });
 
-  const asc = data.ascendant.sign;
+  const asc = data.ascSign;
   const expected = Array(13).fill(null);
   for (let i = 0; i < 12; i++) {
     const house = i + 1;
-    const sign = ((asc - 1 + i) % 12) + 1;
+    const sign = (asc + i) % 12;
     expected[house] = sign;
   }
-  assert.deepStrictEqual(data.houses, expected);
+  assert.deepStrictEqual(data.signInHouse, expected);
 });

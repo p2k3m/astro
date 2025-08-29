@@ -35,23 +35,22 @@ const SIGN_LABELS = [
 ];
 
 export default function Chart({ data, children }) {
-  if (!data || !Array.isArray(data.houses) || data.houses.length !== 12) {
+  if (
+    !data ||
+    !Array.isArray(data.signInHouse) ||
+    data.signInHouse.length !== 13
+  ) {
     return (
       <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
         <span>Invalid chart data</span>
       </div>
     );
   }
-
-  const signToHouse = data.houses;
-  const houseToSign = {};
-  signToHouse.forEach((h, s) => {
-    if (h >= 1 && h <= 12) houseToSign[h] = s;
-  });
+  const signInHouse = data.signInHouse;
 
   const planetByHouse = {};
   data.planets.forEach((p) => {
-    const houseNum = signToHouse[p.sign];
+    const houseNum = p.house;
     if (!houseNum) return;
     const degreeValue = Number(p.deg ?? p.degree);
     let degree = 'No data';
@@ -87,7 +86,7 @@ export default function Chart({ data, children }) {
         </svg>
         {HOUSE_POLYGONS.map((p, idx) => {
           const houseNum = idx + 1;
-          const signIdx = houseToSign[houseNum];
+          const signIdx = signInHouse[houseNum];
           return (
             <div
               key={houseNum}
@@ -123,11 +122,12 @@ export default function Chart({ data, children }) {
 Chart.propTypes = {
   data: PropTypes.shape({
     ascSign: PropTypes.number,
-    houses: PropTypes.arrayOf(PropTypes.number).isRequired,
+    signInHouse: PropTypes.arrayOf(PropTypes.number).isRequired,
     planets: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
         sign: PropTypes.number.isRequired,
+        house: PropTypes.number,
         deg: PropTypes.number,
         retro: PropTypes.bool,
       })

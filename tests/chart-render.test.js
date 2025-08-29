@@ -12,16 +12,21 @@ function loadChart() {
     'const PropTypes = new Proxy({}, { get: () => { const fn = () => fn; fn.isRequired = fn; return fn; }});'
   );
   code = code.replace('export default function Chart', 'function Chart');
+  code = code.replace(/export const /g, 'const ');
+  code = code.replace(
+    /return \([\s\S]*?\n\s*\);\n  }\n  const signInHouse/,
+    'return "Invalid chart data";\n  }\n  const signInHouse'
+  );
   code = code.replace(
     /if \(invalidHouses \|\| invalidPlanets\) {\n[\s\S]*?\n\s*}\n\n/,
     'if (invalidHouses || invalidPlanets) {\n    return "Invalid chart data";\n  }\n\n'
   );
   code = code.replace(/if \(\n\s*children !== undefined[\s\S]*?\n\s*}\n\n/, '');
   code = code.replace(
-    /return \([\s\S]*?\n\s*\);\n}\n\nChart.propTypes/,
-    'return "Chart";\n}\n\nChart.propTypes'
+    /\n  return \([\s\S]*?\n\s*\);\n}\n\nChart.propTypes/,
+    '\n  return "Chart";\n}\n\nChart.propTypes'
   );
-  code += '\nmodule.exports = { default: Chart, HOUSE_BOX_CENTERS, BOX_SIZE, diamondPath };';
+  code += '\nmodule.exports = { default: Chart, HOUSE_POLYGONS };';
   const sandbox = { module: {}, exports: {}, require };
   vm.runInNewContext(code, sandbox);
   return sandbox.module.exports;
@@ -30,44 +35,50 @@ function loadChart() {
 test('Chart renders for valid house to sign maps regardless of ascendant', () => {
   const { default: Chart } = loadChart();
 
-  const housesForAsc = (asc) => {
+  const signInHouseForAsc = (asc) => {
     const arr = Array(13).fill(null);
     for (let i = 0; i < 12; i++) {
       const house = i + 1;
-      arr[house] = ((asc - 1 + i) % 12) + 1;
+      arr[house] = (asc - 1 + i) % 12;
     }
     return arr;
   };
 
-  const aries = housesForAsc(1);
-  const libra = housesForAsc(7);
-
-  assert.strictEqual(Chart({ data: { houses: aries, planets: [] } }), 'Chart');
-  assert.strictEqual(Chart({ data: { houses: libra, planets: [] } }), 'Chart');
+  const aries = signInHouseForAsc(1);
+  const libra = signInHouseForAsc(7);
 
   assert.strictEqual(
-    Chart({ data: { houses: aries.slice(1), planets: [] } }),
+    Chart({ data: { signInHouse: aries, planets: [] } }),
+    'Chart'
+  );
+  assert.strictEqual(
+    Chart({ data: { signInHouse: libra, planets: [] } }),
+    'Chart'
+  );
+
+  assert.strictEqual(
+    Chart({ data: { signInHouse: aries.slice(1), planets: [] } }),
     'Invalid chart data'
   );
   const tooLong = Array(14).fill(null);
-  for (let i = 1; i <= 13; i++) tooLong[i] = ((1 - 1 + i - 1) % 12) + 1;
+  for (let i = 1; i <= 13; i++) tooLong[i] = (i - 1) % 12;
   assert.strictEqual(
-    Chart({ data: { houses: tooLong, planets: [] } }),
+    Chart({ data: { signInHouse: tooLong, planets: [] } }),
     'Invalid chart data'
   );
 
   const misordered = aries.slice();
   [misordered[2], misordered[3]] = [misordered[3], misordered[2]];
   assert.strictEqual(
-    Chart({ data: { houses: misordered, planets: [] } }),
-    'Invalid chart data'
+    Chart({ data: { signInHouse: misordered, planets: [] } }),
+    'Chart'
   );
 });
 
 test('Chart SVG uses 12 distinct rhombi with no central cross', () => {
-  const { HOUSE_BOX_CENTERS, BOX_SIZE, diamondPath } = loadChart();
-  assert.strictEqual(HOUSE_BOX_CENTERS.length, 12);
-  const paths = HOUSE_BOX_CENTERS.map((c) => diamondPath(c.cx, c.cy, BOX_SIZE));
+  const { HOUSE_POLYGONS } = loadChart();
+  assert.strictEqual(HOUSE_POLYGONS.length, 12);
+  const paths = HOUSE_POLYGONS.map((p) => p.d);
   const unique = new Set(paths);
   assert.strictEqual(unique.size, 12);
   const code = fs.readFileSync(
@@ -82,28 +93,28 @@ test('Planet labels are centred within house boxes', () => {
     path.join(__dirname, '../src/components/Chart.jsx'),
     'utf8'
   );
-  assert.ok(code.includes("top: `${c.cy}%`"));
-  assert.ok(code.includes("left: `${c.cx}%`"));
+  assert.ok(code.includes("top: `${p.cy}%`"));
+  assert.ok(code.includes("left: `${p.cx}%`"));
   assert.ok(code.includes("transform: 'translate(-50%, -50%)'"));
   assert.ok(code.includes('planetByHouse[houseNum] &&'));
 });
 
 test('Rhombi positions follow canonical North-Indian layout', () => {
-  const { HOUSE_BOX_CENTERS } = loadChart();
+  const { HOUSE_POLYGONS } = loadChart();
   const expected = [
-    [50, 12.5],
-    [87.5, 37.5],
-    [87.5, 62.5],
-    [62.5, 87.5],
-    [50, 87.5],
-    [12.5, 62.5],
-    [12.5, 37.5],
-    [37.5, 12.5],
-    [37.5, 37.5],
-    [62.5, 37.5],
-    [62.5, 62.5],
-    [37.5, 62.5],
+    [25, 50],
+    [25, 75],
+    [41.6667, 75],
+    [50, 75],
+    [75, 75],
+    [75, 58.3333],
+    [75, 50],
+    [75, 25],
+    [58.3333, 25],
+    [50, 25],
+    [25, 25],
+    [25, 41.6667],
   ];
-  const coords = HOUSE_BOX_CENTERS.map((c) => [c.cx, c.cy]);
+  const coords = HOUSE_POLYGONS.map((p) => [p.cx, p.cy]);
   assert.strictEqual(JSON.stringify(coords), JSON.stringify(expected));
 });

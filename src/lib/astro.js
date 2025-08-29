@@ -70,40 +70,56 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   }
   const asc = lonToSignDeg(hres.ascendant);
 
-  const houses = Array(12).fill(null);
-  for (let i = 0; i < 12; i++) {
-    houses[(asc.sign + i) % 12] = i + 1;
+  // house -> sign mapping (1-indexed)
+  const signInHouse = [null];
+  for (let h = 1; h <= 12; h++) {
+    signInHouse[h] = (asc.sign + h - 1) % 12;
   }
 
-  const flag = swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED | swisseph.SEFLG_SIDEREAL;
+  const flag =
+    swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED | swisseph.SEFLG_SIDEREAL;
   const planetCodes = {
-    Su: swisseph.SE_SUN,
-    Mo: swisseph.SE_MOON,
-    Ma: swisseph.SE_MARS,
-    Me: swisseph.SE_MERCURY,
-    Ju: swisseph.SE_JUPITER,
-    Ve: swisseph.SE_VENUS,
-    Sa: swisseph.SE_SATURN,
-    Ra: swisseph.SE_TRUE_NODE,
+    sun: swisseph.SE_SUN,
+    moon: swisseph.SE_MOON,
+    mars: swisseph.SE_MARS,
+    mercury: swisseph.SE_MERCURY,
+    jupiter: swisseph.SE_JUPITER,
+    venus: swisseph.SE_VENUS,
+    saturn: swisseph.SE_SATURN,
+    rahu: swisseph.SE_TRUE_NODE,
   };
 
   const planets = [];
   const rahuData = swisseph.swe_calc_ut(jd, swisseph.SE_TRUE_NODE, flag);
-  const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
+  const { sign: rSign } = lonToSignDeg(rahuData.longitude);
+
   for (const [name, code] of Object.entries(planetCodes)) {
-    const data = name === 'Ra' ? rahuData : swisseph.swe_calc_ut(jd, code, flag);
-    const { sign, deg } =
-      name === 'Ra' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
-    planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0 });
+    const data = name === 'rahu' ? rahuData : swisseph.swe_calc_ut(jd, code, flag);
+    const { sign, deg } = lonToSignDeg(data.longitude);
+    planets.push({
+      name,
+      sign,
+      house: ((sign - asc.sign + 12) % 12) + 1,
+      deg,
+      retro: data.longitudeSpeed < 0,
+    });
   }
+
+  // Ketu is always opposite Rahu
   const ketuLon = (rahuData.longitude + 180) % 360;
   const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu are not opposite');
   }
-  planets.push({ name: 'Ke', sign: kSign, deg: kDeg, retro: rahuData.longitudeSpeed < 0 });
+  planets.push({
+    name: 'ketu',
+    sign: kSign,
+    house: ((kSign - asc.sign + 12) % 12) + 1,
+    deg: kDeg,
+    retro: rahuData.longitudeSpeed < 0,
+  });
 
-  return { ascSign: asc.sign, houses, planets };
+  return { ascSign: asc.sign, signInHouse, planets };
 }
 
 export function renderNorthIndian(svgEl, data) {
@@ -116,6 +132,14 @@ export function renderNorthIndian(svgEl, data) {
   outer.setAttribute('d', diamondPath(50, 50, 50));
   outer.setAttribute('stroke-width', '2');
   svgEl.appendChild(outer);
+
+  const signToHouse = {};
+  if (Array.isArray(data.signInHouse)) {
+    for (let h = 1; h <= 12; h++) {
+      const s = data.signInHouse[h];
+      if (s !== undefined) signToHouse[s] = h;
+    }
+  }
 
   for (let i = 0; i < 12; i++) {
     const { cx, cy } = SIGN_BOX_CENTERS[i];
@@ -133,7 +157,7 @@ export function renderNorthIndian(svgEl, data) {
     signText.textContent = SIGN_LABELS[i];
     svgEl.appendChild(signText);
 
-    const houseNum = data.houses?.[i];
+    const houseNum = signToHouse[i];
     if (houseNum) {
       const hText = document.createElementNS(svgNS, 'text');
       hText.setAttribute('x', cx - BOX_SIZE + 2);
