@@ -24,6 +24,12 @@ test('converts 12-hour time and preserves AM/PM', async () => {
   assert.deepStrictEqual(backPm, { time: '3:15', ampm: 'PM' });
 });
 
+test('accepts zero-padded hour times', async () => {
+  const { parseTimeInput } = await load();
+  assert.strictEqual(parseTimeInput('08:05', 'AM'), '08:05');
+  assert.strictEqual(parseTimeInput('08:05', 'PM'), '20:05');
+});
+
 test('rejects invalid date and time', async () => {
   const { parseDateInput, parseTimeInput } = await load();
   assert.strictEqual(parseDateInput('31-02-2023', 'en-GB'), null);

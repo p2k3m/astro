@@ -28,7 +28,9 @@ export function parseTimeInput(input, ampm = 'AM') {
     strict: true,
   });
   if (!dt.isValid) return null;
-  if (dt.toFormat('h:mm a').toUpperCase() !== raw) return null;
+  const h1 = dt.toFormat('h:mm a').toUpperCase();
+  const h2 = dt.toFormat('hh:mm a').toUpperCase();
+  if (raw !== h1 && raw !== h2) return null;
   return dt.toFormat('HH:mm');
 }
 
