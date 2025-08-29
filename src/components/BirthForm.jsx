@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
 import { DateTime } from 'luxon';
 import { searchPlaces } from '../lib/offlineGeocoder';
-import { parseDateInput, parseTimeInput, monthFirst } from '../lib/parseDateTime';
+import { parseTimeInput, monthFirst } from '../lib/parseDateTime';
 
 export default function BirthForm({ onSubmit, loading }) {
   const locale = navigator.language || 'en-US';
   const [form, setForm] = useState({
     name: '',
-    dateInput: '',
-    timeInput: '',
-    ampm: 'AM',
+    date: null,
+    time: null,
     place: '',
     lat: null,
     lon: null,
@@ -46,16 +46,18 @@ export default function BirthForm({ onSubmit, loading }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const parsedDate = parseDateInput(form.dateInput, locale);
-  const parsedTime = parseTimeInput(form.timeInput, form.ampm);
+  const parsedDate = form.date ? DateTime.fromJSDate(form.date).toISODate() : null;
+  const timeStr = form.time ? DateTime.fromJSDate(form.time).toFormat('hh:mm') : '';
+  const ampm = form.time ? DateTime.fromJSDate(form.time).toFormat('a') : 'AM';
+  const parsedTime = timeStr ? parseTimeInput(timeStr, ampm) : null;
   const resolved =
     parsedDate && parsedTime
       ? `${DateTime.fromISO(`${parsedDate}T${parsedTime}`, {
           zone: form.timezone,
         }).toISO({ suppressMilliseconds: true })} [${form.timezone}]`
       : '';
-  const dateError = form.dateInput && !parsedDate ? 'Invalid date' : '';
-  const timeError = form.timeInput && !parsedTime ? 'Invalid time' : '';
+  const dateError = '';
+  const timeError = form.time && !parsedTime ? 'Invalid time' : '';
 
   const valid =
     form.name &&
@@ -110,39 +112,30 @@ export default function BirthForm({ onSubmit, loading }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Date of Birth</label>
-          <input
-            type="text"
-            name="dateInput"
-            placeholder={monthFirst(locale) ? 'MM-DD-YYYY' : 'DD-MM-YYYY'}
-            value={form.dateInput}
-            onChange={handleChange}
+          <DatePicker
+            selected={form.date}
+            onChange={(date) => setForm({ ...form, date })}
+            placeholderText={monthFirst(locale) ? 'MM-DD-YYYY' : 'DD-MM-YYYY'}
+            dateFormat={monthFirst(locale) ? 'MM-dd-yyyy' : 'dd-MM-yyyy'}
             className="w-full p-2 rounded bg-slate-800 border border-slate-700"
-            required
+            wrapperClassName="w-full"
           />
           {dateError && <p className="text-red-400 text-sm mt-1">{dateError}</p>}
         </div>
         <div>
           <label className="block mb-1">Time of Birth</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              name="timeInput"
-              placeholder="HH:MM"
-              value={form.timeInput}
-              onChange={handleChange}
-              className="w-full p-2 rounded bg-slate-800 border border-slate-700"
-              required
-            />
-            <select
-              name="ampm"
-              value={form.ampm}
-              onChange={handleChange}
-              className="p-2 rounded bg-slate-800 border border-slate-700"
-            >
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
-          </div>
+          <DatePicker
+            selected={form.time}
+            onChange={(date) => setForm({ ...form, time: date })}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={1}
+            timeCaption="Time"
+            dateFormat="hh:mm aa"
+            placeholderText="HH:MM AM"
+            className="w-full p-2 rounded bg-slate-800 border border-slate-700"
+            wrapperClassName="w-full"
+          />
           {timeError && <p className="text-red-400 text-sm mt-1">{timeError}</p>}
         </div>
       </div>
@@ -202,3 +195,4 @@ export default function BirthForm({ onSubmit, loading }) {
     </form>
   );
 }
+
