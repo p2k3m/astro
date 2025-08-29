@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import { DateTime } from 'luxon';
 import { searchPlaces } from '../lib/offlineGeocoder';
 import { parseTimeInput, monthFirst } from '../lib/parseDateTime';
+import { getTimezoneName } from '../lib/timezone.js';
 
 export default function BirthForm({ onSubmit, loading }) {
   const locale = navigator.language || 'en-US';
@@ -33,11 +34,18 @@ export default function BirthForm({ onSubmit, loading }) {
   }, [form.place]);
 
   const handleSelect = (item) => {
+    let timezone = form.timezone;
+    try {
+      timezone = getTimezoneName(item.lat, item.lon);
+    } catch (e) {
+      // fallback to manual selection if detection fails
+    }
     setForm({
       ...form,
       place: item.name,
       lat: item.lat,
       lon: item.lon,
+      timezone,
     });
     setSuggestions([]);
   };
