@@ -6,14 +6,6 @@ const assert = require('node:assert');
 test('calculateChart produces houses in natural zodiac order', async () => {
   const calculateChart = (await import('../src/calculateChart.js')).default;
 
-  // Stub fetch response for consolidated ephemeris endpoint
-  global.fetch = async (url) => {
-    if (url.startsWith('/api/positions')) {
-      return { ok: true, json: async () => ({ asc_sign: 4, planets: [] }) };
-    }
-    throw new Error('Unexpected URL ' + url);
-  };
-
   const data = await calculateChart({
     date: '2020-01-01',
     time: '12:00',
@@ -21,5 +13,7 @@ test('calculateChart produces houses in natural zodiac order', async () => {
     lon: 0,
   });
 
-  assert.deepStrictEqual(data.houses, [4,5,6,7,8,9,10,11,12,1,2,3]);
+  const start = data.houses[0];
+  const expected = Array.from({ length: 12 }, (_, i) => ((start + i - 1) % 12) + 1);
+  assert.deepStrictEqual(data.houses, expected);
 });

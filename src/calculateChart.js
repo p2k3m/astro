@@ -1,7 +1,8 @@
-// Utility to compute ascendant and planetary positions.
-// Calculations are delegated to a backend API so the frontend remains dependency-free.
+// Utility to compute ascendant and planetary positions using Swiss Ephemeris.
 
+import { DateTime } from 'luxon';
 import { getTimezoneName } from './lib/timezone.js';
+import { computePositions } from './lib/astro.js';
 
 const PLANETS = [
   { key: 'sun', abbr: 'Su' },
@@ -53,32 +54,13 @@ export default async function calculateChart({ date, time, lat, lon, timezone })
       tz = 'UTC';
     }
   }
-  const params = new URLSearchParams({
-    datetime: `${date}T${time}`,
-    tz,
-    lat: String(lat),
-    lon: String(lon),
-  });
 
-  let data;
-  try {
-    const res = await fetch(`/api/positions?${params.toString()}`);
-    if (!res.ok) {
-      let body = {};
-      try {
-        body = await res.json();
-      } catch (e) {}
-      throw new Error(body.error || res.statusText);
-    }
-    data = await res.json();
-  } catch (err) {
-    throw new Error(`Failed to fetch positions: ${err.message}`);
-  }
+  const dt = DateTime.fromISO(`${date}T${time}`, { zone: tz });
+  const dtISO = dt.toISO({ suppressMilliseconds: true });
 
-  const ascSign = data.asc_sign;
-  const houses = Array.from({ length: 12 }, (_, i) => ((ascSign + i - 1) % 12) + 1);
+  const { ascSign, houses, planets: rawPlanets } = computePositions(dtISO, lat, lon);
 
-  const planets = (data.planets || []).map((p) => {
+  const planets = (rawPlanets || []).map((p) => {
     const house = ((p.sign - ascSign + 12) % 12) + 1;
     const abbr = PLANETS.find((pl) => pl.key === p.name)?.abbr;
     return {
