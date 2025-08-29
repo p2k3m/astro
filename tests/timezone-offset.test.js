@@ -6,24 +6,23 @@ const test = require('node:test');
 
 function loadGetTimezoneOffset() {
   let code = fs.readFileSync(path.join(__dirname, '../src/lib/timezone.js'), 'utf8');
-  code = code.replace("import TimezoneFinder from 'timezonefinder';", '');
   code = code.replace("import luxon from 'luxon';", '');
   code = code.replace('const { DateTime } = luxon;', '');
   code = code.replace(/export /g, '');
   code += '\nmodule.exports = { getTimezoneOffset };';
 
-  // Stub TimezoneFinder to map coordinates used in tests to IANA zones
-  class TimezoneFinder {
-    timezoneAt(lat, lon) {
+  // Stub geo-tz to map coordinates used in tests to IANA zones
+  const geoTz = {
+    find(lat, lon) {
       if (Math.abs(lat - 40.7128) < 0.5 && Math.abs(lon + 74.0060) < 0.5) {
-        return 'America/New_York';
+        return ['America/New_York'];
       }
       if (Math.abs(lat - 55.7558) < 0.5 && Math.abs(lon - 37.6173) < 0.5) {
-        return 'Europe/Moscow';
+        return ['Europe/Moscow'];
       }
-      return null;
-    }
-  }
+      return [];
+    },
+  };
 
   // Minimal luxon DateTime stub using Intl API for historical offsets
   const DateTime = {
@@ -54,7 +53,7 @@ function loadGetTimezoneOffset() {
   const sandbox = {
     module: { exports: {} },
     exports: {},
-    TimezoneFinder,
+    geoTz,
     DateTime,
   };
   vm.runInNewContext(code, sandbox);
