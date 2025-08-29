@@ -21,14 +21,14 @@ function loadChart() {
     /return \([\s\S]*?\n\s*\);\n}\n\nChart.propTypes/,
     'return "Chart";\n}\n\nChart.propTypes'
   );
-  code += '\nmodule.exports = { default: Chart };';
+  code += '\nmodule.exports = { default: Chart, SIGN_BOXES };';
   const sandbox = { module: {}, exports: {}, require };
   vm.runInNewContext(code, sandbox);
-  return sandbox.module.exports.default;
+  return sandbox.module.exports;
 }
 
 test('Chart renders only with exactly 12 houses in natural order', () => {
-  const Chart = loadChart();
+  const { default: Chart } = loadChart();
   const natural = Array.from({ length: 12 }, (_, i) => i + 1);
   assert.strictEqual(
     Chart({ data: { houses: natural, planets: [] } }),
@@ -49,10 +49,13 @@ test('Chart renders only with exactly 12 houses in natural order', () => {
   );
 });
 
-test('Chart SVG includes inner polygon to separate houses', () => {
+test('Chart SVG uses 12 rhombi with no inner polygon', () => {
+  const { SIGN_BOXES } = loadChart();
+  assert.strictEqual(SIGN_BOXES.length, 12);
   const code = fs.readFileSync(
     path.join(__dirname, '../src/components/Chart.jsx'),
     'utf8'
   );
-  assert.ok(code.includes('points="50,25 75,50 50,75 25,50"'));
+  assert.ok(!code.includes('<line'));
+  assert.ok(!code.includes('50,25 75,50 50,75 25,50'));
 });
