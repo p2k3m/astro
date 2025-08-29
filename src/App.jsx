@@ -17,7 +17,7 @@ export default function App() {
       setChartData(data);
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      setError(err.message || 'Failed to generate chart');
     } finally {
       setLoading(false);
     }
@@ -32,7 +32,11 @@ export default function App() {
             <div className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
-        {error && <p className="text-red-400">{error}</p>}
+        {error && (
+          <div role="alert" className="text-red-400">
+            {error}
+          </div>
+        )}
         {chartData && !loading && <Chart data={chartData} />}
       </div>
     </div>
