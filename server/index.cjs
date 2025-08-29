@@ -44,7 +44,7 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
-function computeAscendant(date, lat, lon) {
+const computeAscendant = (date, lat, lon) => {
   const ut =
     date.getUTCHours() +
     date.getUTCMinutes() / 60 +
@@ -59,7 +59,7 @@ function computeAscendant(date, lat, lon) {
   );
   const { ascmc } = swisseph.swe_houses(jd, lat, lon, 'P');
   return ascmc[0];
-}
+};
 
 async function computePlanet(date, lat, lon, planetName) {
   return jyotish.getPlanetPosition(planetName, date, lat, lon);
