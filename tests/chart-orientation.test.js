@@ -2,7 +2,7 @@ const assert = require('node:assert');
 const test = require('node:test');
 const app = require('../server/index.cjs');
 
-test('calculateChart assigns Libra ascendant to first house', async (t) => {
+test('calculateChart assigns ascendant sign to first house for multiple charts', async (t) => {
   const server = app.listen(0);
   t.after(() => server.close());
   await new Promise((resolve) => server.once('listening', resolve));
@@ -26,15 +26,19 @@ test('calculateChart assigns Libra ascendant to first house', async (t) => {
 
   const calculateChart = (await import('../src/calculateChart.js')).default;
 
-  const chart = await calculateChart({
-    date: '2020-10-17',
-    time: '19:00',
-    lat: 0,
-    lon: 0,
-  });
+  const verify = async (params) => {
+    const chart = await calculateChart(params);
+    const asc = chart.ascendant.sign;
+    assert.strictEqual(chart.houses[asc], 1);
+    const sun = chart.planets.find((p) => p.name === 'sun');
+    assert.strictEqual(sun.house, chart.houses[sun.sign]);
+  };
 
-  assert.strictEqual(chart.houses[7], 1);
-  const sun = chart.planets.find((p) => p.name === 'sun');
-  assert.strictEqual(sun.sign, 7);
-  assert.strictEqual(sun.house, 1);
+  await t.test('Libra ascendant', () =>
+    verify({ date: '2020-10-17', time: '19:00', lat: 0, lon: 0 })
+  );
+
+  await t.test('Gemini ascendant', () =>
+    verify({ date: '2020-04-01', time: '00:00', lat: 0, lon: 0 })
+  );
 });
