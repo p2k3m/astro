@@ -36,17 +36,23 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     swe.SE_GREG_CAL
   );
 
-  const houses = swe.swe_houses_ex(
+  const rawHouses = swe.swe_houses_ex(
     jd,
     lat,
     lon,
     'P',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );
-  if (!houses || typeof houses.ascendant === 'undefined') {
+  if (!rawHouses || typeof rawHouses.ascendant === 'undefined') {
     throw new Error('Could not compute ascendant from swisseph.');
   }
-  const asc = lonToSignDeg(houses.ascendant);
+  const asc = lonToSignDeg(rawHouses.ascendant);
+
+  const houses = Array(13).fill(null);
+  for (let i = 0; i < 12; i++) {
+    const signIndex = ((asc.sign - 1 + i) % 12) + 1;
+    houses[signIndex] = i + 1;
+  }
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;
   const planetCodes = {
@@ -62,15 +68,20 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
 
   const planets = [];
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
+  const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
-    const { sign, deg } = lonToSignDeg(data.longitude);
+    const { sign, deg } =
+      name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
     planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0 });
   }
   // Ketu opposite Rahu
   const ketuLon = (rahuData.longitude + 180) % 360;
   const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
+  if (((kSign - rSign + 12) % 12) !== 6) {
+    throw new Error('Rahu and Ketu must be six signs apart');
+  }
   planets.push({ name: 'ketu', sign: kSign, deg: kDeg, retro: rahuData.longitudeSpeed < 0 });
 
-  return { asc_sign: asc.sign, planets };
+  return { ascSign: asc.sign, houses, planets };
 }

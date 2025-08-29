@@ -38,17 +38,21 @@ test('sign to house mapping and retrograde flags', async () => {
     },
   };
 
-  const result = compute_positions({ datetime: '2020-01-01T00:00', tz: 'UTC', lat: 0, lon: 0 }, fakeSwe);
+  const result = compute_positions(
+    { datetime: '2020-01-01T00:00', tz: 'UTC', lat: 0, lon: 0 },
+    fakeSwe
+  );
 
-  assert.strictEqual(result.asc_sign, 5); // Leo ascendant
+  assert.strictEqual(result.ascSign, 5); // Leo ascendant
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
   assert.strictEqual(planets.moon.sign, 8);
-  const moonHouse = ((planets.moon.sign - result.asc_sign + 12) % 12) + 1;
-  assert.strictEqual(moonHouse, 4);
+  assert.strictEqual(result.houses[planets.moon.sign], 4);
   assert.strictEqual(planets.moon.retro, true);
 
   assert.strictEqual(planets.rahu.retro, true);
   assert.strictEqual(planets.ketu.sign, 8);
   assert.strictEqual(planets.ketu.retro, true);
+  const diff = (planets.ketu.sign - planets.rahu.sign + 12) % 12;
+  assert.strictEqual(diff, 6);
 });

@@ -50,7 +50,11 @@ export function computePositions(dtISOWithZone, lat, lon, ayanamsha) {
     throw new Error('Could not compute ascendant from swisseph.');
   }
   const asc = lonToSignDeg(hres.ascendant);
-  const houses = Array.from({ length: 12 }, (_, i) => ((asc.sign + i - 1) % 12) + 1);
+  const houses = Array(13).fill(null);
+  for (let i = 0; i < 12; i++) {
+    const signIndex = ((asc.sign - 1 + i) % 12) + 1;
+    houses[signIndex] = i + 1;
+  }
 
   const flag = swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED | swisseph.SEFLG_SIDEREAL;
   const planetCodes = {
@@ -66,18 +70,19 @@ export function computePositions(dtISOWithZone, lat, lon, ayanamsha) {
 
   const planets = [];
   const rahuData = swisseph.swe_calc_ut(jd, swisseph.SE_TRUE_NODE, flag);
+  const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swisseph.swe_calc_ut(jd, code, flag);
-    const { sign, deg } = lonToSignDeg(data.longitude);
+    const { sign, deg } =
+      name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
     planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0 });
   }
 
   const ketuLon = (rahuData.longitude + 180) % 360;
-  const diff = ((ketuLon - rahuData.longitude + 360) % 360) - 180;
-  if (Math.abs(diff) > 1e-6) {
+  const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
+  if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu are not opposite');
   }
-  const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
   planets.push({ name: 'ketu', sign: kSign, deg: kDeg, retro: rahuData.longitudeSpeed < 0 });
 
   return { ascSign: asc.sign, houses, planets };
