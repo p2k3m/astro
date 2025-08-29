@@ -46,6 +46,21 @@ export default function Chart({ data, children }) {
     12: { x: 1, y: 2 },
   };
 
+  const SIGN_MAP = {
+    1: { abbr: 'Ar', symbol: '\u2648' },
+    2: { abbr: 'Ta', symbol: '\u2649' },
+    3: { abbr: 'Ge', symbol: '\u264A' },
+    4: { abbr: 'Cn', symbol: '\u264B' },
+    5: { abbr: 'Le', symbol: '\u264C' },
+    6: { abbr: 'Vi', symbol: '\u264D' },
+    7: { abbr: 'Li', symbol: '\u264E' },
+    8: { abbr: 'Sc', symbol: '\u264F' },
+    9: { abbr: 'Sg', symbol: '\u2650' },
+    10: { abbr: 'Cp', symbol: '\u2651' },
+    11: { abbr: 'Aq', symbol: '\u2652' },
+    12: { abbr: 'Pi', symbol: '\u2653' },
+  };
+
   const planetByHouse = {};
   data.planets.forEach((p) => {
     if (!isValidNumber(p.house)) return;
@@ -68,8 +83,8 @@ export default function Chart({ data, children }) {
         <div className="absolute inset-0 rotate-45 border-2 border-orange-500" />
         {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
           const pos = positions[house];
-          const houseValue = data.houses[house - 1];
-          const displayHouse = isValidNumber(houseValue) ? houseValue : 'No data';
+          const signNum = data.houses[house - 1];
+          const signInfo = SIGN_MAP[signNum] || {};
 
           return (
             <div
@@ -83,9 +98,10 @@ export default function Chart({ data, children }) {
                 height: cell,
               }}
             >
-              <div className="-rotate-45 flex flex-col items-center">
-                <span className="text-yellow-300 font-semibold">
-                  {displayHouse}
+              <div className="-rotate-45 flex flex-col items-center gap-0.5">
+                <span className="text-yellow-300 font-semibold">{house}</span>
+                <span className="text-orange-300 font-semibold">
+                  {signInfo.symbol} {signInfo.abbr}
                 </span>
                 {planetByHouse[house] &&
                   planetByHouse[house].map((pl, idx) => (
@@ -107,10 +123,12 @@ Chart.propTypes = {
     planets: PropTypes.arrayOf(
       PropTypes.shape({
         abbr: PropTypes.string.isRequired,
-        degree: PropTypes.number.isRequired,
+        degree: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+          .isRequired,
         retrograde: PropTypes.bool,
         combust: PropTypes.bool,
         house: PropTypes.number.isRequired,
+        sign: PropTypes.number,
       })
     ).isRequired,
   }).isRequired,
