@@ -72,7 +72,20 @@ app.get('/api/ascendant', async (req, res) => {
   }
   try {
     const jsDate = new Date(date);
-    const longitude = computeAscendant(jsDate, parseFloat(lat), parseFloat(lon));
+    const latNum = parseFloat(lat);
+    const lonNum = parseFloat(lon);
+
+    if (Number.isNaN(jsDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date parameter' });
+    }
+    if (!Number.isFinite(latNum)) {
+      return res.status(400).json({ error: 'Invalid latitude parameter' });
+    }
+    if (!Number.isFinite(lonNum)) {
+      return res.status(400).json({ error: 'Invalid longitude parameter' });
+    }
+
+    const longitude = computeAscendant(jsDate, latNum, lonNum);
     res.json({ longitude });
   } catch (err) {
     console.error('Error in /api/ascendant:', err);
@@ -87,11 +100,39 @@ app.get('/api/planet', async (req, res) => {
   }
   try {
     const jsDate = new Date(date);
+    const latNum = parseFloat(lat);
+    const lonNum = parseFloat(lon);
+    const planetName = String(planet).toLowerCase();
+
+    if (Number.isNaN(jsDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date parameter' });
+    }
+    if (!Number.isFinite(latNum)) {
+      return res.status(400).json({ error: 'Invalid latitude parameter' });
+    }
+    if (!Number.isFinite(lonNum)) {
+      return res.status(400).json({ error: 'Invalid longitude parameter' });
+    }
+    const validPlanets = [
+      'sun',
+      'moon',
+      'mercury',
+      'venus',
+      'mars',
+      'jupiter',
+      'saturn',
+      'rahu',
+      'ketu'
+    ];
+    if (!validPlanets.includes(planetName)) {
+      return res.status(400).json({ error: `Invalid planet parameter: ${planet}` });
+    }
+
     const { longitude, retrograde, combust } = await computePlanet(
       jsDate,
-      parseFloat(lat),
-      parseFloat(lon),
-      planet
+      latNum,
+      lonNum,
+      planetName
     );
     res.json({ longitude, retrograde, combust });
   } catch (err) {
