@@ -45,8 +45,9 @@ const PORT = process.env.PORT || 3001;
 // --- API Endpoints ---
 
 async function computeAscendant(date, lat, lon) {
-  // The calculation functions are on the 'jyotish-calculations' object.
-  return jyotish.getAscendantLongitude(date, lat, lon);
+  // The 'getAscendant' function returns an object with a longitude property.
+  const { longitude } = await jyotish.getAscendant(date, lat, lon);
+  return longitude;
 }
 
 async function computePlanet(date, lat, lon, planetName) {
