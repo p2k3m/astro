@@ -31,24 +31,22 @@ export default function Chart({ data, children }) {
     );
   }
 
-  // Coordinates for the 12 houses laid out on a 4x4 grid. Each house is
-  // represented by a square rotated 45 degrees, matching the traditional
-  // North Indian chart layout. Fractional values (e.g. 1.5) are used for
-  // the centre-aligned houses so that every house remains inside the
-  // chart boundary.
+  // Coordinates for the 12 houses laid out on a 4x4 grid. Values represent
+  // the centre point of each house in grid units so we can position labels
+  // without drawing individual boxes.
   const positions = {
-    1: { x: 1.5, y: 0 }, // top centre
-    2: { x: 3, y: 1 }, // top right
-    3: { x: 3, y: 2 }, // right
-    4: { x: 2, y: 3 }, // bottom right
-    5: { x: 1.5, y: 3 }, // bottom centre
-    6: { x: 0, y: 2 }, // bottom left
-    7: { x: 0, y: 1 }, // left
-    8: { x: 1, y: 0 }, // top left
-    9: { x: 1, y: 1 }, // inner top-left
-    10: { x: 2, y: 1 }, // inner top-right
-    11: { x: 2, y: 2 }, // inner bottom-right
-    12: { x: 1, y: 2 }, // inner bottom-left
+    1: { x: 2, y: 0.5 }, // top centre
+    2: { x: 3.5, y: 1.5 }, // top right
+    3: { x: 3.5, y: 2.5 }, // right
+    4: { x: 2.5, y: 3.5 }, // bottom right
+    5: { x: 2, y: 3.5 }, // bottom centre
+    6: { x: 0.5, y: 2.5 }, // bottom left
+    7: { x: 0.5, y: 1.5 }, // left
+    8: { x: 1.5, y: 0.5 }, // top left
+    9: { x: 1.5, y: 1.5 }, // inner top-left
+    10: { x: 2.5, y: 1.5 }, // inner top-right
+    11: { x: 2.5, y: 2.5 }, // inner bottom-right
+    12: { x: 1.5, y: 2.5 }, // inner bottom-left
   };
 
   const SIGN_MAP = {
@@ -81,15 +79,26 @@ export default function Chart({ data, children }) {
   });
 
   const size = 300; // chart size
-  // Divide the chart into a 4x4 grid so that all houses fit within the
-  // rotated outer square.
-  const cell = size / 4;
+  const grid = 4; // 4x4 grid for positioning
 
   return (
     <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
       <div className="relative" style={{ width: size, height: size }}>
-        {/* outer square */}
-        <div className="absolute inset-0 rotate-45 border-2 border-orange-500" />
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 text-orange-500"
+          fill="none"
+          stroke="currentColor"
+        >
+          <polygon
+            points="50,0 100,50 50,100 0,50"
+            strokeWidth="2"
+          />
+          <line x1="50" y1="0" x2="50" y2="100" strokeWidth="1" />
+          <line x1="0" y1="50" x2="100" y2="50" strokeWidth="1" />
+          <line x1="25" y1="25" x2="75" y2="75" strokeWidth="1" />
+          <line x1="75" y1="25" x2="25" y2="75" strokeWidth="1" />
+        </svg>
         {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
           const pos = positions[house];
           const signNum = data.houses[house - 1];
@@ -98,25 +107,19 @@ export default function Chart({ data, children }) {
           return (
             <div
               key={house}
-              className="absolute border border-orange-500 flex flex-col items-center justify-center text-xs"
+              className="absolute flex flex-col items-center text-xs gap-0.5"
               style={{
-                top: pos.y * (cell / size) * 100 + '%',
-                left: pos.x * (cell / size) * 100 + '%',
-                transform: 'rotate(45deg)',
-                width: cell,
-                height: cell,
+                top: (pos.y / grid) * 100 + '%',
+                left: (pos.x / grid) * 100 + '%',
+                transform: 'translate(-50%, -50%)',
               }}
             >
-              <div className="-rotate-45 flex flex-col items-center gap-0.5">
-                <span className="text-yellow-300 font-semibold">{house}</span>
-                <span className="text-orange-300 font-semibold">
-                  {signInfo.symbol} {signInfo.abbr}
-                </span>
-                {planetByHouse[house] &&
-                  planetByHouse[house].map((pl, idx) => (
-                    <span key={idx}>{pl}</span>
-                  ))}
-              </div>
+              <span className="text-yellow-300 font-semibold">{house}</span>
+              <span className="text-orange-300 font-semibold">
+                {signInfo.symbol} {signInfo.abbr}
+              </span>
+              {planetByHouse[house] &&
+                planetByHouse[house].map((pl, idx) => <span key={idx}>{pl}</span>)}
             </div>
           );
         })}
