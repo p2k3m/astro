@@ -44,6 +44,8 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
+// Compute the ascendant directly with Swiss Ephemeris instead of
+// relying on jyotish.getAscendant.
 const computeAscendant = (date, lat, lon) => {
   const ut =
     date.getUTCHours() +
