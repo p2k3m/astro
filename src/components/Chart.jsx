@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 export default function Chart({ data, children }) {
   const isValidNumber = (val) => typeof val === 'number' && !Number.isNaN(val);
 
-  const invalidHouses = !data || !Array.isArray(data.houses);
+  const invalidHouses =
+    !data || !Array.isArray(data.houses) || data.houses.length !== 12;
 
   const invalidPlanets = !data || !Array.isArray(data.planets);
 
