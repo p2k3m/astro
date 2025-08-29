@@ -75,7 +75,7 @@ export default function Chart({ data, children }) {
 
     planetByHouse[p.house] = planetByHouse[p.house] || [];
     planetByHouse[p.house].push(
-      `${p.abbr} ${degree}${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}`
+      `${p.abbr} ${degree}${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}${p.exalted ? ' E' : ''}${p.debilitated ? ' D' : ''}`
     );
   });
 
@@ -144,6 +144,8 @@ Chart.propTypes = {
           .isRequired,
         retrograde: PropTypes.bool,
         combust: PropTypes.bool,
+        exalted: PropTypes.bool,
+        debilitated: PropTypes.bool,
         house: PropTypes.number.isRequired,
         sign: PropTypes.number,
       })
