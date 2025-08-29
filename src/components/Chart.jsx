@@ -65,7 +65,9 @@ export default function Chart({ data, children }) {
   data.planets.forEach((p) => {
     if (!isValidNumber(p.house)) return;
 
-    const degree = isValidNumber(p.degree) ? `${p.degree}°` : 'No data';
+    // Convert degree to a number so numeric-like strings are treated as valid
+    const degreeValue = Number(p.degree);
+    const degree = isValidNumber(degreeValue) ? `${degreeValue}°` : 'No data';
 
     planetByHouse[p.house] = planetByHouse[p.house] || [];
     planetByHouse[p.house].push(
