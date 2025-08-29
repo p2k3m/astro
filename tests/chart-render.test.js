@@ -27,10 +27,11 @@ function loadChart() {
   return sandbox.module.exports.default;
 }
 
-test('Chart renders only with exactly 12 houses', () => {
+test('Chart renders only with exactly 12 houses in natural order', () => {
   const Chart = loadChart();
+  const natural = Array.from({ length: 12 }, (_, i) => i + 1);
   assert.strictEqual(
-    Chart({ data: { houses: Array(12).fill(1), planets: [] } }),
+    Chart({ data: { houses: natural, planets: [] } }),
     'Chart'
   );
   assert.strictEqual(
@@ -39,6 +40,11 @@ test('Chart renders only with exactly 12 houses', () => {
   );
   assert.strictEqual(
     Chart({ data: { houses: Array(13).fill(1), planets: [] } }),
+    'Invalid chart data'
+  );
+  // Misordered houses should also be rejected
+  assert.strictEqual(
+    Chart({ data: { houses: [1, 2, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12], planets: [] } }),
     'Invalid chart data'
   );
 });

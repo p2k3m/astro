@@ -108,7 +108,23 @@ export default async function calculateChart({ date, time, lat, lon }) {
   const ascLong = await getAscendant(jsDate, lat, lon);
   const asc = longitudeToSign(ascLong);
 
-  const houses = Array.from({ length: 12 }, (_, i) => ((asc.sign + i - 1) % 12) + 1);
+  const houses = Array.from(
+    { length: 12 },
+    (_, i) => ((asc.sign + i - 1) % 12) + 1
+  );
+
+  // Sanity check: ensure we ended up with a full 12-sign progression
+  // starting from the ascendant. This helps catch logic errors if the
+  // calculation above is ever altered.
+  const expected = Array.from(
+    { length: 12 },
+    (_, i) => ((asc.sign + i - 1) % 12) + 1
+  );
+  const validHouses =
+    houses.length === 12 && houses.every((h, idx) => h === expected[idx]);
+  if (!validHouses) {
+    throw new Error('Invalid house sequence');
+  }
 
   // Planetary calculations
   let planetData;

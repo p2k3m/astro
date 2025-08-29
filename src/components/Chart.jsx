@@ -5,7 +5,13 @@ export default function Chart({ data, children }) {
   const isValidNumber = (val) => typeof val === 'number' && !Number.isNaN(val);
 
   const invalidHouses =
-    !data || !Array.isArray(data.houses) || data.houses.length !== 12;
+    !data ||
+    !Array.isArray(data.houses) ||
+    data.houses.length !== 12 ||
+    !data.houses.every(
+      (h, idx, arr) =>
+        typeof h === 'number' && h === ((arr[0] + idx - 1) % 12) + 1
+    );
 
   const invalidPlanets = !data || !Array.isArray(data.planets);
 
