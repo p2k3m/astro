@@ -2,18 +2,18 @@ const assert = require('node:assert');
 const test = require('node:test');
 const app = require('../server/index.cjs');
 
-// Precomputed sidereal values using Swiss Ephemeris
+// Precomputed sidereal values (Swiss Ephemeris, Lahiri) rounded to 1e-12°
 const EXPECTED = {
-  ascendant: 90.54846025906988,
-  sun: 256.38732871727575,
-  moon: 328.0169455557543,
-  mercury: 90.66389499907791,
-  venus: 36.33576696431351,
-  mars: 152.40038823629072,
-  jupiter: 251.12402705195916,
-  saturn: 269.87751240508214,
-  rahu: 74.08081147961104,
-  ketu: 254.08081147961104,
+  ascendant: 90.54846025907,
+  sun: 256.387328717276,
+  moon: 328.016945555754,
+  mercury: 90.663894999078,
+  venus: 36.335766964314,
+  mars: 152.400388236291,
+  jupiter: 251.124027051959,
+  saturn: 269.877512405082,
+  rahu: 74.080811479611,
+  ketu: 254.080811479611,
 };
 
 const BIRTH = {
@@ -24,8 +24,9 @@ const BIRTH = {
 
 const PLANETS = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'rahu', 'ketu'];
 
+const TOLERANCE = 1e-3; // 0.001°
 function closeTo(a, b) {
-  return Math.abs(a - b) < 1e-3;
+  return Math.abs(a - b) < TOLERANCE;
 }
 
 test('API returns expected chart data for birth details', async (t) => {
