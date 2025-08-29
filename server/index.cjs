@@ -89,7 +89,12 @@ app.get('/api/planet', async (req, res) => {
   }
 });
 
-// Start the server.
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+// Start the server only if this file is executed directly.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
+
+// Export the app for testing purposes.
+module.exports = app;
