@@ -50,8 +50,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
 
   const houses = Array(13).fill(null);
   for (let i = 0; i < 12; i++) {
-    const signIndex = ((asc.sign - 1 + i) % 12) + 1;
-    houses[signIndex] = i + 1;
+    const houseNum = i + 1;
+    houses[houseNum] = ((asc.sign - 1 + i) % 12) + 1;
   }
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;

@@ -61,7 +61,7 @@ export default async function calculateChart({ date, time, lat, lon, timezone })
   const { ascSign, houses, planets: rawPlanets } = computePositions(dtISO, lat, lon);
 
   const planets = (rawPlanets || []).map((p) => {
-    const house = houses[p.sign];
+    const house = houses.indexOf(p.sign);
     const abbr = PLANETS.find((pl) => pl.key === p.name)?.abbr;
     return {
       name: p.name,

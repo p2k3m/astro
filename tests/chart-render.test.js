@@ -27,14 +27,14 @@ function loadChart() {
   return sandbox.module.exports;
 }
 
-test('Chart renders for valid sign to house maps regardless of ascendant', () => {
+test('Chart renders for valid house to sign maps regardless of ascendant', () => {
   const { default: Chart } = loadChart();
 
   const housesForAsc = (asc) => {
     const arr = Array(13).fill(null);
     for (let i = 0; i < 12; i++) {
-      const sign = ((asc - 1 + i) % 12) + 1;
-      arr[sign] = i + 1;
+      const house = i + 1;
+      arr[house] = ((asc - 1 + i) % 12) + 1;
     }
     return arr;
   };
@@ -50,7 +50,7 @@ test('Chart renders for valid sign to house maps regardless of ascendant', () =>
     'Invalid chart data'
   );
   const tooLong = Array(14).fill(null);
-  for (let i = 1; i <= 13; i++) tooLong[i] = i;
+  for (let i = 1; i <= 13; i++) tooLong[i] = ((1 - 1 + i - 1) % 12) + 1;
   assert.strictEqual(
     Chart({ data: { houses: tooLong, planets: [] } }),
     'Invalid chart data'

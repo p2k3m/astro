@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-// Ensure calculateChart yields a natural zodiac sequence of houses
+// Ensure calculateChart yields a natural zodiac sequence of signs
 // starting from the ascendant sign.
 test('calculateChart produces houses in natural zodiac order', async () => {
   const calculateChart = (await import('../src/calculateChart.js')).default;
@@ -16,8 +16,9 @@ test('calculateChart produces houses in natural zodiac order', async () => {
   const asc = data.ascendant.sign;
   const expected = Array(13).fill(null);
   for (let i = 0; i < 12; i++) {
-    const signIndex = ((asc - 1 + i) % 12) + 1;
-    expected[signIndex] = i + 1;
+    const house = i + 1;
+    const sign = ((asc - 1 + i) % 12) + 1;
+    expected[house] = sign;
   }
   assert.deepStrictEqual(data.houses, expected);
 });

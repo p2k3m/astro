@@ -42,29 +42,22 @@ const diamondPath = (cx, cy, size = BOX_SIZE) =>
 export default function Chart({ data, children }) {
   const isValidNumber = (val) => typeof val === 'number' && !Number.isNaN(val);
 
-  const signByHouse = [];
+  const signByHouse = data?.houses;
   const invalidHouses =
     !data ||
-    !Array.isArray(data.houses) ||
-    data.houses.length !== 13 ||
+    !Array.isArray(signByHouse) ||
+    signByHouse.length !== 13 ||
     (() => {
-      for (let sign = 1; sign <= 12; sign++) {
-        const house = data.houses[sign];
-        if (
-          !isValidNumber(house) ||
-          house < 1 ||
-          house > 12 ||
-          signByHouse[house]
-        ) {
+      for (let house = 1; house <= 12; house++) {
+        const sign = signByHouse[house];
+        if (!isValidNumber(sign) || sign < 1 || sign > 12) {
           return true;
         }
-        signByHouse[house] = sign;
       }
-      const asc = data.houses.indexOf(1);
-      if (asc === -1) return true;
-      for (let i = 0; i < 12; i++) {
-        const sign = ((asc - 1 + i) % 12) + 1;
-        if (data.houses[sign] !== i + 1) return true;
+      const asc = signByHouse[1];
+      for (let i = 1; i < 12; i++) {
+        const expected = ((asc - 1 + i) % 12) + 1;
+        if (signByHouse[i + 1] !== expected) return true;
       }
       return false;
     })();

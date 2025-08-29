@@ -47,7 +47,7 @@ test('sign to house mapping and retrograde flags', async () => {
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
   assert.strictEqual(planets.moon.sign, 8);
-  assert.strictEqual(result.houses[planets.moon.sign], 4);
+  assert.strictEqual(result.houses[4], planets.moon.sign);
   assert.strictEqual(planets.moon.retro, true);
 
   assert.strictEqual(planets.rahu.retro, true);
