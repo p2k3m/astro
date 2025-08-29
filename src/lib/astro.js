@@ -52,8 +52,8 @@ export function computePositions(dtISOWithZone, lat, lon, ayanamsha) {
   const asc = lonToSignDeg(hres.ascendant);
   const houses = Array(13).fill(null);
   for (let i = 0; i < 12; i++) {
-    const signIndex = ((asc.sign - 1 + i) % 12) + 1;
-    houses[signIndex] = i + 1;
+    const houseNum = i + 1;
+    houses[houseNum] = ((asc.sign - 1 + i) % 12) + 1;
   }
 
   const flag = swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED | swisseph.SEFLG_SIDEREAL;

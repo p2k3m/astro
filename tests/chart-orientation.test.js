@@ -29,9 +29,9 @@ test('calculateChart assigns ascendant sign to first house for multiple charts',
   const verify = async (params) => {
     const chart = await calculateChart(params);
     const asc = chart.ascendant.sign;
-    assert.strictEqual(chart.houses[asc], 1);
+    assert.strictEqual(chart.houses[1], asc);
     const sun = chart.planets.find((p) => p.name === 'sun');
-    assert.strictEqual(sun.house, chart.houses[sun.sign]);
+    assert.strictEqual(chart.houses[sun.house], sun.sign);
   };
 
   await t.test('Libra ascendant', () =>
