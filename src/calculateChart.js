@@ -10,16 +10,20 @@ async function getAscendant(jsDate, lat, lon) {
     lon: String(lon),
   });
 
-  const res = await fetch(`/api/ascendant?${params.toString()}`);
-  if (!res.ok) {
-    let data = {};
-    try {
-      data = await res.json();
-    } catch (e) {}
-    throw new Error(data.error || res.statusText);
+  try {
+    const res = await fetch(`/api/ascendant?${params.toString()}`);
+    if (!res.ok) {
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (e) {}
+      throw new Error(data.error || res.statusText);
+    }
+    const data = await res.json();
+    return data.longitude;
+  } catch (err) {
+    throw new Error(`Failed to fetch ascendant: ${err.message}`);
   }
-  const data = await res.json();
-  return data.longitude;
 }
 
 async function getPlanetPosition(jsDate, lat, lon, planet) {
@@ -30,16 +34,20 @@ async function getPlanetPosition(jsDate, lat, lon, planet) {
     planet,
   });
 
-  const res = await fetch(`/api/planet?${params.toString()}`);
-  if (!res.ok) {
-    let data = {};
-    try {
-      data = await res.json();
-    } catch (e) {}
-    throw new Error(data.error || res.statusText);
+  try {
+    const res = await fetch(`/api/planet?${params.toString()}`);
+    if (!res.ok) {
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (e) {}
+      throw new Error(data.error || res.statusText);
+    }
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    throw new Error(`Failed to fetch ${planet} data: ${err.message}`);
   }
-  const data = await res.json();
-  return data;
 }
 
 const PLANETS = [
