@@ -6,16 +6,10 @@ const assert = require('node:assert');
 test('calculateChart produces houses in natural zodiac order', async () => {
   const calculateChart = (await import('../src/calculateChart.js')).default;
 
-  // Stub fetch responses for timezone, ascendant, and planets
+  // Stub fetch response for consolidated ephemeris endpoint
   global.fetch = async (url) => {
-    if (url.startsWith('https://www.timeapi.io')) {
-      return { ok: true, json: async () => ({ currentUtcOffset: { hours: 0, minutes: 0 } }) };
-    }
-    if (url.startsWith('/api/ascendant')) {
-      return { ok: true, json: async () => ({ longitude: 90 }) };
-    }
-    if (url.startsWith('/api/planet')) {
-      return { ok: true, json: async () => ({ longitude: 0 }) };
+    if (url.startsWith('/api/positions')) {
+      return { ok: true, json: async () => ({ asc_sign: 4, planets: [] }) };
     }
     throw new Error('Unexpected URL ' + url);
   };

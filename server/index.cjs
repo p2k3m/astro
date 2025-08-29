@@ -44,239 +44,35 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
-function computeAscendant(date, lat, lon) {
-  // Convert UTC time to a fractional UT hour value.
-  const ut =
-    date.getUTCHours() +
-    date.getUTCMinutes() / 60 +
-    date.getUTCSeconds() / 3600 +
-    date.getUTCMilliseconds() / 3600000;
-
-  // Calculate the Julian day and then compute house cusps.
-  const julianDay = swisseph.swe_julday(
-    date.getUTCFullYear(),
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    ut,
-    swisseph.SE_GREG_CAL
-  );
-  const houses = swisseph.swe_houses_ex(
-    julianDay,
-    lat,
-    lon,
-    'P',
-    swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH
-  );
-
-  // Error handling: Check if the houses and ascendant properties exist
-  if (!houses || typeof houses.ascendant === 'undefined') {
-    console.error('Failed to compute houses. Result:', houses);
-    throw new Error('Could not compute ascendant from swisseph.');
+let ephemerisModule;
+async function getEphemeris() {
+  if (!ephemerisModule) {
+    ephemerisModule = await import('../src/lib/ephemeris.js');
   }
-
-  // The 'ascendant' property holds the longitude.
-  return houses.ascendant;
+  return ephemerisModule;
 }
 
-// =======================================================================
-// ▼▼▼ THIS FUNCTION HAS BEEN CORRECTED ▼▼▼
-// Replaced jyotish.getPlanetPosition with a direct swisseph implementation.
-// =======================================================================
-async function computePlanet(date, lat, lon, planetName) {
-  const ut =
-    date.getUTCHours() +
-    date.getUTCMinutes() / 60 +
-    date.getUTCSeconds() / 3600;
-  const julianDay = swisseph.swe_julday(
-    date.getUTCFullYear(),
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    ut,
-    swisseph.SE_GREG_CAL
-  );
-
-  const flag =
-    swisseph.SEFLG_SWIEPH |
-    swisseph.SEFLG_SPEED |
-    swisseph.SEFLG_SIDEREAL;
-
-  // Precompute Sun longitude for combustion checks
-  const sunData = swisseph.swe_calc_ut(julianDay, swisseph.SE_SUN, flag);
-
-  // Planet specific settings
-  const COMBUST_THRESHOLDS = {
-    moon: 12,
-    mercury: 14,
-    venus: 10,
-    mars: 17,
-    jupiter: 11,
-    saturn: 15,
-  };
-
-  const EXALTATION_SIGNS = {
-    sun: 1,
-    moon: 2,
-    mercury: 6,
-    venus: 12,
-    mars: 10,
-    jupiter: 4,
-    saturn: 7,
-    rahu: 2,
-    ketu: 8,
-  };
-
-  const DEBILITATION_SIGNS = {
-    sun: 7,
-    moon: 8,
-    mercury: 12,
-    venus: 6,
-    mars: 4,
-    jupiter: 10,
-    saturn: 1,
-    rahu: 8,
-    ketu: 2,
-  };
-
-  function longitudeToSign(longitude) {
-    const norm = ((longitude % 360) + 360) % 360;
-    return Math.floor(norm / 30) + 1; // 1..12
-  }
-
-  if (planetName === 'ketu') {
-    // Ketu is always opposite Rahu. Fetch Rahu once using the true node and derive
-    // Ketu's longitude and speed from it to keep values coherent.
-    const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, flag);
-    if (!rahuData || typeof rahuData.longitude === 'undefined') {
-      throw new Error('Failed to calculate position for ketu');
-    }
-    const lon = (rahuData.longitude + 180) % 360;
-    const sign = longitudeToSign(lon);
-    return {
-      longitude: lon,
-      speed: rahuData.longitudeSpeed,
-      retrograde: rahuData.longitudeSpeed < 0,
-      combust: false,
-      exalted: EXALTATION_SIGNS.ketu === sign,
-      debilitated: DEBILITATION_SIGNS.ketu === sign,
-    };
-  }
-
-  // Map planet names to swisseph constants
-  const planetMap = {
-    sun: swisseph.SE_SUN,
-    moon: swisseph.SE_MOON,
-    mercury: swisseph.SE_MERCURY,
-    venus: swisseph.SE_VENUS,
-    mars: swisseph.SE_MARS,
-    jupiter: swisseph.SE_JUPITER,
-    saturn: swisseph.SE_SATURN,
-    rahu: swisseph.SE_TRUE_NODE, // Rahu is the true north node
-  };
-
-  const planetId = planetMap[planetName];
-  if (typeof planetId === 'undefined') {
-    throw new Error(`Invalid planet name: ${planetName}`);
-  }
-
-  const planetData =
-    planetName === 'sun'
-      ? sunData
-      : swisseph.swe_calc_ut(julianDay, planetId, flag);
-
-  if (!planetData || typeof planetData.longitude === 'undefined') {
-    throw new Error(`Failed to calculate position for ${planetName}`);
-  }
-
-  const sign = longitudeToSign(planetData.longitude);
-
-  let combust = false;
-  if (planetName !== 'sun') {
-    const diffRaw = Math.abs((planetData.longitude - sunData.longitude + 360) % 360);
-    const diff = diffRaw > 180 ? 360 - diffRaw : diffRaw;
-    const threshold = COMBUST_THRESHOLDS[planetName];
-    if (threshold && diff <= threshold) combust = true;
-  }
-
-  return {
-    longitude: planetData.longitude,
-    speed: planetData.longitudeSpeed,
-    retrograde: planetData.longitudeSpeed < 0,
-    combust,
-    exalted: EXALTATION_SIGNS[planetName] === sign,
-    debilitated: DEBILITATION_SIGNS[planetName] === sign,
-  };
-}
-
-
-app.get('/api/ascendant', async (req, res) => {
-  const { date, lat, lon } = req.query;
-  if (!date || !lat || !lon) {
-    return res.status(400).json({ error: 'Missing required query parameters: date, lat, lon' });
+app.get('/api/positions', async (req, res) => {
+  const { datetime, tz, lat, lon } = req.query;
+  if (!datetime || !tz || !lat || !lon) {
+    return res
+      .status(400)
+      .json({ error: 'Missing required query parameters: datetime, tz, lat, lon' });
   }
   try {
-    const jsDate = new Date(date);
     const latNum = parseFloat(lat);
     const lonNum = parseFloat(lon);
-
-    if (Number.isNaN(jsDate.getTime())) {
-      return res.status(400).json({ error: 'Invalid date parameter' });
-    }
     if (!Number.isFinite(latNum)) {
       return res.status(400).json({ error: 'Invalid latitude parameter' });
     }
     if (!Number.isFinite(lonNum)) {
       return res.status(400).json({ error: 'Invalid longitude parameter' });
     }
-
-    // This now calls the corrected function
-    const longitude = computeAscendant(jsDate, latNum, lonNum);
-    res.json({ longitude });
+    const { compute_positions } = await getEphemeris();
+    const result = compute_positions({ datetime, tz, lat: latNum, lon: lonNum });
+    res.json(result);
   } catch (err) {
-    console.error('Error in /api/ascendant:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/planet', async (req, res) => {
-  const { date, lat, lon, planet } = req.query;
-  if (!date || !lat || !lon || !planet) {
-    return res.status(400).json({ error: 'Missing required query parameters: date, lat, lon, planet' });
-  }
-  try {
-    const jsDate = new Date(date);
-    const latNum = parseFloat(lat);
-    const lonNum = parseFloat(lon);
-    const planetName = String(planet).toLowerCase();
-
-    if (Number.isNaN(jsDate.getTime())) {
-      return res.status(400).json({ error: 'Invalid date parameter' });
-    }
-    if (!Number.isFinite(latNum)) {
-      return res.status(400).json({ error: 'Invalid latitude parameter' });
-    }
-    if (!Number.isFinite(lonNum)) {
-      return res.status(400).json({ error: 'Invalid longitude parameter' });
-    }
-    const validPlanets = [
-      'sun',
-      'moon',
-      'mercury',
-      'venus',
-      'mars',
-      'jupiter',
-      'saturn',
-      'rahu',
-      'ketu'
-    ];
-    if (!validPlanets.includes(planetName)) {
-      return res.status(400).json({ error: `Invalid planet parameter: ${planet}` });
-    }
-
-    const { longitude, speed, retrograde, combust, exalted, debilitated } =
-      await computePlanet(jsDate, latNum, lonNum, planetName);
-    res.json({ longitude, speed, retrograde, combust, exalted, debilitated });
-  } catch (err) {
-    console.error('Error in /api/planet:', err);
+    console.error('Error in /api/positions:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -290,4 +86,3 @@ if (require.main === module) {
 
 // Export the app for testing purposes.
 module.exports = app;
-module.exports.computeAscendant = computeAscendant;
