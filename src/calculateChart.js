@@ -68,8 +68,8 @@ async function getTimezoneOffset(lat, lon) {
     // Ignore network or parsing errors and use fallback below
     console.error('Failed to fetch timezone offset', err);
   }
-  // Fallback: crude estimate from longitude (15° ≈ 1 hour)
-  return Math.round(lon / 15) * 60;
+  // Fallback: crude estimate from longitude with half-hour precision
+  return Math.round(lon / 7.5) * 30;
 }
 
 const PLANETS = [
