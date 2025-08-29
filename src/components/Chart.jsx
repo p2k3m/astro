@@ -2,50 +2,42 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const VIEWBOX_SIZE = 100;
-const GRID = 4;
-const BOX_SIZE = (VIEWBOX_SIZE / GRID) / 2; // half a grid unit
+const BOX_SIZE = VIEWBOX_SIZE / 8;
 
-// Fixed positions for the 12 zodiac signs (Aries at the top, proceeding
-// counter-clockwise). Values represent grid coordinates on a 4x4 grid.
-const positions = {
-  1: { x: 2, y: 0.5 }, // Aries - top centre
-  2: { x: 3.5, y: 1.5 }, // Taurus - top right
-  3: { x: 3.5, y: 2.5 }, // Gemini - right
-  4: { x: 2.5, y: 3.5 }, // Cancer - bottom right
-  5: { x: 2, y: 3.5 }, // Leo - bottom centre
-  6: { x: 0.5, y: 2.5 }, // Virgo - bottom left
-  7: { x: 0.5, y: 1.5 }, // Libra - left
-  8: { x: 1.5, y: 0.5 }, // Scorpio - top left
-  9: { x: 1.5, y: 1.5 }, // Sagittarius - inner top-left
-  10: { x: 2.5, y: 1.5 }, // Capricorn - inner top-right
-  11: { x: 2.5, y: 2.5 }, // Aquarius - inner bottom-right
-  12: { x: 1.5, y: 2.5 }, // Pisces - inner bottom-left
-};
+// Centres for each of the 12 sign boxes, in clockwise order starting from Aries
+// at index 0. Values are percentages within the 0-100 SVG viewbox.
+const SIGN_BOX_CENTERS = [
+  { cx: 50, cy: 12.5 }, // Aries
+  { cx: 87.5, cy: 37.5 }, // Taurus
+  { cx: 87.5, cy: 62.5 }, // Gemini
+  { cx: 62.5, cy: 87.5 }, // Cancer
+  { cx: 50, cy: 87.5 }, // Leo
+  { cx: 12.5, cy: 62.5 }, // Virgo
+  { cx: 12.5, cy: 37.5 }, // Libra
+  { cx: 37.5, cy: 12.5 }, // Scorpio
+  { cx: 37.5, cy: 37.5 }, // Sagittarius
+  { cx: 62.5, cy: 37.5 }, // Capricorn
+  { cx: 62.5, cy: 62.5 }, // Aquarius
+  { cx: 37.5, cy: 62.5 }, // Pisces
+];
 
-// Pre-computed polygon information for each sign box (rhombus).
-const SIGN_BOXES = Array.from({ length: 12 }, (_, i) => {
-  const sign = i + 1;
-  const pos = positions[sign];
-  const cx = (pos.x / GRID) * VIEWBOX_SIZE;
-  const cy = (pos.y / GRID) * VIEWBOX_SIZE;
-  const points = `${cx},${cy - BOX_SIZE} ${cx + BOX_SIZE},${cy} ${cx},${cy + BOX_SIZE} ${cx - BOX_SIZE},${cy}`;
-  return { sign, cx, cy, points };
-});
+const SIGN_LABELS = [
+  'Ar',
+  'Ta',
+  'Ge',
+  'Cn',
+  'Le',
+  'Vi',
+  'Li',
+  'Sc',
+  'Sg',
+  'Cp',
+  'Aq',
+  'Pi',
+];
 
-const SIGN_MAP = {
-  1: { abbr: 'Ar', symbol: '\u2648', name: 'Aries' },
-  2: { abbr: 'Ta', symbol: '\u2649', name: 'Taurus' },
-  3: { abbr: 'Ge', symbol: '\u264A', name: 'Gemini' },
-  4: { abbr: 'Cn', symbol: '\u264B', name: 'Cancer' },
-  5: { abbr: 'Le', symbol: '\u264C', name: 'Leo' },
-  6: { abbr: 'Vi', symbol: '\u264D', name: 'Virgo' },
-  7: { abbr: 'Li', symbol: '\u264E', name: 'Libra' },
-  8: { abbr: 'Sc', symbol: '\u264F', name: 'Scorpio' },
-  9: { abbr: 'Sg', symbol: '\u2650', name: 'Sagittarius' },
-  10: { abbr: 'Cp', symbol: '\u2651', name: 'Capricorn' },
-  11: { abbr: 'Aq', symbol: '\u2652', name: 'Aquarius' },
-  12: { abbr: 'Pi', symbol: '\u2653', name: 'Pisces' },
-};
+const diamondPath = (cx, cy, size = BOX_SIZE) =>
+  `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
 
 export default function Chart({ data, children }) {
   const isValidNumber = (val) => typeof val === 'number' && !Number.isNaN(val);
@@ -98,7 +90,7 @@ export default function Chart({ data, children }) {
 
     planetBySign[p.sign] = planetBySign[p.sign] || [];
     planetBySign[p.sign].push(
-      `${p.abbr} ${degree}${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}${p.exalted ? ' E' : ''}${p.debilitated ? ' D' : ''}`
+      `${p.abbr} ${degree}${p.retrograde ? ' R' : ''}${p.combust ? ' C' : ''}`
     );
   });
 
@@ -114,33 +106,38 @@ export default function Chart({ data, children }) {
           fill="none"
           stroke="currentColor"
         >
-          <polygon points="50,0 100,50 50,100 0,50" strokeWidth="2" />
-          {SIGN_BOXES.map((box) => (
-            <polygon key={box.sign} points={box.points} strokeWidth="1" />
+          <path d={diamondPath(50, 50, 50)} strokeWidth="2" />
+          {SIGN_BOX_CENTERS.map((c, idx) => (
+            <path key={idx} d={diamondPath(c.cx, c.cy)} strokeWidth="1" />
           ))}
         </svg>
-        {SIGN_BOXES.map((box) => {
-          const signInfo = SIGN_MAP[box.sign] || {};
+        {SIGN_BOX_CENTERS.map((c, idx) => {
+          const sign = idx + 1;
+          const houseNum = ((sign - ascSign + 12) % 12) + 1;
 
           return (
             <div
-              key={box.sign}
-              className="absolute flex flex-col items-center text-xs gap-1"
+              key={sign}
+              className="absolute flex flex-col items-center text-xs gap-0.5 p-1"
               style={{
-                top: `${box.cy}%`,
-                left: `${box.cx}%`,
+                top: `${c.cy}%`,
+                left: `${c.cx}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             >
               <span className="text-yellow-300 font-semibold">
-                {box.sign}
-                {box.sign === ascSign ? ' Asc' : ''}
+                {houseNum}
               </span>
-              <span className="text-orange-300 font-semibold flex items-center gap-1">
-                {signInfo.symbol} {signInfo.abbr} {signInfo.name || ''}
+              {sign === ascSign && (
+                <span className="text-yellow-300 text-[0.6rem] leading-none">Asc</span>
+              )}
+              <span className="text-orange-300 font-semibold">
+                {SIGN_LABELS[idx]}
               </span>
-              {planetBySign[box.sign] &&
-                planetBySign[box.sign].map((pl, idx) => <span key={idx}>{pl}</span>)}
+              {planetBySign[sign] &&
+                planetBySign[sign].map((pl, i) => (
+                  <span key={i}>{pl}</span>
+                ))}
             </div>
           );
         })}
