@@ -33,7 +33,7 @@ test('calculateChart assigns Libra ascendant to first house', async (t) => {
     lon: 0,
   });
 
-  assert.strictEqual(chart.houses[0], 7);
+  assert.strictEqual(chart.houses[7], 1);
   const sun = chart.planets.find((p) => p.name === 'sun');
   assert.strictEqual(sun.sign, 7);
   assert.strictEqual(sun.house, 1);

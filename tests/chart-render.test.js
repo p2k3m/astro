@@ -29,22 +29,27 @@ function loadChart() {
 
 test('Chart renders only with exactly 12 houses in natural order', () => {
   const { default: Chart } = loadChart();
-  const natural = Array.from({ length: 12 }, (_, i) => i + 1);
+  const natural = Array(13).fill(null);
+  for (let i = 1; i <= 12; i++) natural[i] = i;
   assert.strictEqual(
     Chart({ data: { houses: natural, planets: [] } }),
     'Chart'
   );
   assert.strictEqual(
-    Chart({ data: { houses: Array(11).fill(1), planets: [] } }),
+    Chart({ data: { houses: natural.slice(1), planets: [] } }),
     'Invalid chart data'
   );
+  const tooLong = Array(14).fill(null);
+  for (let i = 1; i <= 13; i++) tooLong[i] = i;
   assert.strictEqual(
-    Chart({ data: { houses: Array(13).fill(1), planets: [] } }),
+    Chart({ data: { houses: tooLong, planets: [] } }),
     'Invalid chart data'
   );
   // Misordered houses should also be rejected
+  const misordered = natural.slice();
+  [misordered[2], misordered[3]] = [3, 2];
   assert.strictEqual(
-    Chart({ data: { houses: [1, 2, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12], planets: [] } }),
+    Chart({ data: { houses: misordered, planets: [] } }),
     'Invalid chart data'
   );
 });

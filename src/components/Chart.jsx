@@ -45,11 +45,16 @@ export default function Chart({ data, children }) {
   const invalidHouses =
     !data ||
     !Array.isArray(data.houses) ||
-    data.houses.length !== 12 ||
-    !data.houses.every(
-      (h, idx, arr) =>
-        typeof h === 'number' && h === ((arr[0] + idx - 1) % 12) + 1
-    );
+    data.houses.length !== 13 ||
+    (() => {
+      const asc = data.houses.indexOf(1);
+      if (asc === -1) return true;
+      for (let i = 0; i < 12; i++) {
+        const sign = ((asc - 1 + i) % 12) + 1;
+        if (data.houses[sign] !== i + 1) return true;
+      }
+      return false;
+    })();
 
   const invalidPlanets = !data || !Array.isArray(data.planets);
 
@@ -94,7 +99,7 @@ export default function Chart({ data, children }) {
     );
   });
 
-  const ascSign = data.houses[0];
+  const ascSign = data.ascendant?.sign || data.houses.indexOf(1);
   const size = 300; // chart size
 
   return (
@@ -113,7 +118,7 @@ export default function Chart({ data, children }) {
         </svg>
         {SIGN_BOX_CENTERS.map((c, idx) => {
           const sign = idx + 1;
-          const houseNum = ((sign - ascSign + 12) % 12) + 1;
+          const houseNum = data.houses[sign];
 
           return (
             <div

@@ -13,7 +13,7 @@ test('reference chart matches known placements', async () => {
     lat: 26.152,
     lon: 85.897,
   });
-  assert.strictEqual(res.asc_sign, 1);
+  assert.strictEqual(res.ascSign, 1);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p.sign]));
   assert.strictEqual(planets.sun, 8);
   assert.strictEqual(planets.moon, 2);
