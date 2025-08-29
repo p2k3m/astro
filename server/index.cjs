@@ -1,10 +1,9 @@
 const fs = require('fs');
-const express = require('express');
+const express = require('../express');
 const path = require('path');
 
-// Import both the high-level calculations library and the low-level ephemeris library.
-const jyotish = require('jyotish-calculations');
-const swisseph = require('swisseph-v2');
+// Import the Swiss Ephemeris library
+const swisseph = require('../swisseph-v2');
 
 // --- Initialization ---
 
@@ -13,8 +12,7 @@ const swisseph = require('swisseph-v2');
 const ephemerisPath = path.join(
   __dirname,
   '..',
-  'node_modules',
-  'swisseph-v2', // The correct package name that contains the ephemeris files.
+  'swisseph-v2',
   'ephe'
 );
 
@@ -31,6 +29,8 @@ try {
   // The setEphemerisPath function belongs to the 'swisseph-v2' package.
   // We must configure it directly.
   swisseph.swe_set_ephe_path(ephemerisPath);
+  // Enable Lahiri sidereal mode
+  swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
   console.log('Swiss Ephemeris path configured successfully.');
 } catch (err) {
   console.error('Failed to configure Swiss Ephemeris:', err);
@@ -60,7 +60,13 @@ function computeAscendant(date, lat, lon) {
     ut,
     swisseph.SE_GREG_CAL
   );
-  const houses = swisseph.swe_houses(julianDay, lat, lon, 'P');
+  const houses = swisseph.swe_houses_ex(
+    julianDay,
+    lat,
+    lon,
+    'P',
+    swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH
+  );
 
   // Error handling: Check if the houses and ascendant properties exist
   if (!houses || typeof houses.ascendant === 'undefined') {
@@ -107,7 +113,11 @@ async function computePlanet(date, lat, lon, planetName) {
     swisseph.SE_GREG_CAL
   );
 
-  const planetData = swisseph.swe_calc_ut(julianDay, planetId, swisseph.SEFLG_SPEED);
+  const flag =
+    swisseph.SEFLG_SWIEPH |
+    swisseph.SEFLG_SPEED |
+    swisseph.SEFLG_SIDEREAL;
+  const planetData = swisseph.swe_calc_ut(julianDay, planetId, flag);
 
   if (!planetData || typeof planetData.longitude === 'undefined') {
     throw new Error(`Failed to calculate position for ${planetName}`);
@@ -116,7 +126,7 @@ async function computePlanet(date, lat, lon, planetName) {
   let longitude = planetData.longitude;
   // For Ketu, we calculate it as 180 degrees opposite Rahu
   if (planetName === 'ketu') {
-      const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, 0);
+      const rahuData = swisseph.swe_calc_ut(julianDay, swisseph.SE_TRUE_NODE, flag);
       longitude = (rahuData.longitude + 180) % 360;
   }
 
