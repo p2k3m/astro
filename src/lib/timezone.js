@@ -1,5 +1,5 @@
-import find from 'geo-tz';
-import { DateTime } from 'luxon';
+let tzf;
+let DateTimeObj;
 
 /**
  * Determine the IANA timezone name for a latitude and longitude.
@@ -9,15 +9,21 @@ import { DateTime } from 'luxon';
  * @returns {string} IANA timezone name
  */
 export function getTimezoneName(lat, lon) {
-  // Use the 'find' function directly. It returns an array of timezone names.
-  const zones = find(lat, lon);
-
-  if (!zones || zones.length === 0) {
+  if (!tzf) {
+    let TF;
+    if (typeof TimezoneFinder !== 'undefined') {
+      TF = TimezoneFinder;
+    } else {
+      const req = eval('require');
+      TF = req('timezonefinder');
+    }
+    tzf = new TF();
+  }
+  const zone = tzf.timezoneAt(lat, lon);
+  if (!zone) {
     throw new Error('Unable to determine time zone');
   }
-
-  // Return the first timezone from the results array.
-  return zones[0];
+  return zone;
 }
 
 /**
@@ -33,11 +39,19 @@ export function getTimezoneName(lat, lon) {
  */
 export function getTimezoneOffset({ date, time, lat, lon }) {
   const zone = getTimezoneName(lat, lon);
+  if (!DateTimeObj) {
+    if (typeof DateTime !== 'undefined') {
+      DateTimeObj = DateTime;
+    } else {
+      const req = eval('require');
+      DateTimeObj = req('luxon').DateTime;
+    }
+  }
 
   const [year, month, day] = date.split('-').map(Number);
   const [hour = 0, minute = 0] = time.split(':').map(Number);
 
-  const dt = DateTime.fromObject({ year, month, day, hour, minute }, { zone });
+  const dt = DateTimeObj.fromObject({ year, month, day, hour, minute }, { zone });
   return dt.offset; // offset in minutes
 }
 
@@ -50,10 +64,14 @@ export function getTimezoneOffset({ date, time, lat, lon }) {
  * @returns {Date} UTC date
  */
 export function toUTC({ datetime, zone }) {
-  // Use Luxon to parse the local time in the specified zone
-  const dt = DateTime.fromISO(datetime, { zone });
-  
-  // Convert the Luxon object directly to a native JavaScript Date.
-  // The JS Date object's internal value is always a UTC timestamp.
+  if (!DateTimeObj) {
+    if (typeof DateTime !== 'undefined') {
+      DateTimeObj = DateTime;
+    } else {
+      const req = eval('require');
+      DateTimeObj = req('luxon').DateTime;
+    }
+  }
+  const dt = DateTimeObj.fromISO(datetime, { zone });
   return dt.toJSDate();
 }

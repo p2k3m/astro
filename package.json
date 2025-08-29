@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "geo-tz": "^8.1.4",
+    "timezonefinder": "^6.0.2",
     "jyotish-calculations": "1.0.8",
     "luxon": "^3.4.4",
     "prop-types": "^15.8.1",
