@@ -16,6 +16,8 @@ test('GET /api/ascendant returns numeric longitude', async (t) => {
   assert.strictEqual(res.status, 200);
   const body = await res.json();
   assert.strictEqual(typeof body.longitude, 'number');
+  // The ascendant should be a valid ecliptic longitude in the range [0, 360).
+  assert.ok(body.longitude >= 0 && body.longitude < 360);
 });
 
 test('GET /api/ascendant missing params returns 400', async (t) => {
