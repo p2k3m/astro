@@ -130,6 +130,8 @@ export default async function calculateChart({ date, time, lat, lon }) {
       degree: pos.degree,
       retrograde: info.retrograde,
       combust: info.combust,
+      exalted: info.exalted,
+      debilitated: info.debilitated,
       house: ((pos.sign - asc.sign + 12) % 12) + 1,
     };
   });

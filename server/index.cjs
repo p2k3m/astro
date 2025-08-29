@@ -100,6 +100,48 @@ async function computePlanet(date, lat, lon, planetName) {
     swisseph.SEFLG_SPEED |
     swisseph.SEFLG_SIDEREAL;
 
+  // Precompute Sun longitude for combustion checks
+  const sunData = swisseph.swe_calc_ut(julianDay, swisseph.SE_SUN, flag);
+
+  // Planet specific settings
+  const COMBUST_THRESHOLDS = {
+    moon: 12,
+    mercury: 14,
+    venus: 10,
+    mars: 17,
+    jupiter: 11,
+    saturn: 15,
+  };
+
+  const EXALTATION_SIGNS = {
+    sun: 1,
+    moon: 2,
+    mercury: 6,
+    venus: 12,
+    mars: 10,
+    jupiter: 4,
+    saturn: 7,
+    rahu: 2,
+    ketu: 8,
+  };
+
+  const DEBILITATION_SIGNS = {
+    sun: 7,
+    moon: 8,
+    mercury: 12,
+    venus: 6,
+    mars: 4,
+    jupiter: 10,
+    saturn: 1,
+    rahu: 8,
+    ketu: 2,
+  };
+
+  function longitudeToSign(longitude) {
+    const norm = ((longitude % 360) + 360) % 360;
+    return Math.floor(norm / 30) + 1; // 1..12
+  }
+
   if (planetName === 'ketu') {
     // Ketu is always opposite Rahu. Fetch Rahu once using the true node and derive
     // Ketu's longitude and speed from it to keep values coherent.
@@ -107,11 +149,15 @@ async function computePlanet(date, lat, lon, planetName) {
     if (!rahuData || typeof rahuData.longitude === 'undefined') {
       throw new Error('Failed to calculate position for ketu');
     }
+    const lon = (rahuData.longitude + 180) % 360;
+    const sign = longitudeToSign(lon);
     return {
-      longitude: (rahuData.longitude + 180) % 360,
+      longitude: lon,
       speed: rahuData.longitudeSpeed,
       retrograde: rahuData.longitudeSpeed < 0,
       combust: false,
+      exalted: EXALTATION_SIGNS.ketu === sign,
+      debilitated: DEBILITATION_SIGNS.ketu === sign,
     };
   }
 
@@ -132,19 +178,32 @@ async function computePlanet(date, lat, lon, planetName) {
     throw new Error(`Invalid planet name: ${planetName}`);
   }
 
-  const planetData = swisseph.swe_calc_ut(julianDay, planetId, flag);
+  const planetData =
+    planetName === 'sun'
+      ? sunData
+      : swisseph.swe_calc_ut(julianDay, planetId, flag);
 
   if (!planetData || typeof planetData.longitude === 'undefined') {
     throw new Error(`Failed to calculate position for ${planetName}`);
+  }
+
+  const sign = longitudeToSign(planetData.longitude);
+
+  let combust = false;
+  if (planetName !== 'sun') {
+    const diffRaw = Math.abs((planetData.longitude - sunData.longitude + 360) % 360);
+    const diff = diffRaw > 180 ? 360 - diffRaw : diffRaw;
+    const threshold = COMBUST_THRESHOLDS[planetName];
+    if (threshold && diff <= threshold) combust = true;
   }
 
   return {
     longitude: planetData.longitude,
     speed: planetData.longitudeSpeed,
     retrograde: planetData.longitudeSpeed < 0,
-    // Note: 'combust' calculation is complex and depends on the Sun's position.
-    // It is omitted here to fix the primary calculation error.
-    combust: false,
+    combust,
+    exalted: EXALTATION_SIGNS[planetName] === sign,
+    debilitated: DEBILITATION_SIGNS[planetName] === sign,
   };
 }
 
@@ -213,13 +272,9 @@ app.get('/api/planet', async (req, res) => {
       return res.status(400).json({ error: `Invalid planet parameter: ${planet}` });
     }
 
-    const { longitude, speed, retrograde, combust } = await computePlanet(
-      jsDate,
-      latNum,
-      lonNum,
-      planetName
-    );
-    res.json({ longitude, speed, retrograde, combust });
+    const { longitude, speed, retrograde, combust, exalted, debilitated } =
+      await computePlanet(jsDate, latNum, lonNum, planetName);
+    res.json({ longitude, speed, retrograde, combust, exalted, debilitated });
   } catch (err) {
     console.error('Error in /api/planet:', err);
     res.status(500).json({ error: err.message });
