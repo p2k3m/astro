@@ -65,7 +65,9 @@ const PLANETS = [
 function longitudeToSign(longitude) {
   const sign = Math.floor(longitude / 30) + 1; // 1..12
   const degree = longitude % 30;
-  return { sign, degree: degree.toFixed(2) };
+  // Return degree as a numeric value rounded to two decimals
+  // Using unary plus converts the string result of toFixed back to a number
+  return { sign, degree: +degree.toFixed(2) };
 }
 
 export default async function calculateChart({ date, time, lat, lon }) {
