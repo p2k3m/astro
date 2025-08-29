@@ -1,9 +1,5 @@
-import TimezoneFinder from 'timezonefinder';
-import luxon from 'luxon';
-
-const { DateTime } = luxon;
-
-const finder = new TimezoneFinder();
+import find from 'geo-tz';
+import { DateTime } from 'luxon';
 
 /**
  * Determine the IANA timezone name for a latitude and longitude.
@@ -13,11 +9,15 @@ const finder = new TimezoneFinder();
  * @returns {string} IANA timezone name
  */
 export function getTimezoneName(lat, lon) {
-  const zone = finder.timezoneAt(lat, lon);
-  if (!zone) {
+  // Use the 'find' function directly. It returns an array of timezone names.
+  const zones = find(lat, lon);
+
+  if (!zones || zones.length === 0) {
     throw new Error('Unable to determine time zone');
   }
-  return zone;
+
+  // Return the first timezone from the results array.
+  return zones[0];
 }
 
 /**
@@ -50,10 +50,10 @@ export function getTimezoneOffset({ date, time, lat, lon }) {
  * @returns {Date} UTC date
  */
 export function toUTC({ datetime, zone }) {
-  const [datePart, timePart = '0:0'] = datetime.split('T');
-  const [year, month, day] = datePart.split('-').map(Number);
-  const [hour = 0, minute = 0] = timePart.split(':').map(Number);
-  const dt = DateTime.fromObject({ year, month, day, hour, minute }, { zone });
-  const utc = Date.UTC(year, month - 1, day, hour, minute);
-  return new Date(utc - dt.offset * 60000);
+  // Use Luxon to parse the local time in the specified zone
+  const dt = DateTime.fromISO(datetime, { zone });
+  
+  // Convert the Luxon object directly to a native JavaScript Date.
+  // The JS Date object's internal value is always a UTC timestamp.
+  return dt.toJSDate();
 }
