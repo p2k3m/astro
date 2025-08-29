@@ -1,4 +1,4 @@
-let tzf;
+let geoTzModule;
 let DateTimeObj;
 
 /**
@@ -9,17 +9,17 @@ let DateTimeObj;
  * @returns {string} IANA timezone name
  */
 export function getTimezoneName(lat, lon) {
-  if (!tzf) {
-    let TF;
-    if (typeof TimezoneFinder !== 'undefined') {
-      TF = TimezoneFinder;
+  if (!geoTzModule) {
+    let mod;
+    if (typeof geoTz !== 'undefined') {
+      mod = geoTz;
     } else {
       const req = eval('require');
-      TF = req('timezonefinder');
+      mod = req('geo-tz');
     }
-    tzf = new TF();
+    geoTzModule = mod;
   }
-  const zone = tzf.timezoneAt(lat, lon);
+  const [zone] = geoTzModule.find(lat, lon);
   if (!zone) {
     throw new Error('Unable to determine time zone');
   }
