@@ -4,43 +4,31 @@ import { DateTime } from 'luxon';
 import { getTimezoneName } from './lib/timezone.js';
 import { computePositions } from './lib/astro.js';
 
-const PLANETS = [
-  { key: 'sun', abbr: 'Su' },
-  { key: 'moon', abbr: 'Mo' },
-  { key: 'mars', abbr: 'Ma' },
-  { key: 'mercury', abbr: 'Me' },
-  { key: 'jupiter', abbr: 'Ju' },
-  { key: 'venus', abbr: 'Ve' },
-  { key: 'saturn', abbr: 'Sa' },
-  { key: 'rahu', abbr: 'Ra' },
-  { key: 'ketu', abbr: 'Ke' },
-];
-
 const EXALTATIONS = {
-  sun: 1,
-  moon: 2,
-  mars: 10,
-  mercury: 6,
-  jupiter: 4,
-  venus: 12,
-  saturn: 7,
+  Su: 0,
+  Mo: 1,
+  Ma: 9,
+  Me: 5,
+  Ju: 3,
+  Ve: 11,
+  Sa: 6,
 };
 
 const DEBILITATIONS = Object.fromEntries(
-  Object.entries(EXALTATIONS).map(([k, v]) => [k, ((v + 6 - 1) % 12) + 1])
+  Object.entries(EXALTATIONS).map(([k, v]) => [k, (v + 6) % 12])
 );
 
 const COMBUST_THRESHOLDS = {
-  mercury: 12,
-  venus: 10,
-  mars: 17,
-  jupiter: 11,
-  saturn: 15,
+  Me: 12,
+  Ve: 10,
+  Ma: 17,
+  Ju: 11,
+  Sa: 15,
 };
 
 export function longitudeToSign(longitude) {
   longitude = ((longitude % 360) + 360) % 360;
-  const sign = Math.floor(longitude / 30) + 1; // 1..12
+  const sign = Math.floor(longitude / 30); // 0..11
   const degree = longitude % 30;
   return { sign, degree: +degree.toFixed(2) };
 }
@@ -58,14 +46,13 @@ export default async function calculateChart({ date, time, lat, lon, timezone })
   const dt = DateTime.fromISO(`${date}T${time}`, { zone: tz });
   const dtISO = dt.toISO({ suppressMilliseconds: true });
 
-  const { ascSign, houses, planets: rawPlanets } = computePositions(dtISO, lat, lon);
+  const { ascSign, houses, planets: rawPlanets } = await computePositions(dtISO, lat, lon);
 
   const planets = (rawPlanets || []).map((p) => {
-    const house = houses.indexOf(p.sign);
-    const abbr = PLANETS.find((pl) => pl.key === p.name)?.abbr;
+    const house = houses[p.sign];
     return {
       name: p.name,
-      abbr,
+      abbr: p.name,
       sign: p.sign,
       degree: p.deg,
       retrograde: p.retro,
@@ -73,15 +60,15 @@ export default async function calculateChart({ date, time, lat, lon, timezone })
     };
   });
 
-  const sun = planets.find((p) => p.name === 'sun');
-  const sunLon = sun ? (sun.sign - 1) * 30 + sun.degree : 0;
+  const sun = planets.find((p) => p.name === 'Su');
+  const sunLon = sun ? sun.sign * 30 + sun.degree : 0;
 
   planets.forEach((p) => {
     const sign = p.sign;
     if (EXALTATIONS[p.name] === sign) p.exalted = true;
     if (DEBILITATIONS[p.name] === sign) p.debilitated = true;
-    if (p.name !== 'sun' && sun) {
-      const lon = (p.sign - 1) * 30 + p.degree;
+    if (p.name !== 'Su' && sun) {
+      const lon = p.sign * 30 + p.degree;
       let diff = Math.abs(lon - sunLon);
       if (diff > 180) diff = 360 - diff;
       const limit = COMBUST_THRESHOLDS[p.name];
