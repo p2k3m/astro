@@ -50,18 +50,18 @@ export default function Chart({ data, children }) {
   };
 
   const SIGN_MAP = {
-    1: { abbr: 'Ar', symbol: '\u2648' },
-    2: { abbr: 'Ta', symbol: '\u2649' },
-    3: { abbr: 'Ge', symbol: '\u264A' },
-    4: { abbr: 'Cn', symbol: '\u264B' },
-    5: { abbr: 'Le', symbol: '\u264C' },
-    6: { abbr: 'Vi', symbol: '\u264D' },
-    7: { abbr: 'Li', symbol: '\u264E' },
-    8: { abbr: 'Sc', symbol: '\u264F' },
-    9: { abbr: 'Sg', symbol: '\u2650' },
-    10: { abbr: 'Cp', symbol: '\u2651' },
-    11: { abbr: 'Aq', symbol: '\u2652' },
-    12: { abbr: 'Pi', symbol: '\u2653' },
+    1: { abbr: 'Ar', symbol: '\u2648', name: 'Aries' },
+    2: { abbr: 'Ta', symbol: '\u2649', name: 'Taurus' },
+    3: { abbr: 'Ge', symbol: '\u264A', name: 'Gemini' },
+    4: { abbr: 'Cn', symbol: '\u264B', name: 'Cancer' },
+    5: { abbr: 'Le', symbol: '\u264C', name: 'Leo' },
+    6: { abbr: 'Vi', symbol: '\u264D', name: 'Virgo' },
+    7: { abbr: 'Li', symbol: '\u264E', name: 'Libra' },
+    8: { abbr: 'Sc', symbol: '\u264F', name: 'Scorpio' },
+    9: { abbr: 'Sg', symbol: '\u2650', name: 'Sagittarius' },
+    10: { abbr: 'Cp', symbol: '\u2651', name: 'Capricorn' },
+    11: { abbr: 'Aq', symbol: '\u2652', name: 'Aquarius' },
+    12: { abbr: 'Pi', symbol: '\u2653', name: 'Pisces' },
   };
 
   const planetByHouse = {};
@@ -107,16 +107,16 @@ export default function Chart({ data, children }) {
           return (
             <div
               key={house}
-              className="absolute flex flex-col items-center text-xs gap-0.5"
+              className="absolute flex flex-col items-center text-xs gap-1"
               style={{
                 top: (pos.y / grid) * 100 + '%',
                 left: (pos.x / grid) * 100 + '%',
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span className="text-yellow-300 font-semibold">{house}</span>
-              <span className="text-orange-300 font-semibold">
-                {signInfo.symbol} {signInfo.abbr}
+              <span className="text-yellow-300 font-semibold">{signNum}</span>
+              <span className="text-orange-300 font-semibold flex items-center gap-1">
+                {signInfo.symbol} {signInfo.abbr} {signInfo.name || ''}
               </span>
               {planetByHouse[house] &&
                 planetByHouse[house].map((pl, idx) => <span key={idx}>{pl}</span>)}
