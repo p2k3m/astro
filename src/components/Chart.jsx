@@ -99,6 +99,10 @@ export default function Chart({ data, children }) {
           <line x1="0" y1="50" x2="100" y2="50" strokeWidth="1" />
           <line x1="25" y1="25" x2="75" y2="75" strokeWidth="1" />
           <line x1="75" y1="25" x2="25" y2="75" strokeWidth="1" />
+          <polygon
+            points="50,25 75,50 50,75 25,50"
+            strokeWidth="1"
+          />
         </svg>
         {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
           const pos = positions[house];

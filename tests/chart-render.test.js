@@ -42,3 +42,11 @@ test('Chart renders only with exactly 12 houses', () => {
     'Invalid chart data'
   );
 });
+
+test('Chart SVG includes inner polygon to separate houses', () => {
+  const code = fs.readFileSync(
+    path.join(__dirname, '../src/components/Chart.jsx'),
+    'utf8'
+  );
+  assert.ok(code.includes('points="50,25 75,50 50,75 25,50"'));
+});
