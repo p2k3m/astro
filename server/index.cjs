@@ -44,11 +44,12 @@ const PORT = process.env.PORT || 3001;
 
 // --- API Endpoints ---
 
-async function computeAscendant(date, lat, lon) {
+function computeAscendant(date, lat, lon) {
   const ut =
     date.getUTCHours() +
     date.getUTCMinutes() / 60 +
-    date.getUTCSeconds() / 3600;
+    date.getUTCSeconds() / 3600 +
+    date.getUTCMilliseconds() / 3600000;
   const jd = swisseph.swe_julday(
     date.getUTCFullYear(),
     date.getUTCMonth() + 1,
@@ -71,7 +72,7 @@ app.get('/api/ascendant', async (req, res) => {
   }
   try {
     const jsDate = new Date(date);
-    const longitude = await computeAscendant(jsDate, parseFloat(lat), parseFloat(lon));
+    const longitude = computeAscendant(jsDate, parseFloat(lat), parseFloat(lon));
     res.json({ longitude });
   } catch (err) {
     console.error('Error in /api/ascendant:', err);
