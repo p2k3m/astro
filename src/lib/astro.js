@@ -205,22 +205,48 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     saturn: swisseph.SE_SATURN,
     rahu: swisseph.SE_TRUE_NODE,
   };
+  // combustion thresholds (degrees)
+  const combustDeg = {
+    moon: 12,
+    mars: 17,
+    mercury: 14,
+    jupiter: 11,
+    venus: 10,
+    saturn: 15,
+  };
+  // exaltation signs (0 = Aries)
+  const exaltedSign = {
+    sun: 0,
+    moon: 1,
+    mars: 9,
+    mercury: 5,
+    jupiter: 3,
+    venus: 11,
+    saturn: 6,
+    rahu: 1,
+    ketu: 7,
+  };
 
   const planets = [];
+  const sunData = swisseph.swe_calc_ut(jd, swisseph.SE_SUN, flag);
+  const sunLon = sunData.longitude;
   const rahuData = swisseph.swe_calc_ut(jd, swisseph.SE_TRUE_NODE, flag);
   const { sign: rSign } = lonToSignDeg(rahuData.longitude);
 
   for (const [name, code] of Object.entries(planetCodes)) {
-    const data = name === 'rahu' ? rahuData : swisseph.swe_calc_ut(jd, code, flag);
+    const data = name === 'rahu' ? rahuData : name === 'sun' ? sunData : swisseph.swe_calc_ut(jd, code, flag);
     const { sign, deg } = lonToSignDeg(data.longitude);
-    planets.push({
-      name,
-      sign,
-      // Determine house by subtracting the sign offset from the ascendant
-      house: ((asc.sign - sign + 12) % 12) + 1,
-      deg,
-      retro: data.longitudeSpeed < 0,
-    });
+    const house = ((asc.sign - sign + 12) % 12) + 1;
+    const retro = data.longitudeSpeed < 0;
+    const cDeg = combustDeg[name];
+    let combust = false;
+    if (cDeg !== undefined) {
+      const diff = Math.abs(((data.longitude - sunLon + 540) % 360) - 180);
+      combust = diff < cDeg;
+    }
+    const exalt = exaltedSign[name];
+    const exalted = exalt !== undefined && sign === exalt;
+    planets.push({ name, sign, house, deg, retro, combust, exalted });
   }
 
   // Ketu is always opposite Rahu
@@ -229,12 +255,15 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu are not opposite');
   }
+  const kExalted = exaltedSign.ketu !== undefined && kSign === exaltedSign.ketu;
   planets.push({
     name: 'ketu',
     sign: kSign,
     house: ((asc.sign - kSign + 12) % 12) + 1,
     deg: kDeg,
     retro: rahuData.longitudeSpeed < 0,
+    combust: false,
+    exalted: kExalted,
   });
 
   return { ascSign: asc.sign, signInHouse, planets };
@@ -298,7 +327,11 @@ export function renderNorthIndian(svgEl, data, options = {}) {
       const dVal = Math.floor(p.deg);
       const m = Math.round((p.deg - dVal) * 60);
       const degStr = `${String(dVal).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
-      t.textContent = `${p.name} ${degStr}${p.retro ? ' R' : ''}`;
+      let name = p.name;
+      if (p.retro) name += '(R)';
+      if (p.combust) name += '(C)';
+      if (p.exalted) name += '(Ex)';
+      t.textContent = `${name} ${degStr}`;
       svgEl.appendChild(t);
       py += 0.04;
     });
