@@ -81,13 +81,16 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const planets = [];
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
+  const houseOf = (bodyLon) => {
+    const h = swe.swe_house_pos(jd, lat, lon, 'P', bodyLon, houses);
+    // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
+    return ((Math.floor(h) - 1 + 12) % 12) + 1; // 1..12
+  };
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
-    let house = swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses);
-    // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
-    house = ((Math.floor(house) - 1 + 12) % 12) + 1; // 1..12
+    const house = houseOf(data.longitude);
     planets.push({
       name,
       sign,
@@ -105,9 +108,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
-  let ketuHouse = swe.swe_house_pos(jd, lat, lon, 'P', ketuLon, houses);
-  // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
-  ketuHouse = ((Math.floor(ketuHouse) - 1 + 12) % 12) + 1; // 1..12
+  const ketuHouse = houseOf(ketuLon);
   planets.push({
     name: 'ketu',
     sign: kSign,
