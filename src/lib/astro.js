@@ -128,9 +128,27 @@ export const {
 } = buildHouseGeometry();
 
 export function polygonCentroid(pts) {
-  const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+  // Compute the centroid using the area-weighted formula (shoelace theorem).
+  // This provides the true geometric centre even for irregular polygons.
+  let doubleArea = 0;
+  let cx = 0;
+  let cy = 0;
   const n = pts.length;
-  return { cx: sx / n, cy: sy / n };
+  for (let i = 0; i < n; i++) {
+    const [x0, y0] = pts[i];
+    const [x1, y1] = pts[(i + 1) % n];
+    const cross = x0 * y1 - x1 * y0;
+    doubleArea += cross;
+    cx += (x0 + x1) * cross;
+    cy += (y0 + y1) * cross;
+  }
+  if (doubleArea === 0) {
+    // Degenerate polygon; fall back to simple average.
+    const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+    return { cx: sx / n, cy: sy / n };
+  }
+  const area = doubleArea / 2;
+  return { cx: cx / (6 * area), cy: cy / (6 * area) };
 }
 
 export function diamondPath(cx, cy, size = BOX_SIZE) {
