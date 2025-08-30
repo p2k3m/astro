@@ -38,16 +38,16 @@ export default function Chart({ data, children, useAbbreviations = false }) {
     <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
       <div className="relative" style={{ width: size, height: size }}>
         <svg
-          viewBox="0 0 100 100"
+          viewBox="0 0 1 1"
           className="absolute inset-0 text-orange-500"
           fill="none"
           stroke="currentColor"
         >
-          <path d={CHART_PATHS.outer} strokeWidth="2" />
+          <path d={CHART_PATHS.outer} strokeWidth={0.02} />
           {CHART_PATHS.diagonals.map((d, idx) => (
-            <path key={`diag-${idx}`} d={d} strokeWidth="1" />
+            <path key={`diag-${idx}`} d={d} strokeWidth={0.01} />
           ))}
-          <path d={CHART_PATHS.inner} strokeWidth="1" />
+          <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
         {HOUSE_POLYGONS.map(({ cx, cy }, idx) => {
           const houseNum = idx + 1;
@@ -57,8 +57,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               key={houseNum}
               className="absolute flex flex-col items-center text-xs gap-[2px] p-[2px]"
               style={{
-                top: `${cy}%`,
-                left: `${cx}%`,
+                top: cy * size,
+                left: cx * size,
                 transform: 'translate(-50%, -50%)',
               }}
             >

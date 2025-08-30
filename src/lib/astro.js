@@ -17,20 +17,20 @@ function lonToSignDeg(longitude) {
   return { sign, deg };
 }
 
-export const BOX_SIZE = 12.5;
+export const BOX_SIZE = 0.125;
 export const SIGN_BOX_CENTERS = [
-  { cx: 50, cy: 12.5 }, // Aries
-  { cx: 75, cy: 12.5 }, // Taurus
-  { cx: 87.5, cy: 25 }, // Gemini
-  { cx: 87.5, cy: 50 }, // Cancer
-  { cx: 87.5, cy: 75 }, // Leo
-  { cx: 75, cy: 87.5 }, // Virgo
-  { cx: 50, cy: 87.5 }, // Libra
-  { cx: 25, cy: 87.5 }, // Scorpio
-  { cx: 12.5, cy: 75 }, // Sagittarius
-  { cx: 12.5, cy: 50 }, // Capricorn
-  { cx: 12.5, cy: 25 }, // Aquarius
-  { cx: 25, cy: 12.5 }, // Pisces
+  { cx: 0.5, cy: 0.125 }, // Aries
+  { cx: 0.75, cy: 0.125 }, // Taurus
+  { cx: 0.875, cy: 0.25 }, // Gemini
+  { cx: 0.875, cy: 0.5 }, // Cancer
+  { cx: 0.875, cy: 0.75 }, // Leo
+  { cx: 0.75, cy: 0.875 }, // Virgo
+  { cx: 0.5, cy: 0.875 }, // Libra
+  { cx: 0.25, cy: 0.875 }, // Scorpio
+  { cx: 0.125, cy: 0.75 }, // Sagittarius
+  { cx: 0.125, cy: 0.5 }, // Capricorn
+  { cx: 0.125, cy: 0.25 }, // Aquarius
+  { cx: 0.25, cy: 0.125 }, // Pisces
 ];
 
 // Sign label helpers. By default signs are labelled 1-12.
@@ -56,7 +56,7 @@ export function getSignLabel(index, { useAbbreviations = false } = {}) {
 }
 
 // Derive chart geometry and house polygons programmatically.
-function buildHouseGeometry(scale = 100) {
+function buildHouseGeometry(scale = 1) {
   const O = [0.5, 0.5];
   const mid = [
     [0.5, 0],
@@ -203,13 +203,13 @@ export async function computePositions(dtISOWithZone, lat, lon) {
 
 export function renderNorthIndian(svgEl, data, options = {}) {
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
-  svgEl.setAttribute('viewBox', '0 0 100 100');
+  svgEl.setAttribute('viewBox', '0 0 1 1');
   svgEl.setAttribute('fill', 'none');
   svgEl.setAttribute('stroke', 'currentColor');
 
   const outer = document.createElementNS(svgNS, 'path');
-  outer.setAttribute('d', diamondPath(50, 50, 50));
-  outer.setAttribute('stroke-width', '2');
+  outer.setAttribute('d', diamondPath(0.5, 0.5, 0.5));
+  outer.setAttribute('stroke-width', '0.02');
   svgEl.appendChild(outer);
 
   for (let h = 1; h <= 12; h++) {
@@ -218,25 +218,25 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
     const path = document.createElementNS(svgNS, 'path');
     path.setAttribute('d', d);
-    path.setAttribute('stroke-width', '1');
+    path.setAttribute('stroke-width', '0.01');
     svgEl.appendChild(path);
 
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
     const hText = document.createElementNS(svgNS, 'text');
     hText.setAttribute('x', cx);
-    hText.setAttribute('y', cy - 6);
+    hText.setAttribute('y', cy - 0.06);
     hText.setAttribute('text-anchor', 'middle');
-    hText.setAttribute('font-size', '3');
+    hText.setAttribute('font-size', '0.03');
     hText.textContent = String(h);
     svgEl.appendChild(hText);
 
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
       ascText.setAttribute('x', cx);
-      ascText.setAttribute('y', cy + 8);
+      ascText.setAttribute('y', cy + 0.08);
       ascText.setAttribute('text-anchor', 'middle');
-      ascText.setAttribute('font-size', '3');
+      ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
       svgEl.appendChild(ascText);
     }
@@ -245,24 +245,24 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.setAttribute('x', cx);
     signText.setAttribute('y', cy);
     signText.setAttribute('text-anchor', 'middle');
-    signText.setAttribute('font-size', '4');
+    signText.setAttribute('font-size', '0.04');
     signText.textContent = getSignLabel(signIdx, options);
     svgEl.appendChild(signText);
 
     const planets = data.planets.filter((p) => p.sign === signIdx);
-    let py = cy + 4;
+    let py = cy + 0.04;
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');
       t.setAttribute('x', cx);
       t.setAttribute('y', py);
       t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-size', '3');
+      t.setAttribute('font-size', '0.03');
       const dVal = Math.floor(p.deg);
       const m = Math.round((p.deg - dVal) * 60);
       const degStr = `${String(dVal).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
       t.textContent = `${p.name} ${degStr}${p.retro ? ' R' : ''}`;
       svgEl.appendChild(t);
-      py += 4;
+      py += 0.04;
     });
   }
 }

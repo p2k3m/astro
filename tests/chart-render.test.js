@@ -39,10 +39,10 @@ test('North Indian chart uses single outer diamond with internal grid', () => {
 
   const paths = svg.children.filter((c) => c.tagName === 'path');
   assert.strictEqual(paths.length, 13);
-  assert.strictEqual(paths[0].attributes.d, diamondPath(50, 50, 50));
-  assert.strictEqual(paths[0].attributes['stroke-width'], '2');
+  assert.strictEqual(paths[0].attributes.d, diamondPath(0.5, 0.5, 0.5));
+  assert.strictEqual(paths[0].attributes['stroke-width'], '0.02');
   for (let i = 0; i < 12; i++) {
-    assert.strictEqual(paths[i + 1].attributes['stroke-width'], '1');
+    assert.strictEqual(paths[i + 1].attributes['stroke-width'], '0.01');
     assert.strictEqual(paths[i + 1].attributes.d, HOUSE_POLYGONS[i].d);
   }
   assert.ok(svg.children.every((el) => el.tagName !== 'line'));

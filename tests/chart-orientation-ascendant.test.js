@@ -37,7 +37,7 @@ test('renderNorthIndian and Chart orient Aries ascendant clockwise', () => {
   const houseTexts = svg.children.filter(
     (c) =>
       c.tagName === 'text' &&
-      c.attributes['font-size'] === '3' &&
+      c.attributes['font-size'] === '0.03' &&
       /^\d+$/.test(c.textContent)
   );
   assert.strictEqual(houseTexts.length, 12);
@@ -46,7 +46,7 @@ test('renderNorthIndian and Chart orient Aries ascendant clockwise', () => {
     assert.ok(t, `house ${i + 1} missing`);
     const expected = HOUSE_POLYGONS[i];
     assert.strictEqual(Number(t.attributes.x), expected.cx);
-    assert.strictEqual(Number(t.attributes.y), expected.cy - 6);
+    assert.strictEqual(Number(t.attributes.y), expected.cy - 0.06);
   }
   delete global.document;
 

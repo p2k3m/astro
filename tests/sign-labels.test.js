@@ -33,7 +33,7 @@ test('renderNorthIndian defaults to numeric sign labels', () => {
   const svg = new Element('svg');
   renderNorthIndian(svg, { ascSign: 0, signInHouse, planets: [] });
   const texts = svg.children.filter(
-    (c) => c.tagName === 'text' && c.attributes['font-size'] === '4'
+    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.04'
   );
   const labels = texts.map((t) => t.textContent);
   assert.deepStrictEqual(labels, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']);
@@ -49,7 +49,7 @@ test('renderNorthIndian can use abbreviated sign labels', () => {
     useAbbreviations: true,
   });
   const texts = svg.children.filter(
-    (c) => c.tagName === 'text' && c.attributes['font-size'] === '4'
+    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.04'
   );
   const labels = texts.map((t) => t.textContent);
   assert.deepStrictEqual(labels, ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi']);
