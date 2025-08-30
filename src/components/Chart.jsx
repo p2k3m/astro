@@ -7,6 +7,18 @@ import {
   getSignLabel,
 } from '../lib/astro.js';
 
+const PLANET_ABBR = {
+  sun: 'Su',
+  moon: 'Mo',
+  mars: 'Ma',
+  mercury: 'Me',
+  jupiter: 'Ju',
+  venus: 'Ve',
+  saturn: 'Sa',
+  rahu: 'Ra',
+  ketu: 'Ke',
+};
+
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
     !data ||
@@ -32,9 +44,10 @@ export default function Chart({ data, children, useAbbreviations = false }) {
       const m = Math.round((degreeValue - d) * 60);
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
-    const label = `${p.name} ${degree}${p.retro ? ' R' : ''}`;
+    const abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
+    const deg = `${degree}${p.retro ? ' R' : ''}`;
     planetBySign[signIdx] = planetBySign[signIdx] || [];
-    planetBySign[signIdx].push(label);
+    planetBySign[signIdx].push({ abbr, deg });
   });
 
   const size = 300; // chart size
@@ -81,12 +94,13 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               </span>
               {planetBySign[signIdx] &&
                 planetBySign[signIdx].map((pl, i) => (
-                  <span
+                  <div
                     key={i}
-                    className="px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
+                    className="flex flex-col items-center px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
                   >
-                    {pl}
-                  </span>
+                    <span>{pl.abbr}</span>
+                    <span>{pl.deg}</span>
+                  </div>
                 ))}
             </div>
           );
