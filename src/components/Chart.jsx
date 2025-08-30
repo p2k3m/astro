@@ -61,33 +61,35 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           return (
             <div
               key={houseNum}
-              className="absolute flex flex-col items-center text-xs gap-[2px] p-[2px]"
+              className="absolute w-[60px] h-[60px] overflow-hidden whitespace-nowrap text-center"
               style={{
                 top: cy * size,
                 left: cx * size,
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span className="text-yellow-300/40 text-[0.6rem] leading-none">
-                {houseNum}
-              </span>
-              {houseNum === 1 && (
-                <span className="text-yellow-300 text-[0.6rem] leading-none">
-                  La/Asc
+              <div className="flex flex-col items-center text-xs gap-[2px] p-[2px] w-full h-full">
+                <span className="text-yellow-300/40 text-[0.6rem] leading-none">
+                  {houseNum}
                 </span>
-              )}
-              <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
-                {getSignLabel(signIdx, { useAbbreviations })}
-              </span>
-              {planetBySign[signIdx] &&
-                planetBySign[signIdx].map((pl, i) => (
-                  <span
-                    key={i}
-                    className="px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
-                  >
-                    {pl}
+                {houseNum === 1 && (
+                  <span className="text-yellow-300 text-[0.6rem] leading-none">
+                    La/Asc
                   </span>
-                ))}
+                )}
+                <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
+                  {getSignLabel(signIdx, { useAbbreviations })}
+                </span>
+                {planetBySign[signIdx] &&
+                  planetBySign[signIdx].map((pl, i) => (
+                    <span
+                      key={i}
+                      className="px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
+                    >
+                      {pl}
+                    </span>
+                  ))}
+              </div>
             </div>
           );
         })}
