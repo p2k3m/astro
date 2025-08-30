@@ -77,5 +77,6 @@ compare it against the AstroSage online chart using known reference data:
 3. Run this project and enter the same details. The ascendant sign and the
    houses occupied by the Sun and Moon should match the AstroSage results.
 
-A regression test in `tests/astrosage-compare.test.js` hardcodes these
-AstroSage values so you can verify them automatically with `npm test`.
+A regression test in `tests/reference-case.test.js` performs the AstroSage
+comparison by hardcoding these values so you can verify them automatically with
+`npm test`.
