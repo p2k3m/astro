@@ -1,0 +1,20 @@
+const assert = require('node:assert');
+const test = require('node:test');
+const calculateChart = require('../src/calculateChart.js').default;
+
+test('Darbhanga 1982-10-27 03:50 ascendant regression', async () => {
+  const result = await calculateChart({
+    date: '1982-10-27',
+    time: '03:50',
+    lat: 26.15216,
+    lon: 85.89707,
+    timezone: 'Asia/Calcutta',
+  });
+
+  assert.strictEqual(result.ascSign, 6);
+  assert.deepStrictEqual(result.signInHouse, [null, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5]);
+
+  const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
+  assert.strictEqual(planets.sun.house, 2);
+  assert.strictEqual(planets.jupiter.house, 3);
+});
