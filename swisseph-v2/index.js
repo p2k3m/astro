@@ -246,8 +246,11 @@ function ascendantTropical(jd, lat, lon) {
   const lst = localSiderealTime(jd, lon) * DEG2RAD;
   const eps = obliquity(jd) * DEG2RAD;
   const phi = lat * DEG2RAD;
-  // Formula valid near equator; adequate for tests
-  const asc = Math.atan2(-Math.cos(lst), Math.sin(lst) * Math.cos(eps));
+  // Standard ascendant formula valid for all latitudes
+  const asc = Math.atan2(
+    -Math.cos(lst),
+    Math.sin(lst) * Math.cos(eps) - Math.tan(phi) * Math.sin(eps)
+  );
   return normalizeAngle(asc * RAD2DEG);
 }
 
