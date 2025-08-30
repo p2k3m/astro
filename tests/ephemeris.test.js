@@ -5,7 +5,7 @@ async function getCompute() {
   return (await import('../src/lib/ephemeris.js')).compute_positions;
 }
 
-test('sign to house mapping and retrograde flags', async () => {
+test('house cusps and retrograde flags', async () => {
   const compute_positions = await getCompute();
 
   const fakeSwe = {
@@ -22,7 +22,24 @@ test('sign to house mapping and retrograde flags', async () => {
     SE_SATURN: 6,
     SE_TRUE_NODE: 7,
     swe_julday: () => 0,
-    swe_houses_ex: () => ({ ascendant: 123 }), // Leo 3°
+    swe_houses_ex: () => ({
+      ascendant: 123,
+      houses: [
+        null,
+        123,
+        153,
+        183,
+        213,
+        243,
+        273,
+        303,
+        333,
+        3,
+        33,
+        63,
+        93,
+      ],
+    }), // Leo 3° ascendant
     swe_calc_ut: (jd, id, flag) => {
       const data = {
         0: { longitude: 100, longitudeSpeed: 1 }, // Sun in Cancer
@@ -36,6 +53,10 @@ test('sign to house mapping and retrograde flags', async () => {
       };
       return data[id];
     },
+    swe_house_pos: (jd, lat, lon, hsys, bodyLon, houses) => {
+      const asc = houses[1];
+      return Math.floor(((bodyLon - asc + 360) % 360) / 30) + 1;
+    },
   };
 
   const result = compute_positions(
@@ -46,13 +67,16 @@ test('sign to house mapping and retrograde flags', async () => {
   assert.strictEqual(result.ascSign, 5); // Leo ascendant
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
+  assert.strictEqual(result.houses[1], 123);
   assert.strictEqual(planets.moon.sign, 8);
-  assert.strictEqual(result.houses[4], planets.moon.sign);
+  assert.strictEqual(planets.moon.house, 3);
   assert.strictEqual(planets.moon.retro, true);
 
   assert.strictEqual(planets.rahu.retro, true);
+  assert.strictEqual(planets.rahu.house, 9);
   assert.strictEqual(planets.ketu.sign, 8);
+  assert.strictEqual(planets.ketu.house, 3);
   assert.strictEqual(planets.ketu.retro, true);
-  const diff = (planets.ketu.sign - planets.rahu.sign + 12) % 12;
+  const diff = (planets.ketu.house - planets.rahu.house + 12) % 12;
   assert.strictEqual(diff, 6);
 });

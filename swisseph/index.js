@@ -258,5 +258,26 @@ export function swe_houses_ex(jd, lat, lon, hsys, flags) {
   const ascTropical = ascendantTropical(jd, lat, lon);
   const ayan = lahiriAyanamsa(jd);
   const ascSid = normalizeAngle(ascTropical - ayan);
-  return { ascendant: ascSid };
+  // Derive whole-sign house cusps: each house begins at the start of its
+  // corresponding zodiac sign.  House 1 starts at the beginning of the
+  // ascendant's sign, with subsequent houses spaced every 30°.
+  const signStart = Math.floor(ascSid / 30) * 30;
+  const houses = [null];
+  for (let i = 0; i < 12; i++) {
+    houses.push(normalizeAngle(signStart + i * 30));
+  }
+  return { ascendant: ascSid, houses };
+}
+
+// Determine the house position of a planet given its ecliptic longitude.
+// This simplified version merely compares the planet longitude against the
+// first house cusp and assumes 30° houses, adequate for our tests.
+export function swe_house_pos(jd, lat, lon, hsys, bodyLon, houses) {
+  const asc = houses?.[1];
+  const ascendant =
+    typeof asc === 'number'
+      ? asc
+      : swe_houses_ex(jd, lat, lon, hsys, 0).houses[1];
+  const diff = normalizeAngle(bodyLon - ascendant);
+  return Math.floor(diff / 30) + 1; // 1..12
 }
