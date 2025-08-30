@@ -1,5 +1,13 @@
 import { DateTime } from 'luxon';
-import * as swisseph from '../../swisseph-v2/index.js';
+import * as swisseph from '../../swisseph/index.js';
+
+const ephePath = new URL('../../swisseph/ephe/', import.meta.url).pathname;
+
+if (swisseph.swe_set_ephe_path) {
+  try {
+    swisseph.swe_set_ephe_path(ephePath);
+  } catch {}
+}
 
 if (swisseph.swe_set_sid_mode) {
   try {

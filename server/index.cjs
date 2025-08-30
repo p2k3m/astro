@@ -3,7 +3,7 @@ const express = require('../express');
 const path = require('path');
 
 // Import the Swiss Ephemeris library
-const swisseph = require('../swisseph-v2');
+const swisseph = require('../swisseph');
 
 // --- Initialization ---
 
@@ -12,21 +12,21 @@ const swisseph = require('../swisseph-v2');
 const ephemerisPath = path.join(
   __dirname,
   '..',
-  'swisseph-v2',
+  'swisseph',
   'ephe'
 );
 
 // Check if the ephemeris directory exists. If not, log a detailed error and exit.
 if (!fs.existsSync(ephemerisPath)) {
   console.error(
-    'Swiss Ephemeris path not found. Please ensure "swisseph-v2" is installed correctly.'
+    'Swiss Ephemeris path not found. Please ensure "swisseph" is installed correctly.'
   );
   console.error('Expected path:', ephemerisPath);
   process.exit(1);
 }
 
 try {
-  // The setEphemerisPath function belongs to the 'swisseph-v2' package.
+  // The setEphemerisPath function belongs to the Swiss Ephemeris package.
   // We must configure it directly.
   swisseph.swe_set_ephe_path(ephemerisPath);
   // Enable Lahiri sidereal mode
