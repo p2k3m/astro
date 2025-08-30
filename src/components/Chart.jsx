@@ -111,7 +111,7 @@ export default function Chart({
                 padding: (2 / 300) * size,
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="absolute top-1 right-1 pointer-events-none">
                 <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
                   {getSignLabel(signNum - 1, { useAbbreviations })}
                 </span>
