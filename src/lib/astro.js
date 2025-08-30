@@ -189,8 +189,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   // house -> sign mapping (1-indexed)
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    // Subtract the house offset to map signs, wrapping correctly from 0..11
-    signInHouse[h] = (asc.sign - (h - 1) + 12) % 12;
+    // Add the house offset so signs advance counter-clockwise, wrapping from 0..11
+    signInHouse[h] = (asc.sign + (h - 1)) % 12;
   }
 
   const flag =
@@ -236,7 +236,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : name === 'sun' ? sunData : swisseph.swe_calc_ut(jd, code, flag);
     const { sign, deg } = lonToSignDeg(data.longitude);
-    const house = ((asc.sign - sign + 12) % 12) + 1;
+    // Determine the house by advancing forward from the ascendant
+    const house = ((sign - asc.sign + 12) % 12) + 1;
     const retro = data.longitudeSpeed < 0;
     const cDeg = combustDeg[name];
     let combust = false;
@@ -259,7 +260,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   planets.push({
     name: 'ketu',
     sign: kSign,
-    house: ((asc.sign - kSign + 12) % 12) + 1,
+    // Place Ketu forward from the ascendant
+    house: ((kSign - asc.sign + 12) % 12) + 1,
     deg: kDeg,
     retro: rahuData.longitudeSpeed < 0,
     combust: false,
