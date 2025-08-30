@@ -107,13 +107,13 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <div
-                className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]"
-              >
-                <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
                   {getSignLabel(signIdx, { useAbbreviations })}
                 </span>
+              </div>
 
+              <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]">
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
                     <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
