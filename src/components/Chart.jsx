@@ -32,7 +32,12 @@ const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
 });
 
 
-export default function Chart({ data, children, useAbbreviations = false }) {
+export default function Chart({
+  data,
+  children,
+  useAbbreviations = false,
+  size = 360,
+}) {
   if (
     !data ||
     !Array.isArray(data.signInHouse) ||
@@ -66,8 +71,6 @@ export default function Chart({ data, children, useAbbreviations = false }) {
     planetByHouse[houseIdx].push({ abbr, deg });
   });
 
-  const size = 300; // chart size
-
   return (
     <div className="backdrop-blur-md bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center justify-center">
       <div className="relative" style={{ width: size, height: size }}>
@@ -91,20 +94,21 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           const houseNum = idx + 1;
           const signNum = signInHouse[houseNum];
 
-          const margin = 4; // pixels
+          const margin = (4 / 300) * size; // scale margin with chart size
           const width = (maxX - minX) * size - margin;
           const height = (maxY - minY) * size - margin;
 
           return (
             <div
               key={houseNum}
-              className="absolute overflow-hidden p-[2px]"
+              className="absolute overflow-hidden"
               style={{
                 top: by * size,
                 left: bx * size,
                 width,
                 height,
                 transform: 'translate(-50%, -50%)',
+                padding: (2 / 300) * size,
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -155,5 +159,6 @@ Chart.propTypes = {
   }).isRequired,
   children: PropTypes.node,
   useAbbreviations: PropTypes.bool,
+  size: PropTypes.number,
 };
 
