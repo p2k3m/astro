@@ -172,7 +172,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   const hres = swisseph.swe_houses_ex(
     jd,
     lat,
-    -lon,
+    lon,
     'P',
     swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH
   );
