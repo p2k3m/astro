@@ -14,7 +14,7 @@ export default function BirthForm({ onSubmit, loading }) {
     place: '',
     lat: null,
     lon: null,
-    timezone: 'Asia/Kolkata',
+    timezone: 'Asia/Calcutta',
   });
   const [suggestions, setSuggestions] = useState([]);
   const timezones = Intl.supportedValuesOf('timeZone');

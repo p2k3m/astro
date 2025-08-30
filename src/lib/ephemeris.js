@@ -39,7 +39,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const rawHouses = swe.swe_houses_ex(
     jd,
     lat,
-    -lon,
+    lon,
     'P',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );

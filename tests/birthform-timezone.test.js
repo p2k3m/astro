@@ -22,7 +22,7 @@ test('selecting a city sets its timezone', () => {
       place: '',
       lat: null,
       lon: null,
-      timezone: 'Asia/Kolkata',
+      timezone: 'Asia/Calcutta',
     },
     setForm(newForm) {
       sandbox.form = newForm;
