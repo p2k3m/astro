@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   CHART_PATHS,
   HOUSE_POLYGONS,
-  HOUSE_CENTROIDS,
+  polygonCentroid,
   getSignLabel,
 } from '../lib/astro.js';
 
@@ -19,24 +19,6 @@ const PLANET_ABBR = {
   ketu: 'Ke',
 };
 
-// Position each sign label at the inner corner of its house. The mapping is
-// derived by comparing the North-Indian layout used on AstroSage with the
-// coordinates in `HOUSE_CENTROIDS` so that each label sits on the corner closest
-// to the chart centre.
-const SIGN_LABEL_POS = [
-  'bottom-0 right-0', // 1: top diamond (inner corner points down-right)
-  'bottom-0 right-0', // 2: top-left triangle
-  'top-0 right-0', // 3: left diamond
-  'top-0 right-0', // 4: bottom-left triangle
-  'top-0 right-0', // 5: bottom-left main triangle
-  'top-0 left-0', // 6: bottom diamond
-  'top-0 left-0', // 7: bottom-right main triangle
-  'top-0 left-0', // 8: bottom-right triangle
-  'bottom-0 left-0', // 9: right diamond
-  'bottom-0 left-0', // 10: top-right triangle
-  'bottom-0 left-0', // 11: top-right main triangle
-  'bottom-0 right-0', // 12: top-left main triangle
-];
 
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
@@ -89,10 +71,23 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
-        {HOUSE_POLYGONS.map((_, idx) => {
-          const { cx, cy } = HOUSE_CENTROIDS[idx];
+        {HOUSE_POLYGONS.map((poly, idx) => {
+          const { cx, cy } = polygonCentroid(poly);
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
+
+          // Determine the inner corner closest to the chart centre (0.5, 0.5)
+          const EPS = 1e-9;
+          let vert, horiz;
+          if (cy < 0.5 - EPS) vert = 'bottom-0';
+          else if (cy > 0.5 + EPS) vert = 'top-0';
+          else vert = cx < 0.5 ? 'top-0' : 'bottom-0';
+
+          if (cx < 0.5 - EPS) horiz = 'right-0';
+          else if (cx > 0.5 + EPS) horiz = 'left-0';
+          else horiz = cy < 0.5 ? 'right-0' : 'left-0';
+
+          const labelPos = `${vert} ${horiz}`;
 
           return (
             <div
@@ -105,7 +100,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               }}
             >
               <span
-                className={`absolute text-[10px] text-yellow-300/50 ${SIGN_LABEL_POS[idx]}`}
+                className={`absolute text-[10px] text-yellow-300/50 ${labelPos}`}
               >
                 {getSignLabel(signIdx, { useAbbreviations })}
               </span>
