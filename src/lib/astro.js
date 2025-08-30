@@ -92,28 +92,28 @@ function buildHouseGeometry(scale = 1) {
   const cells = [
     // Top hexagon (House 1)
     [TL, MT, TR, MR, C, ML],
-    // Top-right triangle (House 2)
-    [TR, C, MT],
-    // Top-right corner triangle (House 3)
-    [TR, MR, C],
-    // Right hexagon (House 4)
-    [TR, MR, BR, MB, C, MT],
-    // Bottom-right triangle (House 5)
-    [BR, C, MR],
-    // Bottom-right corner triangle (House 6)
-    [BR, MB, C],
+    // Top-left triangle (House 2)
+    [TL, C, ML],
+    // Top-left corner triangle (House 3)
+    [TL, MT, C],
+    // Left hexagon (House 4)
+    [BL, ML, TL, MT, C, MB],
+    // Bottom-left triangle (House 5)
+    [BL, C, MB],
+    // Bottom-left corner triangle (House 6)
+    [BL, ML, C],
     // Bottom hexagon (House 7)
     [BR, MB, BL, ML, C, MR],
-    // Bottom-left triangle (House 8)
-    [BL, C, MB],
-    // Bottom-left corner triangle (House 9)
-    [BL, ML, C],
-    // Left hexagon (House 10)
-    [BL, ML, TL, MT, C, MB],
-    // Top-left triangle (House 11)
-    [TL, C, ML],
-    // Top-left corner triangle (House 12)
-    [TL, MT, C],
+    // Bottom-right triangle (House 8)
+    [BR, C, MR],
+    // Bottom-right corner triangle (House 9)
+    [BR, MB, C],
+    // Right hexagon (House 10)
+    [TR, MR, BR, MB, C, MT],
+    // Top-right triangle (House 11)
+    [TR, C, MT],
+    // Top-right corner triangle (House 12)
+    [TR, MR, C],
   ];
 
   const centroids = cells.map(polygonCentroid);
