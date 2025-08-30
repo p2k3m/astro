@@ -74,37 +74,55 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           const { cx, cy } = HOUSE_CENTROIDS[idx];
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
+          const signLabel = getSignLabel(signIdx, { useAbbreviations });
+          const signPos = [
+            'bottom-0 left-1/2 -translate-x-1/2',
+            'bottom-0 right-0',
+            'top-1/2 right-0 -translate-y-1/2',
+            'top-0 right-0',
+            'top-0 right-0',
+            'top-0 left-1/2 -translate-x-1/2',
+            'top-0 left-0',
+            'top-0 left-0',
+            'top-1/2 left-0 -translate-y-1/2',
+            'bottom-0 left-0',
+            'bottom-0 left-0',
+            'bottom-0 right-0',
+          ][idx];
+
           return (
             <div
               key={houseNum}
-              className="absolute flex flex-col justify-center items-center text-center overflow-hidden w-[60px] h-[60px] min-w-[50px] min-h-[50px] text-xs gap-[2px] p-[2px]"
+              className="absolute w-[60px] h-[60px] min-w-[50px] min-h-[50px] p-[2px]"
               style={{
                 top: cy * size,
                 left: cx * size,
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span className="text-yellow-300/40 text-[0.6rem] leading-none">
-                {houseNum}
+              <span
+                className={`absolute text-yellow-300/40 text-[0.5rem] ${signPos}`}
+              >
+                {signLabel}
               </span>
-              {houseNum === 1 && (
-                <span className="text-yellow-300 text-[0.6rem] leading-none">
-                  La/Asc
-                </span>
-              )}
-              <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
-                {getSignLabel(signIdx, { useAbbreviations })}
-              </span>
-              {planetBySign[signIdx] &&
-                planetBySign[signIdx].map((pl, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
-                  >
-                    <span>{pl.abbr}</span>
-                    <span>{pl.deg}</span>
+
+              <div className="house-content-container text-[clamp(0.5rem,0.7vw,0.75rem)] space-y-[2px]">
+                {houseNum === 1 && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-yellow-300 text-[0.6rem] leading-none">
+                      La/Asc
+                    </span>
                   </div>
-                ))}
+                )}
+
+                {planetBySign[signIdx] &&
+                  planetBySign[signIdx].map((pl, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                      <span>{pl.abbr}</span>
+                      <span>{pl.deg}</span>
+                    </div>
+                  ))}
+              </div>
             </div>
           );
         })}
