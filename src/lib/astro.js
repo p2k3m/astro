@@ -189,7 +189,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   // house -> sign mapping (1-indexed)
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    signInHouse[h] = (asc.sign + h - 1) % 12;
+    // Subtract the house offset to map signs, wrapping correctly from 0..11
+    signInHouse[h] = (asc.sign - (h - 1) + 12) % 12;
   }
 
   const flag =
@@ -215,7 +216,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     planets.push({
       name,
       sign,
-      house: ((sign - asc.sign + 12) % 12) + 1,
+      // Determine house by subtracting the sign offset from the ascendant
+      house: ((asc.sign - sign + 12) % 12) + 1,
       deg,
       retro: data.longitudeSpeed < 0,
     });
@@ -230,7 +232,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   planets.push({
     name: 'ketu',
     sign: kSign,
-    house: ((kSign - asc.sign + 12) % 12) + 1,
+    house: ((asc.sign - kSign + 12) % 12) + 1,
     deg: kDeg,
     retro: rahuData.longitudeSpeed < 0,
   });
