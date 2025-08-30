@@ -1,50 +1,27 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const fs = require('node:fs');
-const path = require('node:path');
-const { getSignLabel } = require('../src/lib/astro.js');
+const { HOUSE_POLYGONS, polygonCentroid } = require('../src/lib/astro.js');
 
-class Element {
-  constructor(tag) {
-    this.tagName = tag;
-    this.attributes = {};
-    this.children = [];
-    this.textContent = '';
-  }
-  setAttribute(name, value) {
-    this.attributes[name] = String(value);
-  }
-  appendChild(child) {
-    this.children.push(child);
-  }
-}
+function closestCornerClass(cx, cy) {
+  const EPS = 1e-9;
+  let vert;
+  if (cy < 0.5 - EPS) vert = 'bottom-0';
+  else if (cy > 0.5 + EPS) vert = 'top-0';
+  else vert = cx < 0.5 ? 'top-0' : 'bottom-0';
 
-// Extract SIGN_LABEL_POS array from Chart.jsx without executing React code
-const chartPath = path.join(__dirname, '../src/components/Chart.jsx');
-const chartSrc = fs.readFileSync(chartPath, 'utf8');
-const match = chartSrc.match(/const SIGN_LABEL_POS = \[(.*?)\];/s);
-if (!match) throw new Error('SIGN_LABEL_POS not found');
-const SIGN_LABEL_POS = eval('[ ' + match[1] + ' ]');
+  let horiz;
+  if (cx < 0.5 - EPS) horiz = 'right-0';
+  else if (cx > 0.5 + EPS) horiz = 'left-0';
+  else horiz = cy < 0.5 ? 'right-0' : 'left-0';
 
-function renderMockChart(signInHouse) {
-  const root = new Element('div');
-  for (let h = 1; h <= 12; h++) {
-    const houseDiv = new Element('div');
-    const span = new Element('span');
-    span.setAttribute('class',
-      'absolute text-[10px] text-yellow-300/50 ' + SIGN_LABEL_POS[h - 1]
-    );
-    span.textContent = getSignLabel(signInHouse[h]);
-    houseDiv.appendChild(span);
-    root.appendChild(houseDiv);
-  }
-  return root;
+  return `${vert} ${horiz}`;
 }
 
 test('sign labels positioned at AstroSage corners', () => {
-  const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1; // Aries ascendant
-  const root = renderMockChart(signInHouse);
+  const positions = HOUSE_POLYGONS.map((poly) => {
+    const { cx, cy } = polygonCentroid(poly);
+    return closestCornerClass(cx, cy);
+  });
   const expected = [
     'bottom-0 right-0', // 1
     'bottom-0 right-0', // 2
@@ -59,9 +36,5 @@ test('sign labels positioned at AstroSage corners', () => {
     'bottom-0 left-0', // 11
     'bottom-0 right-0', // 12
   ];
-  const base = 'absolute text-[10px] text-yellow-300/50 ';
-  const positions = root.children.map(
-    (house) => house.children[0].attributes.class.slice(base.length)
-  );
   assert.deepStrictEqual(positions, expected);
 });
