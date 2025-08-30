@@ -34,8 +34,14 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(amPlanets.sun.house, 2);
   assert.strictEqual(amPlanets.moon.sign, 1);
   assert.strictEqual(amPlanets.moon.house, 8);
-  assert.strictEqual(amPlanets.saturn.sign, 5);
-  assert.strictEqual(amPlanets.saturn.house, 12);
+  assert.strictEqual(amPlanets.jupiter.sign, 7);
+  assert.strictEqual(amPlanets.jupiter.house, 2);
+  assert.strictEqual(amPlanets.saturn.sign, 6);
+  assert.strictEqual(amPlanets.saturn.house, 1);
+  assert.deepStrictEqual(
+    am.planets.filter((p) => p.house === 1).map((p) => p.name),
+    ['saturn']
+  );
 
   global.document = doc;
   const svgAm = new Element('svg');
@@ -52,6 +58,8 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(pmPlanets.sun.house, 8);
   assert.strictEqual(pmPlanets.moon.sign, 1);
   assert.strictEqual(pmPlanets.moon.house, 2);
+  assert.strictEqual(pmPlanets.jupiter.house, 8);
+  assert.strictEqual(pmPlanets.saturn.house, 7);
 
   const svgPm = new Element('svg');
   renderNorthIndian(svgPm, pm);
