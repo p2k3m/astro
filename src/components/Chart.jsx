@@ -92,7 +92,7 @@ export default function Chart({
           const bx = (minX + maxX) / 2;
           const by = (minY + maxY) / 2;
           const houseNum = idx + 1;
-          const signNum = signInHouse[houseNum];
+          const signNum = houseNum === 1 ? data.ascSign : signInHouse[houseNum];
 
           const margin = (4 / 300) * size; // scale margin with chart size
           const width = (maxX - minX) * size - margin;
@@ -144,6 +144,7 @@ export default function Chart({
 
 Chart.propTypes = {
   data: PropTypes.shape({
+    ascSign: PropTypes.number.isRequired,
     signInHouse: PropTypes.arrayOf(PropTypes.number).isRequired,
     planets: PropTypes.arrayOf(
       PropTypes.shape({

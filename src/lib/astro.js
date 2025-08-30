@@ -208,7 +208,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     });
   }
 
-  return { ascSign: signInHouse[1], signInHouse, planets };
+  return { ascSign: base.ascSign, signInHouse, planets };
 }
 
 export function renderNorthIndian(svgEl, data, options = {}) {
