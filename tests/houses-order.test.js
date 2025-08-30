@@ -37,19 +37,16 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
   global.document = doc;
   const svg = new Element('svg');
   renderNorthIndian(svg, data);
-  const houseTexts = svg.children.filter(
-    (c) =>
-      c.tagName === 'text' &&
-      c.attributes['font-size'] === '0.03' &&
-      /^\d+$/.test(c.textContent)
+  const signTexts = svg.children.filter(
+    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.04'
   );
-  assert.strictEqual(houseTexts.length, 12);
+  assert.strictEqual(signTexts.length, 12);
   for (let i = 0; i < 12; i++) {
-    const t = houseTexts.find((ht) => ht.textContent === String(i + 1));
-    assert.ok(t, `house ${i + 1} missing`);
+    const t = signTexts.find((st) => st.textContent === String(i + 1));
+    assert.ok(t, `sign ${i + 1} missing`);
     const { cx, cy } = HOUSE_CENTROIDS[i];
     assert.strictEqual(Number(t.attributes.x), cx);
-    assert.strictEqual(Number(t.attributes.y), cy - 0.06);
+    assert.strictEqual(Number(t.attributes.y), cy);
   }
   delete global.document;
 
