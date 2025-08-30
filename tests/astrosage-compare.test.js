@@ -43,3 +43,9 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
 });
+
+test('Darbhanga 1982-12-01 03:50 sign sequence matches AstroSage', async () => {
+  const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
+  const expected = [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
+  assert.deepStrictEqual(am.signInHouse, expected);
+});
