@@ -86,13 +86,13 @@ export default function Chart({
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
+        {/* Planet listings */}
         {HOUSE_POLYGONS.map((_, idx) => {
           const bbox = HOUSE_BBOXES[idx];
           const { minX, maxX, minY, maxY } = bbox;
           const bx = (minX + maxX) / 2;
           const by = (minY + maxY) / 2;
           const houseNum = idx + 1;
-          const signNum = houseNum === 1 ? data.ascSign : signInHouse[houseNum];
 
           const margin = (4 / 300) * size; // scale margin with chart size
           const width = (maxX - minX) * size - margin;
@@ -111,21 +111,7 @@ export default function Chart({
                 padding: (2 / 300) * size,
               }}
             >
-              <div className="absolute top-1 right-1 pointer-events-none">
-                <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
-                  {getSignLabel(signNum - 1, { useAbbreviations })}
-                </span>
-              </div>
-
               <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]">
-                {houseNum === 1 && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
-                      Asc
-                    </span>
-                  </div>
-                )}
-
                 {planetByHouse[houseNum] &&
                   planetByHouse[houseNum].map((pl, i) => (
                     <span key={i} className="text-center">
@@ -136,6 +122,51 @@ export default function Chart({
             </div>
           );
         })}
+
+        {/* Sign and ascendant labels overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          {HOUSE_POLYGONS.map((_, idx) => {
+            const bbox = HOUSE_BBOXES[idx];
+            const { minX, maxX, minY, maxY } = bbox;
+            const bx = (minX + maxX) / 2;
+            const by = (minY + maxY) / 2;
+            const houseNum = idx + 1;
+            const signNum = signInHouse[houseNum] ?? houseNum;
+
+            const margin = (4 / 300) * size; // scale margin with chart size
+            const width = (maxX - minX) * size - margin;
+            const height = (maxY - minY) * size - margin;
+
+            return (
+              <div
+                key={`label-${houseNum}`}
+                className="absolute"
+                style={{
+                  top: by * size,
+                  left: bx * size,
+                  width,
+                  height,
+                  transform: 'translate(-50%, -50%)',
+                  padding: (2 / 300) * size,
+                }}
+              >
+                <div className="absolute top-1 right-1">
+                  <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
+                    {getSignLabel(signNum - 1, { useAbbreviations })}
+                  </span>
+                </div>
+
+                {houseNum === 1 && (
+                  <div className="absolute top-1 left-1">
+                    <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
+                      Asc
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
         {children}
       </div>
     </div>
