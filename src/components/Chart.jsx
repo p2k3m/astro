@@ -19,20 +19,23 @@ const PLANET_ABBR = {
   ketu: 'Ke',
 };
 
-// Position each sign label at the inner corner of its house.
+// Position each sign label at the inner corner of its house. The mapping is
+// derived by comparing the North-Indian layout used on AstroSage with the
+// coordinates in `HOUSE_CENTROIDS` so that each label sits on the corner closest
+// to the chart centre.
 const SIGN_LABEL_POS = [
-  'bottom-0 left-1/2 -translate-x-1/2', // 1
-  'bottom-0 right-0', // 2
-  'top-1/2 right-0 -translate-y-1/2', // 3
-  'top-0 right-0', // 4
-  'top-0 right-0', // 5
-  'top-0 left-1/2 -translate-x-1/2', // 6
-  'top-0 left-0', // 7
-  'top-0 left-0', // 8
-  'top-1/2 left-0 -translate-y-1/2', // 9
-  'bottom-0 left-0', // 10
-  'bottom-0 left-0', // 11
-  'bottom-0 right-0', // 12
+  'bottom-0 right-0', // 1: top diamond (inner corner points down-right)
+  'bottom-0 right-0', // 2: top-left triangle
+  'top-0 right-0', // 3: left diamond
+  'top-0 right-0', // 4: bottom-left triangle
+  'top-0 right-0', // 5: bottom-left main triangle
+  'top-0 left-0', // 6: bottom diamond
+  'top-0 left-0', // 7: bottom-right main triangle
+  'top-0 left-0', // 8: bottom-right triangle
+  'bottom-0 left-0', // 9: right diamond
+  'bottom-0 left-0', // 10: top-right triangle
+  'bottom-0 left-0', // 11: top-right main triangle
+  'bottom-0 right-0', // 12: top-left main triangle
 ];
 
 export default function Chart({ data, children, useAbbreviations = false }) {
