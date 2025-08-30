@@ -38,7 +38,7 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
   const svg = new Element('svg');
   renderNorthIndian(svg, data);
   const signTexts = svg.children.filter(
-    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.04'
+    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.05'
   );
   assert.strictEqual(signTexts.length, 12);
   for (let i = 0; i < 12; i++) {

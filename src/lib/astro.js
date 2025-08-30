@@ -218,7 +218,6 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   addPath(CHART_PATHS.inner, '0.01');
 
   for (let h = 1; h <= 12; h++) {
-    const poly = HOUSE_POLYGONS[h - 1];
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
@@ -236,10 +235,11 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.setAttribute('x', cx);
     signText.setAttribute('y', cy);
     signText.setAttribute('text-anchor', 'middle');
-    signText.setAttribute('font-size', '0.04');
+    signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signIdx, options);
     svgEl.appendChild(signText);
 
+    const poly = HOUSE_POLYGONS[h - 1];
     const planets = data.planets.filter((p) => p.house === h);
     const maxY = Math.max(...poly.map((pt) => pt[1]));
     let py = Math.min(cy + 0.06, maxY - 0.02);
