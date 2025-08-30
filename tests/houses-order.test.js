@@ -1,24 +1,16 @@
 const test = require('node:test');
 const assert = require('node:assert');
+const { computePositions } = require('../src/lib/astro.js');
 
-// Ensure calculateChart yields a natural zodiac sequence of signs
-// starting from the ascendant sign.
-test('calculateChart produces houses in natural zodiac order', async () => {
-  const calculateChart = (await import('../src/calculateChart.js')).default;
+// Ensure signInHouse rotates correctly from the ascendant and maintains cardinal orientation
 
-  const data = await calculateChart({
-    date: '2020-01-01',
-    time: '12:00',
-    lat: 0,
-    lon: 0,
-  });
-
-  const asc = data.ascSign;
-  const expected = Array(13).fill(null);
-  for (let i = 0; i < 12; i++) {
-    const house = i + 1;
-    const sign = (asc + i) % 12;
-    expected[house] = sign;
+test('computePositions produces houses in natural zodiac order', async () => {
+  const data = await computePositions('2020-01-01T12:00+00:00', 0, 0);
+  const k = data.ascSign;
+  for (let h = 1; h <= 12; h++) {
+    assert.strictEqual(data.signInHouse[h], (k + h - 1) % 12);
   }
-  assert.deepStrictEqual(data.signInHouse, expected);
+  assert.strictEqual(data.signInHouse[4], (data.signInHouse[1] + 3) % 12);
+  assert.strictEqual(data.signInHouse[7], (data.signInHouse[1] + 6) % 12);
+  assert.strictEqual(data.signInHouse[10], (data.signInHouse[1] + 9) % 12);
 });
