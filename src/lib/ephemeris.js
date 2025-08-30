@@ -86,6 +86,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
     let house = swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses);
+    // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
     house = ((Math.floor(house) - 1 + 12) % 12) + 1; // 1..12
     planets.push({
       name,
@@ -105,6 +106,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
   let ketuHouse = swe.swe_house_pos(jd, lat, lon, 'P', ketuLon, houses);
+  // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
   ketuHouse = ((Math.floor(ketuHouse) - 1 + 12) % 12) + 1; // 1..12
   planets.push({
     name: 'ketu',
