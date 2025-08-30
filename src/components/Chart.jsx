@@ -104,6 +104,13 @@ export default function Chart({ data, children, useAbbreviations = false }) {
 
           const labelPos = `${vert} ${horiz}`;
 
+          const padClasses = [
+            vert === 'top-0' ? 'pt-4' : vert === 'bottom-0' ? 'pb-4' : '',
+            horiz === 'left-0' ? 'pl-4' : horiz === 'right-0' ? 'pr-4' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+
           const margin = 4; // pixels
           const width = (maxX - minX) * size - margin;
           const height = (maxY - minY) * size - margin;
@@ -126,7 +133,9 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 {getSignLabel(signIdx, { useAbbreviations })}
               </span>
 
-              <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]">
+              <div
+                className={`flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)] ${padClasses}`}
+              >
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
                     <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
