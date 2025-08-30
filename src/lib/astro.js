@@ -56,58 +56,67 @@ export function getSignLabel(index, { useAbbreviations = false } = {}) {
 }
 
 // Derive chart geometry and house polygons programmatically.
+// The layout follows the North-Indian style used by AstroSage:
+// a square frame with two diagonals forming an "X" and an inner
+// diamond that joins the midpoints of the four sides. These
+// five strokes partition the canvas into twelve regions which we
+// expose as HOUSE_POLYGONS for labelling and hit‑testing.
 function buildHouseGeometry(scale = 1) {
-  const O = [0.5, 0.5];
-  const mid = [
-    [0.5, 0],
-    [1, 0.5],
-    [0.5, 1],
-    [0, 0.5],
-  ];
-  const inter = [
-    { cw: [0.75, 0.25], ccw: [0.25, 0.25] },
-    { cw: [0.75, 0.75], ccw: [0.75, 0.25] },
-    { cw: [0.25, 0.75], ccw: [0.75, 0.75] },
-    { cw: [0.25, 0.25], ccw: [0.25, 0.75] },
-  ];
+  // Corner points of the unit square
+  const TL = [0, 0];
+  const TR = [1, 0];
+  const BR = [1, 1];
+  const BL = [0, 1];
+
+  // Midpoints of each side and the centre
+  const MT = [0.5, 0];
+  const MR = [1, 0.5];
+  const MB = [0.5, 1];
+  const ML = [0, 0.5];
+  const C = [0.5, 0.5];
 
   const pathFrom = (pts) =>
     pts
       .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x * scale} ${y * scale}`)
       .join(' ') + ' Z';
 
-  const cells = [];
-  const centroids = [];
-  for (let i = 0; i < 4; i++) {
-    const p0 = mid[i];
-    const pCW = inter[i].cw;
-    const pCCW = inter[i].ccw;
-    const pNext = mid[(i + 1) % 4];
-
-    const kite = i === 3 ? [p0, pCW, O, pCCW] : [p0, pCCW, O, pCW];
-    cells.push(kite);
-    centroids.push(polygonCentroid(kite));
-
-    const triSide = [pCW, O, p0];
-    cells.push(triSide);
-    centroids.push(polygonCentroid(triSide));
-
-    const triCorner = i === 2 ? [pNext, pCW, p0] : [pNext, p0, pCW];
-    cells.push(triCorner);
-    centroids.push(polygonCentroid(triCorner));
-  }
-
-  const outer = pathFrom(mid);
-  const inner = pathFrom([
-    inter[3].cw,
-    inter[0].cw,
-    inter[1].cw,
-    inter[2].cw,
-  ]);
+  // Paths for outer square, diagonals and inner diamond
+  const outer = pathFrom([TL, TR, BR, BL]);
+  const inner = pathFrom([MT, MR, MB, ML]);
   const diagonals = [
-    `M${mid[0][0] * scale} ${mid[0][1] * scale} L${mid[2][0] * scale} ${mid[2][1] * scale}`,
-    `M${mid[3][0] * scale} ${mid[3][1] * scale} L${mid[1][0] * scale} ${mid[1][1] * scale}`,
+    `M${TL[0] * scale} ${TL[1] * scale} L${BR[0] * scale} ${BR[1] * scale}`,
+    `M${TR[0] * scale} ${TR[1] * scale} L${BL[0] * scale} ${BL[1] * scale}`,
   ];
+
+  // Define the twelve regions (8 corner triangles + 4 kites)
+  const cells = [
+    // Top hexagon (House 1)
+    [TL, MT, TR, MR, C, ML],
+    // Top-right triangle (House 2)
+    [TR, C, MT],
+    // Top-right corner triangle (House 3)
+    [TR, MR, C],
+    // Right hexagon (House 4)
+    [TR, MR, BR, MB, C, MT],
+    // Bottom-right triangle (House 5)
+    [BR, C, MR],
+    // Bottom-right corner triangle (House 6)
+    [BR, MB, C],
+    // Bottom hexagon (House 7)
+    [BR, MB, BL, ML, C, MR],
+    // Bottom-left triangle (House 8)
+    [BL, C, MB],
+    // Bottom-left corner triangle (House 9)
+    [BL, ML, C],
+    // Left hexagon (House 10)
+    [BL, ML, TL, MT, C, MB],
+    // Top-left triangle (House 11)
+    [TL, C, ML],
+    // Top-left corner triangle (House 12)
+    [TL, MT, C],
+  ];
+
+  const centroids = cells.map(polygonCentroid);
 
   return { paths: { outer, inner, diagonals }, polys: cells, centroids };
 }
