@@ -222,14 +222,6 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
-    const hText = document.createElementNS(svgNS, 'text');
-    hText.setAttribute('x', cx);
-    hText.setAttribute('y', cy - 0.06);
-    hText.setAttribute('text-anchor', 'middle');
-    hText.setAttribute('font-size', '0.03');
-    hText.textContent = String(h);
-    svgEl.appendChild(hText);
-
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
       ascText.setAttribute('x', cx);

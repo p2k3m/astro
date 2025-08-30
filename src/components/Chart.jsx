@@ -83,33 +83,13 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
-        {HOUSE_POLYGONS.map((poly, idx) => {
+        {HOUSE_POLYGONS.map((_, idx) => {
           const bbox = HOUSE_BBOXES[idx];
           const { minX, maxX, minY, maxY } = bbox;
           const bx = (minX + maxX) / 2;
           const by = (minY + maxY) / 2;
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
-
-          // Determine the inner corner closest to the chart centre (0.5, 0.5)
-          const EPS = 1e-9;
-          let vert, horiz;
-          if (by < 0.5 - EPS) vert = 'bottom-0';
-          else if (by > 0.5 + EPS) vert = 'top-0';
-          else vert = bx < 0.5 ? 'top-0' : 'bottom-0';
-
-          if (bx < 0.5 - EPS) horiz = 'right-0';
-          else if (bx > 0.5 + EPS) horiz = 'left-0';
-          else horiz = by < 0.5 ? 'right-0' : 'left-0';
-
-          const labelPos = `${vert} ${horiz}`;
-
-          const padClasses = [
-            vert === 'top-0' ? 'pt-4' : vert === 'bottom-0' ? 'pb-4' : '',
-            horiz === 'left-0' ? 'pl-4' : horiz === 'right-0' ? 'pr-4' : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
 
           const margin = 4; // pixels
           const width = (maxX - minX) * size - margin;
@@ -127,17 +107,11 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span
-                className={`absolute text-[11px] font-bold text-amber-700/70 ${labelPos}`}
-              >
-                {getSignLabel(signIdx, { useAbbreviations })}
-              </span>
-
               <div
-                className={`flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)] ${padClasses}`}
+                className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]"
               >
                 <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
-                  {houseNum}
+                  {getSignLabel(signIdx, { useAbbreviations })}
                 </span>
 
                 {houseNum === 1 && (
