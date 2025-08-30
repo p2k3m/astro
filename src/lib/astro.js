@@ -142,13 +142,12 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     lon,
   });
 
-  // house -> sign mapping (1-indexed, signs 0..11)
+  // Derive sign indices for each house from the returned cusp longitudes.
   const signInHouse = [null];
-  const signToHouse = {};
   for (let h = 1; h <= 12; h++) {
-    const sign = base.houses[h] - 1;
+    const lon = base.houses[h];
+    const sign = Math.floor((((lon % 360) + 360) % 360) / 30);
     signInHouse[h] = sign;
-    signToHouse[sign] = h;
   }
 
   // combustion thresholds (degrees)
@@ -179,7 +178,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
 
   for (const p of base.planets) {
     const sign = p.sign - 1;
-    const house = signToHouse[sign];
+    const house = p.house;
     const deg = p.deg;
     const lon = sign * 30 + deg;
     const retro = p.retro;

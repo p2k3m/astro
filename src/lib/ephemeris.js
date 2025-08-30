@@ -51,16 +51,15 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     'P',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );
-  if (!rawHouses || typeof rawHouses.ascendant === 'undefined') {
-    throw new Error('Could not compute ascendant from swisseph.');
+  if (
+    !rawHouses ||
+    typeof rawHouses.ascendant === 'undefined' ||
+    !Array.isArray(rawHouses.houses)
+  ) {
+    throw new Error('Could not compute houses from swisseph.');
   }
-  const asc = lonToSignDeg(rawHouses.ascendant);
-
-  const houses = Array(13).fill(null);
-  for (let i = 0; i < 12; i++) {
-    const houseNum = i + 1;
-    houses[houseNum] = ((asc.sign - 1 + i) % 12) + 1;
-  }
+  const houses = rawHouses.houses;
+  const asc = lonToSignDeg(houses[1]);
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;
   const planetCodes = {
@@ -81,7 +80,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
-    planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0 });
+    const house = swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses);
+    planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0, house });
   }
   // Ketu opposite Rahu
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -89,7 +89,14 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
-  planets.push({ name: 'ketu', sign: kSign, deg: kDeg, retro: rahuData.longitudeSpeed < 0 });
+  const ketuHouse = swe.swe_house_pos(jd, lat, lon, 'P', ketuLon, houses);
+  planets.push({
+    name: 'ketu',
+    sign: kSign,
+    deg: kDeg,
+    retro: rahuData.longitudeSpeed < 0,
+    house: ketuHouse,
+  });
 
   return { ascSign: asc.sign, houses, planets };
 }
