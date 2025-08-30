@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { compute_positions } from './ephemeris.js';
+import { compute_positions, lonToSignDeg } from './ephemeris.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
@@ -144,13 +144,11 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   });
 
   // Derive sign numbers (1–12) for each house from the returned cusp
-  // longitudes. Swiss Ephemeris gives cusp longitudes in degrees; we map
-  // these to signs and store them as 1-based values.
+  // longitudes. Swiss Ephemeris gives cusp longitudes in degrees; use
+  // lonToSignDeg to convert these to 1-based sign numbers.
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    const lon = base.houses[h];
-    const sign = Math.floor((((lon % 360) + 360) % 360) / 30) + 1;
-    signInHouse[h] = sign;
+    signInHouse[h] = lonToSignDeg(base.houses[h]).sign;
   }
   if (process.env.DEBUG_HOUSES) {
     console.log('signInHouse:', signInHouse);
