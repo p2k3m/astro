@@ -196,7 +196,16 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     }
     const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
-    planets.push({ name: p.name, sign, house, deg, retro, combust, exalted });
+    planets.push({
+      name: p.name,
+      sign,
+      house,
+      deg,
+      retro,
+      combust,
+      exalted,
+      speed: p.speed,
+    });
   }
 
   return { ascSign: signInHouse[1], signInHouse, planets };

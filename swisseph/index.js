@@ -220,10 +220,13 @@ function siderealLongitude(jd, planetId) {
 
 export function swe_calc_ut(jd, planetId, flags) {
   const lon = siderealLongitude(jd, planetId);
-  const lon2 = siderealLongitude(jd + 1, planetId);
-  let speed = lon2 - lon;
-  if (speed > 180) speed -= 360;
-  if (speed < -180) speed += 360;
+  const delta = 1 / 1440; // one minute step for speed
+  const lonBefore = siderealLongitude(jd - delta, planetId);
+  const lonAfter = siderealLongitude(jd + delta, planetId);
+  let diff = lonAfter - lonBefore;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  const speed = diff / (2 * delta); // degrees per day
   return { longitude: lon, longitudeSpeed: speed };
 }
 

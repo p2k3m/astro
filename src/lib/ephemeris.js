@@ -88,7 +88,14 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const house = Math.trunc(
       swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses)
     );
-    planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0, house });
+    planets.push({
+      name,
+      sign,
+      deg,
+      speed: data.longitudeSpeed,
+      retro: data.longitudeSpeed < 0,
+      house,
+    });
   }
   // Ketu opposite Rahu
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -103,6 +110,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     name: 'ketu',
     sign: kSign,
     deg: kDeg,
+    speed: -rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
     house: ketuHouse,
   });
