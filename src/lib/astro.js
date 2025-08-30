@@ -171,61 +171,54 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   outer.setAttribute('stroke-width', '2');
   svgEl.appendChild(outer);
 
-  const signToHouse = {};
-  if (Array.isArray(data.signInHouse)) {
-    for (let h = 1; h <= 12; h++) {
-      const s = data.signInHouse[h];
-      if (s !== undefined) signToHouse[s] = h;
-    }
-  }
+  for (let h = 1; h <= 12; h++) {
+    const poly = HOUSE_POLYGONS[h - 1];
+    const { d, cx, cy } = poly;
 
-  for (let i = 0; i < 12; i++) {
-    const { cx, cy } = SIGN_BOX_CENTERS[i];
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke-width', '1');
+    svgEl.appendChild(path);
 
-    const box = document.createElementNS(svgNS, 'path');
-    box.setAttribute('d', diamondPath(cx, cy, BOX_SIZE));
-    box.setAttribute('stroke-width', '1');
-    svgEl.appendChild(box);
+    const signIdx = data.signInHouse?.[h] ?? h - 1;
 
-    const signText = document.createElementNS(svgNS, 'text');
-    signText.setAttribute('x', cx);
-    signText.setAttribute('y', cy - BOX_SIZE + 4);
-    signText.setAttribute('text-anchor', 'middle');
-    signText.setAttribute('font-size', '4');
-    signText.textContent = getSignLabel(i, options);
-    svgEl.appendChild(signText);
+    const hText = document.createElementNS(svgNS, 'text');
+    hText.setAttribute('x', cx);
+    hText.setAttribute('y', cy - 6);
+    hText.setAttribute('text-anchor', 'middle');
+    hText.setAttribute('font-size', '3');
+    hText.textContent = String(h);
+    svgEl.appendChild(hText);
 
-    const houseNum = signToHouse[i];
-    if (houseNum) {
-      const hText = document.createElementNS(svgNS, 'text');
-      hText.setAttribute('x', cx - BOX_SIZE + 2);
-      hText.setAttribute('y', cy - BOX_SIZE + 4);
-      hText.setAttribute('font-size', '3');
-      hText.textContent = String(houseNum);
-      svgEl.appendChild(hText);
-    }
-
-    if (i === data.ascSign) {
+    if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
       ascText.setAttribute('x', cx);
-      ascText.setAttribute('y', cy + BOX_SIZE - 2);
+      ascText.setAttribute('y', cy + 8);
       ascText.setAttribute('text-anchor', 'middle');
       ascText.setAttribute('font-size', '3');
       ascText.textContent = 'Asc';
       svgEl.appendChild(ascText);
     }
 
-    const planets = data.planets.filter((p) => p.sign === i);
-    let py = cy - BOX_SIZE / 2 + 8;
+    const signText = document.createElementNS(svgNS, 'text');
+    signText.setAttribute('x', cx);
+    signText.setAttribute('y', cy);
+    signText.setAttribute('text-anchor', 'middle');
+    signText.setAttribute('font-size', '4');
+    signText.textContent = getSignLabel(signIdx, options);
+    svgEl.appendChild(signText);
+
+    const planets = data.planets.filter((p) => p.sign === signIdx);
+    let py = cy + 4;
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');
       t.setAttribute('x', cx);
       t.setAttribute('y', py);
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-size', '3');
-      const d = Math.floor(p.deg);
-      const m = Math.round((p.deg - d) * 60);
-      const degStr = `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
+      const dVal = Math.floor(p.deg);
+      const m = Math.round((p.deg - dVal) * 60);
+      const degStr = `${String(dVal).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
       t.textContent = `${p.name} ${degStr}${p.retro ? ' R' : ''}`;
       svgEl.appendChild(t);
       py += 4;

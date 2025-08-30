@@ -1,11 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  diamondPath,
-  BOX_SIZE,
-  SIGN_BOX_CENTERS,
-  getSignLabel,
-} from '../lib/astro.js';
+import { diamondPath, HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
 
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
@@ -20,12 +15,6 @@ export default function Chart({ data, children, useAbbreviations = false }) {
     );
   }
   const signInHouse = data.signInHouse;
-
-  const signToHouse = {};
-  for (let h = 1; h <= 12; h++) {
-    const s = signInHouse[h];
-    if (s !== undefined) signToHouse[s] = h;
-  }
 
   const planetBySign = {};
   data.planets.forEach((p) => {
@@ -55,16 +44,16 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           stroke="currentColor"
         >
           <path d={diamondPath(50, 50, 50)} strokeWidth="2" />
-          {SIGN_BOX_CENTERS.map(({ cx, cy }, idx) => (
-            <path key={idx} d={diamondPath(cx, cy, BOX_SIZE)} strokeWidth="1" />
+          {HOUSE_POLYGONS.map(({ d }, idx) => (
+            <path key={idx} d={d} strokeWidth="1" />
           ))}
         </svg>
-        {SIGN_BOX_CENTERS.map(({ cx, cy }, idx) => {
-          const signIdx = idx;
-          const houseNum = signToHouse[signIdx];
+        {HOUSE_POLYGONS.map(({ cx, cy }, idx) => {
+          const houseNum = idx + 1;
+          const signIdx = signInHouse[houseNum];
           return (
             <div
-              key={signIdx}
+              key={houseNum}
               className="absolute flex flex-col items-center text-xs gap-[2px] p-[2px]"
               style={{
                 top: `${cy}%`,
@@ -72,11 +61,9 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              {houseNum !== undefined && (
-                <span className="text-yellow-300/40 text-[0.6rem] leading-none">
-                  {houseNum}
-                </span>
-              )}
+              <span className="text-yellow-300/40 text-[0.6rem] leading-none">
+                {houseNum}
+              </span>
               {houseNum === 1 && (
                 <span className="text-yellow-300 text-[0.6rem] leading-none">
                   La/Asc
