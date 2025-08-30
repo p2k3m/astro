@@ -46,10 +46,10 @@ export default function Chart({ data, children, useAbbreviations = false }) {
   }
   const signInHouse = data.signInHouse;
 
-  const planetBySign = {};
+  const planetByHouse = {};
   data.planets.forEach((p) => {
-    const signIdx = p.sign;
-    if (signIdx === undefined) return;
+    const houseIdx = p.house;
+    if (houseIdx === undefined) return;
     const degreeValue = Number(p.deg ?? p.degree);
     let degree = 'No data';
     if (!Number.isNaN(degreeValue)) {
@@ -62,8 +62,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
     if (p.combust) abbr += '(C)';
     if (p.exalted) abbr += '(Ex)';
     const deg = degree;
-    planetBySign[signIdx] = planetBySign[signIdx] || [];
-    planetBySign[signIdx].push({ abbr, deg });
+    planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
+    planetByHouse[houseIdx].push({ abbr, deg });
   });
 
   const size = 300; // chart size
@@ -135,8 +135,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                   </div>
                 )}
 
-                {planetBySign[signIdx] &&
-                  planetBySign[signIdx].map((pl, i) => (
+                {planetByHouse[houseNum] &&
+                  planetByHouse[houseNum].map((pl, i) => (
                     <span key={i} className="text-center">
                       {pl.abbr} {pl.deg}
                     </span>
@@ -157,8 +157,8 @@ Chart.propTypes = {
     planets: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
-        sign: PropTypes.number.isRequired,
-        house: PropTypes.number,
+        sign: PropTypes.number,
+        house: PropTypes.number.isRequired,
         deg: PropTypes.number,
         retro: PropTypes.bool,
         combust: PropTypes.bool,

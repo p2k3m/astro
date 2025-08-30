@@ -247,7 +247,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.textContent = getSignLabel(signIdx, options);
     svgEl.appendChild(signText);
 
-    const planets = data.planets.filter((p) => p.sign === signIdx);
+    const planets = data.planets.filter((p) => p.house === h);
     const maxY = Math.max(...poly.map((pt) => pt[1]));
     let py = Math.min(cy + 0.04, maxY - 0.02);
     const step =
