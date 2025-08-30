@@ -143,11 +143,13 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     lon,
   });
 
-  // Derive sign indices for each house from the returned cusp longitudes.
+  // Derive sign numbers (1–12) for each house from the returned cusp
+  // longitudes. Swiss Ephemeris gives cusp longitudes in degrees; we map
+  // these to signs and store them as 1-based values.
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
     const lon = base.houses[h];
-    const sign = Math.floor((((lon % 360) + 360) % 360) / 30);
+    const sign = Math.floor((((lon % 360) + 360) % 360) / 30) + 1;
     signInHouse[h] = sign;
   }
   if (process.env.DEBUG_HOUSES) {
@@ -219,7 +221,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
   for (let h = 1; h <= 12; h++) {
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
-    const signIdx = data.signInHouse?.[h] ?? h - 1;
+    const signNum = data.signInHouse?.[h] ?? h;
 
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
@@ -236,7 +238,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.setAttribute('y', cy);
     signText.setAttribute('text-anchor', 'middle');
     signText.setAttribute('font-size', '0.05');
-    signText.textContent = getSignLabel(signIdx, options);
+    signText.textContent = getSignLabel(signNum - 1, options);
     svgEl.appendChild(signText);
 
     const poly = HOUSE_POLYGONS[h - 1];

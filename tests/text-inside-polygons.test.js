@@ -42,14 +42,14 @@ function pointInPolygon(x, y, poly) {
 
 test('all text elements render inside their house polygons', () => {
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = Array.from({ length: 12 }, (_, i) => ({
     name: `p${i}`,
     sign: i,
     house: i + 1,
     deg: 0,
   }));
-  const data = { ascSign: 0, signInHouse, planets };
+  const data = { ascSign: 1, signInHouse, planets };
 
   global.document = doc;
   const svg = new Element('svg');
