@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {
   CHART_PATHS,
   HOUSE_POLYGONS,
-  polygonCentroid,
   getSignLabel,
 } from '../lib/astro.js';
 
@@ -18,6 +17,19 @@ const PLANET_ABBR = {
   rahu: 'Ra',
   ketu: 'Ke',
 };
+
+// Pre-compute bounding boxes for each house polygon so we can size
+// the wrapper for each house dynamically based on its actual bounds.
+const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
+  const xs = poly.map(([x]) => x);
+  const ys = poly.map(([, y]) => y);
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys),
+  };
+});
 
 
 export default function Chart({ data, children, useAbbreviations = false }) {
@@ -72,30 +84,39 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
         {HOUSE_POLYGONS.map((poly, idx) => {
-          const { cx, cy } = polygonCentroid(poly);
+          const bbox = HOUSE_BBOXES[idx];
+          const { minX, maxX, minY, maxY } = bbox;
+          const bx = (minX + maxX) / 2;
+          const by = (minY + maxY) / 2;
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
 
           // Determine the inner corner closest to the chart centre (0.5, 0.5)
           const EPS = 1e-9;
           let vert, horiz;
-          if (cy < 0.5 - EPS) vert = 'bottom-0';
-          else if (cy > 0.5 + EPS) vert = 'top-0';
-          else vert = cx < 0.5 ? 'top-0' : 'bottom-0';
+          if (by < 0.5 - EPS) vert = 'bottom-0';
+          else if (by > 0.5 + EPS) vert = 'top-0';
+          else vert = bx < 0.5 ? 'top-0' : 'bottom-0';
 
-          if (cx < 0.5 - EPS) horiz = 'right-0';
-          else if (cx > 0.5 + EPS) horiz = 'left-0';
-          else horiz = cy < 0.5 ? 'right-0' : 'left-0';
+          if (bx < 0.5 - EPS) horiz = 'right-0';
+          else if (bx > 0.5 + EPS) horiz = 'left-0';
+          else horiz = by < 0.5 ? 'right-0' : 'left-0';
 
           const labelPos = `${vert} ${horiz}`;
+
+          const margin = 4; // pixels
+          const width = (maxX - minX) * size - margin;
+          const height = (maxY - minY) * size - margin;
 
           return (
             <div
               key={houseNum}
-              className="absolute w-[60px] h-[60px] min-w-[50px] min-h-[50px] p-[2px]"
+              className="absolute overflow-hidden p-[2px]"
               style={{
-                top: cy * size,
-                left: cx * size,
+                top: by * size,
+                left: bx * size,
+                width,
+                height,
                 transform: 'translate(-50%, -50%)',
               }}
             >
