@@ -93,7 +93,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
       sign,
       deg,
       speed: data.longitudeSpeed,
-      retro: data.longitudeSpeed < 0,
+      // Treat very small negative speeds as direct motion to avoid
+      // floating point noise from triggering retrograde flags.
+      retro: data.longitudeSpeed <= -1e-5,
       house,
     });
   }
@@ -111,7 +113,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     sign: kSign,
     deg: kDeg,
     speed: -rahuData.longitudeSpeed,
-    retro: rahuData.longitudeSpeed < 0,
+    // Ketu shares motion with Rahu; apply the same tolerance check.
+    retro: rahuData.longitudeSpeed <= -1e-5,
     house: ketuHouse,
   });
 
