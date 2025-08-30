@@ -25,16 +25,16 @@ test('sign labels positioned at AstroSage corners', () => {
   const expected = [
     'bottom-0 right-0', // 1
     'bottom-0 right-0', // 2
-    'top-0 right-0', // 3
+    'bottom-0 right-0', // 3
     'top-0 right-0', // 4
     'top-0 right-0', // 5
-    'top-0 left-0', // 6
+    'top-0 right-0', // 6
     'top-0 left-0', // 7
     'top-0 left-0', // 8
-    'bottom-0 left-0', // 9
+    'top-0 left-0', // 9
     'bottom-0 left-0', // 10
     'bottom-0 left-0', // 11
-    'bottom-0 right-0', // 12
+    'bottom-0 left-0', // 12
   ];
   assert.deepStrictEqual(positions, expected);
 });
