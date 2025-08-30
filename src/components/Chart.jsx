@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { diamondPath, HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
+import { CHART_PATHS, HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
 
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
@@ -43,10 +43,11 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           fill="none"
           stroke="currentColor"
         >
-          <path d={diamondPath(50, 50, 50)} strokeWidth="2" />
-          {HOUSE_POLYGONS.map(({ d }, idx) => (
-            <path key={idx} d={d} strokeWidth="1" />
+          <path d={CHART_PATHS.outer} strokeWidth="2" />
+          {CHART_PATHS.diagonals.map((d, idx) => (
+            <path key={`diag-${idx}`} d={d} strokeWidth="1" />
           ))}
+          <path d={CHART_PATHS.inner} strokeWidth="1" />
         </svg>
         {HOUSE_POLYGONS.map(({ cx, cy }, idx) => {
           const houseNum = idx + 1;

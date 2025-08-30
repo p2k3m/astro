@@ -55,23 +55,64 @@ export function getSignLabel(index, { useAbbreviations = false } = {}) {
   return labels[index] ?? String(index + 1);
 }
 
-// Each entry defines the path and centre of a house polygon in the
-// fixed AstroSage-style layout. Houses are numbered clockwise
-// starting from the top diamond.
-export const HOUSE_POLYGONS = [
-  { d: 'M50 0 L25 25 L50 50 L75 25 Z', cx: 50, cy: 25 }, // 1
-  { d: 'M75 25 L50 50 L50 0 Z', cx: 58.3333, cy: 25 }, // 2
-  { d: 'M100 50 L50 0 L75 25 Z', cx: 75, cy: 25 }, // 3
-  { d: 'M100 50 L75 25 L50 50 L75 75 Z', cx: 75, cy: 50 }, // 4
-  { d: 'M75 75 L50 50 L100 50 Z', cx: 75, cy: 58.3333 }, // 5
-  { d: 'M50 100 L100 50 L75 75 Z', cx: 75, cy: 75 }, // 6
-  { d: 'M50 100 L75 75 L50 50 L25 75 Z', cx: 50, cy: 75 }, // 7
-  { d: 'M25 75 L50 50 L50 100 Z', cx: 41.6667, cy: 75 }, // 8
-  { d: 'M0 50 L25 75 L50 100 Z', cx: 25, cy: 75 }, // 9
-  { d: 'M0 50 L25 25 L50 50 L25 75 Z', cx: 25, cy: 50 }, // 10
-  { d: 'M25 25 L50 50 L0 50 Z', cx: 25, cy: 41.6667 }, // 11
-  { d: 'M50 0 L0 50 L25 25 Z', cx: 25, cy: 25 }, // 12
-];
+// Derive chart geometry and house polygons programmatically.
+function buildHouseGeometry(scale = 100) {
+  const O = [0.5, 0.5];
+  const mid = [
+    [0.5, 0],
+    [1, 0.5],
+    [0.5, 1],
+    [0, 0.5],
+  ];
+  const inter = [
+    { cw: [0.75, 0.25], ccw: [0.25, 0.25] },
+    { cw: [0.75, 0.75], ccw: [0.75, 0.25] },
+    { cw: [0.25, 0.75], ccw: [0.75, 0.75] },
+    { cw: [0.25, 0.25], ccw: [0.25, 0.75] },
+  ];
+
+  const pathFrom = (pts) =>
+    pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x * scale} ${y * scale}`).join(' ') + ' Z';
+
+  const centroid = (pts) => {
+    const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+    const n = pts.length;
+    return { cx: (sx / n) * scale, cy: (sy / n) * scale };
+  };
+
+  const cells = [];
+  for (let i = 0; i < 4; i++) {
+    const p0 = mid[i];
+    const pCW = inter[i].cw;
+    const pCCW = inter[i].ccw;
+    const pNext = mid[(i + 1) % 4];
+
+    const kite = i === 3 ? [p0, pCW, O, pCCW] : [p0, pCCW, O, pCW];
+    cells.push({ d: pathFrom(kite), ...centroid(kite) });
+
+    const triSide = [pCW, O, p0];
+    cells.push({ d: pathFrom(triSide), ...centroid(triSide) });
+
+    const triCorner = i === 2 ? [pNext, pCW, p0] : [pNext, p0, pCW];
+    cells.push({ d: pathFrom(triCorner), ...centroid(triCorner) });
+  }
+
+  const outer = pathFrom(mid);
+  const inner = pathFrom([
+    inter[3].cw,
+    inter[0].cw,
+    inter[1].cw,
+    inter[2].cw,
+  ]);
+  const diagonals = [
+    `M${mid[0][0] * scale} ${mid[0][1] * scale} L${mid[2][0] * scale} ${mid[2][1] * scale}`,
+    `M${mid[3][0] * scale} ${mid[3][1] * scale} L${mid[1][0] * scale} ${mid[1][1] * scale}`,
+  ];
+
+  return { paths: { outer, inner, diagonals }, cells };
+}
+
+export const { paths: CHART_PATHS, cells: HOUSE_POLYGONS } = buildHouseGeometry();
 
 export function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
