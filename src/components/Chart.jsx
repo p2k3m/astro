@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
-
-export { HOUSE_POLYGONS };
+import {
+  diamondPath,
+  BOX_SIZE,
+  SIGN_BOX_CENTERS,
+  getSignLabel,
+} from '../lib/astro.js';
 
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
@@ -18,10 +21,16 @@ export default function Chart({ data, children, useAbbreviations = false }) {
   }
   const signInHouse = data.signInHouse;
 
-  const planetByHouse = {};
+  const signToHouse = {};
+  for (let h = 1; h <= 12; h++) {
+    const s = signInHouse[h];
+    if (s !== undefined) signToHouse[s] = h;
+  }
+
+  const planetBySign = {};
   data.planets.forEach((p) => {
-    const houseNum = p.house;
-    if (!houseNum) return;
+    const signIdx = p.sign;
+    if (signIdx === undefined) return;
     const degreeValue = Number(p.deg ?? p.degree);
     let degree = 'No data';
     if (!Number.isNaN(degreeValue)) {
@@ -30,8 +39,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
     const label = `${p.name} ${degree}${p.retro ? ' R' : ''}`;
-    planetByHouse[houseNum] = planetByHouse[houseNum] || [];
-    planetByHouse[houseNum].push(label);
+    planetBySign[signIdx] = planetBySign[signIdx] || [];
+    planetBySign[signIdx].push(label);
   });
 
   const size = 300; // chart size
@@ -45,38 +54,39 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           fill="none"
           stroke="currentColor"
         >
-          {HOUSE_POLYGONS.map((p, idx) => (
-            <path key={idx} d={p.d} strokeWidth="1" />
+          <path d={diamondPath(50, 50, 50)} strokeWidth="2" />
+          {SIGN_BOX_CENTERS.map(({ cx, cy }, idx) => (
+            <path key={idx} d={diamondPath(cx, cy, BOX_SIZE)} strokeWidth="1" />
           ))}
         </svg>
-        {HOUSE_POLYGONS.map((p, idx) => {
-          const houseNum = idx + 1;
-          const signIdx = signInHouse[houseNum];
+        {SIGN_BOX_CENTERS.map(({ cx, cy }, idx) => {
+          const signIdx = idx;
+          const houseNum = signToHouse[signIdx];
           return (
             <div
-              key={houseNum}
+              key={signIdx}
               className="absolute flex flex-col items-center text-xs gap-[2px] p-[2px]"
               style={{
-                top: `${p.cy}%`,
-                left: `${p.cx}%`,
+                top: `${cy}%`,
+                left: `${cx}%`,
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <span className="text-yellow-300/40 text-[0.6rem] leading-none">
-                {houseNum}
-              </span>
+              {houseNum !== undefined && (
+                <span className="text-yellow-300/40 text-[0.6rem] leading-none">
+                  {houseNum}
+                </span>
+              )}
               {houseNum === 1 && (
                 <span className="text-yellow-300 text-[0.6rem] leading-none">
                   La/Asc
                 </span>
               )}
-              {signIdx !== undefined && (
-                <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
-                  {getSignLabel(signIdx, { useAbbreviations })}
-                </span>
-              )}
-              {planetByHouse[houseNum] &&
-                planetByHouse[houseNum].map((pl, i) => (
+              <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
+                {getSignLabel(signIdx, { useAbbreviations })}
+              </span>
+              {planetBySign[signIdx] &&
+                planetBySign[signIdx].map((pl, i) => (
                   <span
                     key={i}
                     className="px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
