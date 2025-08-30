@@ -1,23 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { HOUSE_POLYGONS } from '../lib/astro.js';
 
-// Each entry defines the path and centre of a house polygon in the
-// fixed AstroSage-style layout. Houses are numbered counter-clockwise
-// starting from the left.
-export const HOUSE_POLYGONS = [
-  { d: 'M0 50 L25 25 L50 50 L25 75 Z', cx: 25, cy: 50 }, // 1
-  { d: 'M0 50 L25 75 L50 100 Z', cx: 25, cy: 75 }, // 2
-  { d: 'M25 75 L50 50 L50 100 Z', cx: 41.6667, cy: 75 }, // 3
-  { d: 'M50 100 L75 75 L50 50 L25 75 Z', cx: 50, cy: 75 }, // 4
-  { d: 'M50 100 L100 50 L75 75 Z', cx: 75, cy: 75 }, // 5
-  { d: 'M75 75 L50 50 L100 50 Z', cx: 75, cy: 58.3333 }, // 6
-  { d: 'M100 50 L75 25 L50 50 L75 75 Z', cx: 75, cy: 50 }, // 7
-  { d: 'M100 50 L50 0 L75 25 Z', cx: 75, cy: 25 }, // 8
-  { d: 'M75 25 L50 50 L50 0 Z', cx: 58.3333, cy: 25 }, // 9
-  { d: 'M50 0 L25 25 L50 50 L75 25 Z', cx: 50, cy: 25 }, // 10
-  { d: 'M50 0 L0 50 L25 25 Z', cx: 25, cy: 25 }, // 11
-  { d: 'M25 25 L50 50 L0 50 Z', cx: 25, cy: 41.6667 }, // 12
-];
+export { HOUSE_POLYGONS };
 
 const SIGN_LABELS = [
   'Ar',
