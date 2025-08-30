@@ -11,7 +11,7 @@ A single-page React application that renders an accurate North Indian style D1 (
 - Collects name, date, time, and place of birth.
 - Autocomplete for birth location using a local dataset or geocoder service.
 - Calculates Ascendant and planetary positions (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu).
-- Indicates retrograde (R) and combust (C) planets.
+- Indicates retrograde (R), combust (C), and exalted (Ex) planets.
 - Renders responsive North Indian (diamond-style) chart.
 - Dark, glassmorphic UI with Tailwind CSS.
 

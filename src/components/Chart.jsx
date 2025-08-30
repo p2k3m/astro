@@ -44,8 +44,11 @@ export default function Chart({ data, children, useAbbreviations = false }) {
       const m = Math.round((degreeValue - d) * 60);
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
-    const abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
-    const deg = `${degree}${p.retro ? ' R' : ''}`;
+    let abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
+    if (p.retro) abbr += '(R)';
+    if (p.combust) abbr += '(C)';
+    if (p.exalted) abbr += '(Ex)';
+    const deg = degree;
     planetBySign[signIdx] = planetBySign[signIdx] || [];
     planetBySign[signIdx].push({ abbr, deg });
   });
@@ -121,6 +124,8 @@ Chart.propTypes = {
         house: PropTypes.number,
         deg: PropTypes.number,
         retro: PropTypes.bool,
+        combust: PropTypes.bool,
+        exalted: PropTypes.bool,
       })
     ).isRequired,
   }).isRequired,
