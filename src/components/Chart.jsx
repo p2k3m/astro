@@ -121,10 +121,9 @@ export default function Chart({ data, children, useAbbreviations = false }) {
 
                 {planetBySign[signIdx] &&
                   planetBySign[signIdx].map((pl, i) => (
-                    <div key={i} className="flex flex-col items-center">
-                      <span>{pl.abbr}</span>
-                      <span>{pl.deg}</span>
-                    </div>
+                    <span key={i} className="text-center">
+                      {pl.abbr} {pl.deg}
+                    </span>
                   ))}
               </div>
             </div>
