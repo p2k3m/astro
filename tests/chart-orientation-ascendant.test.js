@@ -1,6 +1,6 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { renderNorthIndian, SIGN_BOX_CENTERS, BOX_SIZE } = require('../src/lib/astro.js');
+const { renderNorthIndian, HOUSE_POLYGONS } = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -44,12 +44,12 @@ test('renderNorthIndian and Chart orient Aries ascendant clockwise', () => {
   for (let i = 0; i < 12; i++) {
     const t = houseTexts.find((ht) => ht.textContent === String(i + 1));
     assert.ok(t, `house ${i + 1} missing`);
-    const expected = SIGN_BOX_CENTERS[i];
-    assert.strictEqual(Number(t.attributes.x), expected.cx - BOX_SIZE + 2);
-    assert.strictEqual(Number(t.attributes.y), expected.cy - BOX_SIZE + 4);
+    const expected = HOUSE_POLYGONS[i];
+    assert.strictEqual(Number(t.attributes.x), expected.cx);
+    assert.strictEqual(Number(t.attributes.y), expected.cy - 6);
   }
   delete global.document;
 
-  const chartCenters = signInHouse.slice(1).map((s) => SIGN_BOX_CENTERS[s]);
-  assert.deepStrictEqual(chartCenters, SIGN_BOX_CENTERS);
+  const chartPolys = signInHouse.slice(1).map((s) => HOUSE_POLYGONS[s]);
+  assert.deepStrictEqual(chartPolys, HOUSE_POLYGONS);
 });

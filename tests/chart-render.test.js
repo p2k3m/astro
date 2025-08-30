@@ -1,6 +1,10 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { renderNorthIndian, diamondPath } = require('../src/lib/astro.js');
+const {
+  renderNorthIndian,
+  diamondPath,
+  HOUSE_POLYGONS,
+} = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -37,8 +41,9 @@ test('North Indian chart uses single outer diamond with internal grid', () => {
   assert.strictEqual(paths.length, 13);
   assert.strictEqual(paths[0].attributes.d, diamondPath(50, 50, 50));
   assert.strictEqual(paths[0].attributes['stroke-width'], '2');
-  for (let i = 1; i < paths.length; i++) {
-    assert.strictEqual(paths[i].attributes['stroke-width'], '1');
+  for (let i = 0; i < 12; i++) {
+    assert.strictEqual(paths[i + 1].attributes['stroke-width'], '1');
+    assert.strictEqual(paths[i + 1].attributes.d, HOUSE_POLYGONS[i].d);
   }
   assert.ok(svg.children.every((el) => el.tagName !== 'line'));
   delete global.document;
