@@ -27,7 +27,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
     data.signInHouse.length !== 13
   ) {
     return (
-      <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
+      <div className="backdrop-blur-md bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center justify-center">
         <span>Invalid chart data</span>
       </div>
     );
@@ -57,11 +57,11 @@ export default function Chart({ data, children, useAbbreviations = false }) {
   const size = 300; // chart size
 
   return (
-    <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 flex items-center justify-center">
+    <div className="backdrop-blur-md bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center justify-center">
       <div className="relative" style={{ width: size, height: size }}>
         <svg
           viewBox="0 0 1 1"
-          className="absolute inset-0 text-orange-500"
+          className="absolute inset-0 text-amber-600"
           fill="none"
           stroke="currentColor"
         >
@@ -100,15 +100,15 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               }}
             >
               <span
-                className={`absolute text-[10px] text-yellow-300/50 ${labelPos}`}
+                className={`absolute text-[11px] font-bold text-amber-700/70 ${labelPos}`}
               >
                 {getSignLabel(signIdx, { useAbbreviations })}
               </span>
 
-              <div className="flex flex-col items-center justify-center h-full gap-1 text-[clamp(0.5rem,0.7vw,0.75rem)]">
+              <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]">
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
-                    <span className="text-yellow-300 text-[0.6rem] leading-none">
+                    <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
                       Asc
                     </span>
                   </div>

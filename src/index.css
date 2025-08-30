@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 body {
-  @apply font-inter;
+  @apply font-inter bg-amber-50 text-amber-900;
 }
 
