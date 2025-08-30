@@ -19,7 +19,7 @@ const reference = {
 
 test('computePositions matches AstroSage reference for Darbhanga 1982-12-01 03:50', async () => {
   const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
-  assert.strictEqual(result.ascSign, 6);
+  assert.strictEqual(result.ascSign, 7);
   assert.deepStrictEqual(
     result.planets.filter((p) => p.house === 7).map((p) => p.name),
     ['mercury', 'venus']

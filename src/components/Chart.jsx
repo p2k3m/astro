@@ -89,7 +89,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           const bx = (minX + maxX) / 2;
           const by = (minY + maxY) / 2;
           const houseNum = idx + 1;
-          const signIdx = signInHouse[houseNum];
+          const signNum = signInHouse[houseNum];
 
           const margin = 4; // pixels
           const width = (maxX - minX) * size - margin;
@@ -109,7 +109,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
             >
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
-                  {getSignLabel(signIdx, { useAbbreviations })}
+                  {getSignLabel(signNum - 1, { useAbbreviations })}
                 </span>
               </div>
 

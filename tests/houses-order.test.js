@@ -31,8 +31,8 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('houses and signs increase anti-clockwise from ascendant', () => {
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
-  const data = { ascSign: 0, signInHouse, planets: [] };
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
+  const data = { ascSign: 1, signInHouse, planets: [] };
 
   global.document = doc;
   const svg = new Element('svg');
@@ -53,7 +53,7 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
   for (let i = 0; i < 12; i++) {
     const current = signInHouse[i + 1];
     const next = signInHouse[(i + 1) % 12 + 1];
-    assert.strictEqual(next, (current + 1) % 12);
+    assert.strictEqual(next, (current % 12) + 1);
 
     const { cx: cx1, cy: cy1 } = HOUSE_CENTROIDS[i];
     const { cx: cx2, cy: cy2 } = HOUSE_CENTROIDS[(i + 1) % 12];

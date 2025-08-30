@@ -30,8 +30,8 @@ test('North Indian chart uses one outer square and internal grid', () => {
   const svg = new Element('svg');
   global.document = doc;
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
-  renderNorthIndian(svg, { ascSign: 0, signInHouse, planets: [] });
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets: [] });
 
   const paths = svg.children.filter((c) => c.tagName === 'path');
   assert.strictEqual(paths.length, 4);

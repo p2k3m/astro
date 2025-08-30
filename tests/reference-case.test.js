@@ -28,7 +28,7 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('reference charts for Darbhanga on 1982-12-01 match expected placements', async () => {
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
-  assert.strictEqual(am.ascSign, 6);
+  assert.strictEqual(am.ascSign, 7);
   const amPlanets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
   assert.strictEqual(amPlanets.sun.sign, 7);
   assert.strictEqual(amPlanets.sun.house, 2);
@@ -52,7 +52,7 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   );
 
   const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
-  assert.strictEqual(pm.ascSign, 1);
+  assert.strictEqual(pm.ascSign, 2);
   const pmPlanets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(pmPlanets.sun.sign, 7);
   assert.strictEqual(pmPlanets.sun.house, 7);

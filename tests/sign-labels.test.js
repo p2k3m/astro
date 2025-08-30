@@ -28,10 +28,10 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('renderNorthIndian defaults to numeric sign labels', () => {
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   global.document = doc;
   const svg = new Element('svg');
-  renderNorthIndian(svg, { ascSign: 0, signInHouse, planets: [] });
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets: [] });
   const texts = svg.children.filter(
     (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.05'
   );
@@ -42,10 +42,10 @@ test('renderNorthIndian defaults to numeric sign labels', () => {
 
 test('renderNorthIndian can use abbreviated sign labels', () => {
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   global.document = doc;
   const svg = new Element('svg');
-  renderNorthIndian(svg, { ascSign: 0, signInHouse, planets: [] }, {
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets: [] }, {
     useAbbreviations: true,
   });
   const texts = svg.children.filter(

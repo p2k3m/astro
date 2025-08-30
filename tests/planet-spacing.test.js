@@ -28,7 +28,7 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('planets render in distinct rows below sign label', () => {
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
     { name: 'p1', house: 2, deg: 0 },
     { name: 'p2', house: 2, deg: 10 },
@@ -38,7 +38,7 @@ test('planets render in distinct rows below sign label', () => {
 
   global.document = doc;
   const svg = new Element('svg');
-  renderNorthIndian(svg, { ascSign: 0, signInHouse, planets });
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
 
   const { cx, cy } = HOUSE_CENTROIDS[1]; // house 2
