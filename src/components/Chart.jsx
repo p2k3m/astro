@@ -107,7 +107,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 {getSignLabel(signIdx, { useAbbreviations })}
               </span>
 
-              <div className="house-content-container text-[clamp(0.5rem,0.7vw,0.75rem)] space-y-[2px]">
+              <div className="flex flex-col items-center justify-center h-full gap-1 text-[clamp(0.5rem,0.7vw,0.75rem)]">
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
                     <span className="text-yellow-300 text-[0.6rem] leading-none">
