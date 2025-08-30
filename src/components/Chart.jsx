@@ -19,6 +19,22 @@ const PLANET_ABBR = {
   ketu: 'Ke',
 };
 
+// Position each sign label at the inner corner of its house.
+const SIGN_LABEL_POS = [
+  'bottom-0 left-1/2 -translate-x-1/2', // 1
+  'bottom-0 right-0', // 2
+  'top-1/2 right-0 -translate-y-1/2', // 3
+  'top-0 right-0', // 4
+  'top-0 right-0', // 5
+  'top-0 left-1/2 -translate-x-1/2', // 6
+  'top-0 left-0', // 7
+  'top-0 left-0', // 8
+  'top-1/2 left-0 -translate-y-1/2', // 9
+  'bottom-0 left-0', // 10
+  'bottom-0 left-0', // 11
+  'bottom-0 right-0', // 12
+];
+
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
     !data ||
@@ -74,21 +90,6 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           const { cx, cy } = HOUSE_CENTROIDS[idx];
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
-          const signLabel = getSignLabel(signIdx, { useAbbreviations });
-          const signPos = [
-            'bottom-0 left-1/2 -translate-x-1/2',
-            'bottom-0 right-0',
-            'top-1/2 right-0 -translate-y-1/2',
-            'top-0 right-0',
-            'top-0 right-0',
-            'top-0 left-1/2 -translate-x-1/2',
-            'top-0 left-0',
-            'top-0 left-0',
-            'top-1/2 left-0 -translate-y-1/2',
-            'bottom-0 left-0',
-            'bottom-0 left-0',
-            'bottom-0 right-0',
-          ][idx];
 
           return (
             <div
@@ -101,9 +102,9 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               }}
             >
               <span
-                className={`absolute text-yellow-300/40 text-[0.5rem] ${signPos}`}
+                className={`absolute text-[10px] text-yellow-300/50 ${SIGN_LABEL_POS[idx]}`}
               >
-                {signLabel}
+                {getSignLabel(signIdx, { useAbbreviations })}
               </span>
 
               <div className="house-content-container text-[clamp(0.5rem,0.7vw,0.75rem)] space-y-[2px]">
