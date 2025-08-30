@@ -114,7 +114,7 @@ export default function Chart({ data, children, useAbbreviations = false }) {
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
                     <span className="text-yellow-300 text-[0.6rem] leading-none">
-                      La/Asc
+                      Asc
                     </span>
                   </div>
                 )}
