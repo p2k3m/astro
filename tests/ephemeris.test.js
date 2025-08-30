@@ -13,6 +13,7 @@ test('house cusps and retrograde flags', async () => {
     SEFLG_SIDEREAL: 2,
     SEFLG_SWIEPH: 4,
     SEFLG_SPEED: 8,
+    SEFLG_RETROGRADE: 16,
     SE_SUN: 0,
     SE_MOON: 1,
     SE_MERCURY: 2,
@@ -42,15 +43,23 @@ test('house cusps and retrograde flags', async () => {
     }), // Leo 3° ascendant
     swe_calc_ut: (jd, id, flag) => {
       const data = {
-        0: { longitude: 100, longitudeSpeed: 1 }, // Sun in Cancer
-        1: { longitude: 210, longitudeSpeed: -0.5 }, // Moon retro in Libra
+        0: { longitude: 100, longitudeSpeed: 1, flags: 0 }, // Sun in Cancer
+        1: {
+          longitude: 210,
+          longitudeSpeed: -0.5,
+          flags: fakeSwe.SEFLG_RETROGRADE,
+        }, // Moon retro in Libra
         // Mercury has a tiny negative speed that should not count as retrograde
-        2: { longitude: 50, longitudeSpeed: -1e-6 },
-        3: { longitude: 10, longitudeSpeed: 0.1 },
-        4: { longitude: 80, longitudeSpeed: 0.1 },
-        5: { longitude: 170, longitudeSpeed: 0.1 },
-        6: { longitude: 300, longitudeSpeed: 0.1 },
-        7: { longitude: 30, longitudeSpeed: -0.1 }, // Rahu retro in Taurus
+        2: { longitude: 50, longitudeSpeed: -1e-6, flags: 0 },
+        3: { longitude: 10, longitudeSpeed: 0.1, flags: 0 },
+        4: { longitude: 80, longitudeSpeed: 0.1, flags: 0 },
+        5: { longitude: 170, longitudeSpeed: 0.1, flags: 0 },
+        6: { longitude: 300, longitudeSpeed: 0.1, flags: 0 },
+        7: {
+          longitude: 30,
+          longitudeSpeed: -0.1,
+          flags: fakeSwe.SEFLG_RETROGRADE,
+        }, // Rahu retro in Taurus
       };
       return data[id];
     },
