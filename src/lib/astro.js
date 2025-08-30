@@ -77,6 +77,7 @@ function buildHouseGeometry(scale = 1) {
       .join(' ') + ' Z';
 
   const cells = [];
+  const centroids = [];
   for (let i = 0; i < 4; i++) {
     const p0 = mid[i];
     const pCW = inter[i].cw;
@@ -85,12 +86,15 @@ function buildHouseGeometry(scale = 1) {
 
     const kite = i === 3 ? [p0, pCW, O, pCCW] : [p0, pCCW, O, pCW];
     cells.push(kite);
+    centroids.push(polygonCentroid(kite));
 
     const triSide = [pCW, O, p0];
     cells.push(triSide);
+    centroids.push(polygonCentroid(triSide));
 
     const triCorner = i === 2 ? [pNext, pCW, p0] : [pNext, p0, pCW];
     cells.push(triCorner);
+    centroids.push(polygonCentroid(triCorner));
   }
 
   const outer = pathFrom(mid);
@@ -105,10 +109,14 @@ function buildHouseGeometry(scale = 1) {
     `M${mid[3][0] * scale} ${mid[3][1] * scale} L${mid[1][0] * scale} ${mid[1][1] * scale}`,
   ];
 
-  return { paths: { outer, inner, diagonals }, polys: cells };
+  return { paths: { outer, inner, diagonals }, polys: cells, centroids };
 }
 
-export const { paths: CHART_PATHS, polys: HOUSE_POLYGONS } = buildHouseGeometry();
+export const {
+  paths: CHART_PATHS,
+  polys: HOUSE_POLYGONS,
+  centroids: HOUSE_CENTROIDS,
+} = buildHouseGeometry();
 
 export function polygonCentroid(pts) {
   const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
@@ -221,8 +229,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   addPath(CHART_PATHS.inner, '0.01');
 
   for (let h = 1; h <= 12; h++) {
-    const poly = HOUSE_POLYGONS[h - 1];
-    const { cx, cy } = polygonCentroid(poly);
+    const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
     const hText = document.createElementNS(svgNS, 'text');
