@@ -85,7 +85,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
-    const house = swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses);
+    const house = Math.trunc(
+      swe.swe_house_pos(jd, lat, lon, 'P', data.longitude, houses)
+    );
     planets.push({ name, sign, deg, retro: data.longitudeSpeed < 0, house });
   }
   // Ketu opposite Rahu
@@ -94,7 +96,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
-  const ketuHouse = swe.swe_house_pos(jd, lat, lon, 'P', ketuLon, houses);
+  const ketuHouse = Math.trunc(
+    swe.swe_house_pos(jd, lat, lon, 'P', ketuLon, houses)
+  );
   planets.push({
     name: 'ketu',
     sign: kSign,
