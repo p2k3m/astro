@@ -1,25 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { HOUSE_POLYGONS } from '../lib/astro.js';
+import { HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
 
 export { HOUSE_POLYGONS };
 
-const SIGN_LABELS = [
-  'Ar',
-  'Ta',
-  'Ge',
-  'Cn',
-  'Le',
-  'Vi',
-  'Li',
-  'Sc',
-  'Sg',
-  'Cp',
-  'Aq',
-  'Pi',
-];
-
-export default function Chart({ data, children }) {
+export default function Chart({ data, children, useAbbreviations = false }) {
   if (
     !data ||
     !Array.isArray(data.signInHouse) ||
@@ -87,7 +72,7 @@ export default function Chart({ data, children }) {
               )}
               {signIdx !== undefined && (
                 <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
-                  {SIGN_LABELS[signIdx]}
+                  {getSignLabel(signIdx, { useAbbreviations })}
                 </span>
               )}
               {planetByHouse[houseNum] &&
@@ -122,5 +107,6 @@ Chart.propTypes = {
     ).isRequired,
   }).isRequired,
   children: PropTypes.node,
+  useAbbreviations: PropTypes.bool,
 };
 
