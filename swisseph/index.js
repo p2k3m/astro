@@ -15,6 +15,7 @@ export const SE_MEAN_NODE = 8; // Ketu approximated
 export const SEFLG_SPEED = 1 << 0;
 export const SEFLG_SWIEPH = 1 << 1;
 export const SEFLG_SIDEREAL = 1 << 2;
+export const SEFLG_RETROGRADE = 1 << 3;
 
 export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
 export const SE_GREG_CAL = 1;
@@ -239,7 +240,8 @@ export function swe_calc_ut(jd, planetId, flags) {
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   const speed = diff / (2 * delta); // degrees per day
-  return { longitude: lon, longitudeSpeed: speed };
+  const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
+  return { longitude: lon, longitudeSpeed: speed, flags: ret };
 }
 
 function localSiderealTime(jd, lon) {

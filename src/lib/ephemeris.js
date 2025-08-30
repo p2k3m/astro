@@ -91,14 +91,13 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
     const house = houseOf(data.longitude);
+    const flags = data.flags || 0;
     planets.push({
       name,
       sign,
       deg,
       speed: data.longitudeSpeed,
-      // Treat very small negative speeds as direct motion to avoid
-      // floating point noise from triggering retrograde flags.
-      retro: data.longitudeSpeed <= -1e-5,
+      retro: (flags & swe.SEFLG_RETROGRADE) !== 0,
       house,
     });
   }
@@ -114,8 +113,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     sign: kSign,
     deg: kDeg,
     speed: -rahuData.longitudeSpeed,
-    // Ketu shares motion with Rahu; apply the same tolerance check.
-    retro: rahuData.longitudeSpeed <= -1e-5,
+    retro: (rahuData.flags & swe.SEFLG_RETROGRADE) !== 0,
     house: ketuHouse,
   });
 

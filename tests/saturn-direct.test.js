@@ -13,7 +13,12 @@ test('Saturn degree and direct motion on 1982-12-28', async () => {
     lat: 0,
     lon: 0,
   });
-  const saturn = result.planets.find((p) => p.name === 'saturn');
+  const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
+  const saturn = planets.saturn;
   assert.ok(Math.abs(saturn.deg - 29.63) < 0.1);
-  assert.ok(saturn.speed > 0, 'Saturn should be direct');
+  const direct = ['sun', 'moon', 'mercury', 'venus', 'mars', 'saturn'];
+  for (const name of direct) {
+    assert.ok(!planets[name].retro, `${name} should be direct`);
+  }
+  assert.ok(planets.jupiter.retro, 'jupiter should be retrograde');
 });
