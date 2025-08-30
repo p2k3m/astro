@@ -33,7 +33,27 @@ export const SIGN_BOX_CENTERS = [
   { cx: 25, cy: 12.5 }, // Pisces
 ];
 
-const SIGN_LABELS = ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi'];
+// Sign label helpers. By default signs are labelled 1-12.
+export const SIGN_NUMBERS = Array.from({ length: 12 }, (_, i) => String(i + 1));
+export const SIGN_ABBREVIATIONS = [
+  'Ar',
+  'Ta',
+  'Ge',
+  'Cn',
+  'Le',
+  'Vi',
+  'Li',
+  'Sc',
+  'Sg',
+  'Cp',
+  'Aq',
+  'Pi',
+];
+
+export function getSignLabel(index, { useAbbreviations = false } = {}) {
+  const labels = useAbbreviations ? SIGN_ABBREVIATIONS : SIGN_NUMBERS;
+  return labels[index] ?? String(index + 1);
+}
 
 // Each entry defines the path and centre of a house polygon in the
 // fixed AstroSage-style layout. Houses are numbered counter-clockwise
@@ -140,7 +160,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   return { ascSign: asc.sign, signInHouse, planets };
 }
 
-export function renderNorthIndian(svgEl, data) {
+export function renderNorthIndian(svgEl, data, options = {}) {
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
   svgEl.setAttribute('viewBox', '0 0 100 100');
   svgEl.setAttribute('fill', 'none');
@@ -172,7 +192,7 @@ export function renderNorthIndian(svgEl, data) {
     signText.setAttribute('y', cy - BOX_SIZE + 4);
     signText.setAttribute('text-anchor', 'middle');
     signText.setAttribute('font-size', '4');
-    signText.textContent = SIGN_LABELS[i];
+    signText.textContent = getSignLabel(i, options);
     svgEl.appendChild(signText);
 
     const houseNum = signToHouse[i];
