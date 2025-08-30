@@ -282,6 +282,7 @@ export function swe_house_pos(jd, lat, lon, hsys, bodyLon, houses) {
     typeof asc === 'number'
       ? asc
       : swe_houses_ex(jd, lat, lon, hsys, 0).houses[1];
-  const diff = normalizeAngle(bodyLon - ascendant);
-  return Math.floor(diff / 30) + 1; // 1..12
+  const ascSign = Math.floor(ascendant / 30);
+  const bodySign = Math.floor(bodyLon / 30);
+  return ((bodySign - ascSign + 12) % 12) + 1;
 }
