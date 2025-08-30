@@ -59,7 +59,7 @@ export default function Chart({ data, children }) {
       const m = Math.round((degreeValue - d) * 60);
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
-    const label = `${p.name} ${degree}${p.retro || p.retrograde ? ' R' : ''}`;
+    const label = `${p.name} ${degree}${p.retro ? ' R' : ''}`;
     planetByHouse[houseNum] = planetByHouse[houseNum] || [];
     planetByHouse[houseNum].push(label);
   });
@@ -75,13 +75,8 @@ export default function Chart({ data, children }) {
           fill="none"
           stroke="currentColor"
         >
-          <path d="M50 0 L100 50 L50 100 L0 50 Z" strokeWidth="2" />
-          <path d="M0 50 L100 50" strokeWidth="1" />
-          <path d="M50 0 L50 100" strokeWidth="1" />
-          <path d="M25 25 L75 75" strokeWidth="1" />
-          <path d="M75 25 L25 75" strokeWidth="1" />
           {HOUSE_POLYGONS.map((p, idx) => (
-            <path key={idx} d={p.d} fill="transparent" stroke="none" aria-label={`house ${idx + 1}`} />
+            <path key={idx} d={p.d} strokeWidth="1" />
           ))}
         </svg>
         {HOUSE_POLYGONS.map((p, idx) => {
@@ -90,7 +85,7 @@ export default function Chart({ data, children }) {
           return (
             <div
               key={houseNum}
-              className="absolute flex flex-col items-center text-xs gap-0.5 p-1"
+              className="absolute flex flex-col items-center text-xs gap-[2px] p-[2px]"
               style={{
                 top: `${p.cy}%`,
                 left: `${p.cx}%`,
@@ -100,16 +95,25 @@ export default function Chart({ data, children }) {
               <span className="text-yellow-300/40 text-[0.6rem] leading-none">
                 {houseNum}
               </span>
-              {signIdx === data.ascSign && (
-                <span className="text-yellow-300 text-[0.6rem] leading-none">Asc</span>
+              {houseNum === 1 && (
+                <span className="text-yellow-300 text-[0.6rem] leading-none">
+                  La/Asc
+                </span>
               )}
               {signIdx !== undefined && (
-                <span className="text-orange-300 font-semibold">
+                <span className="text-orange-300 font-semibold text-[clamp(0.5rem,0.8vw,0.75rem)]">
                   {SIGN_LABELS[signIdx]}
                 </span>
               )}
               {planetByHouse[houseNum] &&
-                planetByHouse[houseNum].map((pl, i) => <span key={i}>{pl}</span>)}
+                planetByHouse[houseNum].map((pl, i) => (
+                  <span
+                    key={i}
+                    className="px-[2px] text-[clamp(0.5rem,0.7vw,0.75rem)]"
+                  >
+                    {pl}
+                  </span>
+                ))}
             </div>
           );
         })}
@@ -121,7 +125,6 @@ export default function Chart({ data, children }) {
 
 Chart.propTypes = {
   data: PropTypes.shape({
-    ascSign: PropTypes.number,
     signInHouse: PropTypes.arrayOf(PropTypes.number).isRequired,
     planets: PropTypes.arrayOf(
       PropTypes.shape({
