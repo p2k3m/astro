@@ -59,6 +59,13 @@ function buildChartPaths(scale = 1) {
   const MR = [1, 0.5];
   const MB = [0.5, 1];
   const ML = [0, 0.5];
+  const O = [0.5, 0.5];
+
+  // Intersections of diagonals with the inner diamond
+  const P1 = [0.25, 0.25];
+  const P2 = [0.75, 0.75];
+  const P3 = [0.75, 0.25];
+  const P4 = [0.25, 0.75];
 
   const pathFrom = (pts) =>
     pts
@@ -72,41 +79,29 @@ function buildChartPaths(scale = 1) {
     `M${TR[0] * scale} ${TR[1] * scale} L${BL[0] * scale} ${BL[1] * scale}`,
   ];
 
-  return { outer, inner, diagonals };
+  // House polygons derived from chart geometry
+  const housePolygons = [
+    [P1, MT, P3, O],
+    [TL, MT, P1],
+    [ML, P1, O, P4],
+    [BL, ML, P4],
+    [MB, BL, P4],
+    [P2, MB, P4, O],
+    [BR, MB, P2],
+    [MR, BR, P2],
+    [P3, MR, P2, O],
+    [TR, MR, P3],
+    [MT, TR, P3],
+    [ML, TL, P1],
+  ].map((poly) => poly.map(([x, y]) => [x * scale, y * scale]));
+
+  return { outer, inner, diagonals, housePolygons };
 }
 
 export const CHART_PATHS = buildChartPaths();
 
-// Ordered mapping of house numbers (1-12) to their visual positions.
-// The coordinates were chosen so that text labels render near the
-// geometric centre of the intended chart cell.
-export const HOUSE_CENTROIDS = [
-  { cx: 0.5, cy: 0.25 }, // 1: Top Diamond
-  { cx: 1 / 3, cy: 1 / 3 }, // 2: Top-Left Triangle
-  { cx: 0.25, cy: 0.5 }, // 3: Left Diamond
-  { cx: 1 / 3, cy: 2 / 3 }, // 4: Bottom-Left Triangle
-  { cx: 1 / 6, cy: 5 / 6 }, // 5: Bottom-Left Main Triangle
-  { cx: 0.5, cy: 0.75 }, // 6: Bottom Diamond
-  { cx: 5 / 6, cy: 5 / 6 }, // 7: Bottom-Right Main Triangle
-  { cx: 2 / 3, cy: 2 / 3 }, // 8: Bottom-Right Triangle
-  { cx: 0.75, cy: 0.5 }, // 9: Right Diamond
-  { cx: 2 / 3, cy: 1 / 3 }, // 10: Top-Right Triangle
-  { cx: 5 / 6, cy: 1 / 6 }, // 11: Top-Right Main Triangle
-  { cx: 1 / 6, cy: 1 / 6 }, // 12: Top-Left Main Triangle
-];
-
-// Placeholder polygons used purely for iteration; each is a tiny diamond
-// centred on the corresponding HOUSE_CENTROIDS entry.
-const makeDiamond = (cx, cy, size = 0.01) => [
-  [cx, cy - size],
-  [cx + size, cy],
-  [cx, cy + size],
-  [cx - size, cy],
-];
-
-export const HOUSE_POLYGONS = HOUSE_CENTROIDS.map(({ cx, cy }) =>
-  makeDiamond(cx, cy)
-);
+export const HOUSE_POLYGONS = CHART_PATHS.housePolygons;
+export const HOUSE_CENTROIDS = HOUSE_POLYGONS.map(polygonCentroid);
 
 export function polygonCentroid(pts) {
   // Compute the centroid using the area-weighted formula (shoelace theorem).
@@ -220,6 +215,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   addPath(CHART_PATHS.inner, '0.01');
 
   for (let h = 1; h <= 12; h++) {
+    const poly = HOUSE_POLYGONS[h - 1];
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
@@ -250,7 +246,15 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     svgEl.appendChild(signText);
 
     const planets = data.planets.filter((p) => p.sign === signIdx);
-    let py = cy + 0.04;
+    const maxY = Math.max(...poly.map((pt) => pt[1]));
+    let py = Math.min(cy + 0.04, maxY - 0.02);
+    const step =
+      planets.length > 1
+        ? Math.min(
+            0.04,
+            (maxY - 0.02 - py) / (planets.length - 1)
+          )
+        : 0;
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');
       t.setAttribute('x', cx);
@@ -266,7 +270,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
       if (p.exalted) name += '(Ex)';
       t.textContent = `${name} ${degStr}`;
       svgEl.appendChild(t);
-      py += 0.04;
+      py += step;
     });
   }
 }
