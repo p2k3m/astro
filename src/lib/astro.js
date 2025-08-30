@@ -189,6 +189,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
+      // shortest angular separation from the Sun
       const diff = Math.abs((sunLon - lon + 180) % 360 - 180);
       combust = diff < cDeg;
     }
