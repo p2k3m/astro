@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {
   CHART_PATHS,
   HOUSE_POLYGONS,
+  HOUSE_CENTROIDS,
   getSignLabel,
-  polygonCentroid,
 } from '../lib/astro.js';
 
 export default function Chart({ data, children, useAbbreviations = false }) {
@@ -54,8 +54,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
-        {HOUSE_POLYGONS.map((poly, idx) => {
-          const { cx, cy } = polygonCentroid(poly);
+        {HOUSE_POLYGONS.map((_, idx) => {
+          const { cx, cy } = HOUSE_CENTROIDS[idx];
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
           return (
