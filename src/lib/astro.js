@@ -249,7 +249,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
     const planets = data.planets.filter((p) => p.house === h);
     const maxY = Math.max(...poly.map((pt) => pt[1]));
-    let py = Math.min(cy + 0.04, maxY - 0.02);
+    let py = Math.min(cy + 0.06, maxY - 0.02);
     const step =
       planets.length > 1
         ? Math.min(
