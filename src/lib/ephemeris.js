@@ -59,6 +59,11 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     throw new Error('Could not compute houses from swisseph.');
   }
   const houses = rawHouses.houses;
+  if (process.env.DEBUG_HOUSES) {
+    console.log('swe_houses_ex houses:', houses);
+  }
+  // The house array follows the Swiss Ephemeris convention: index 1 is the
+  // first house cusp (ascendant) and 12 the twelfth. Index 0 is unused.
   const asc = lonToSignDeg(houses[1]);
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;

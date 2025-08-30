@@ -149,6 +149,9 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     const sign = Math.floor((((lon % 360) + 360) % 360) / 30);
     signInHouse[h] = sign;
   }
+  if (process.env.DEBUG_HOUSES) {
+    console.log('signInHouse:', signInHouse);
+  }
 
   // combustion thresholds (degrees)
   const combustDeg = {

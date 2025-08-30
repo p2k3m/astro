@@ -234,7 +234,11 @@ function localSiderealTime(jd, lon) {
     360.98564736629 * (jd - 2451545.0) +
     0.000387933 * T * T -
     (T * T * T) / 38710000;
-  return normalizeAngle(GMST + lon);
+  // Swiss Ephemeris uses geographic longitudes that are positive east of
+  // Greenwich.  The sidereal-time formula above assumes the same convention,
+  // which means we subtract the east-positive longitude to obtain the local
+  // sidereal time.
+  return normalizeAngle(GMST - lon);
 }
 
 function obliquity(jd) {
