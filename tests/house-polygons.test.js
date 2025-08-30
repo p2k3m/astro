@@ -18,8 +18,7 @@ test('HOUSE_POLYGONS lists fixed paths for the twelve houses', () => {
     'M0.25 0.25 L0.5 0.5 L0 0.5 Z',
     'M0.5 0 L0 0.5 L0.25 0.25 Z',
   ];
-  assert.deepStrictEqual(
-    HOUSE_POLYGONS.map((p) => p.d),
-    expected
-  );
+  const pathFrom = (pts) =>
+    pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x} ${y}`).join(' ') + ' Z';
+  assert.deepStrictEqual(HOUSE_POLYGONS.map(pathFrom), expected);
 });

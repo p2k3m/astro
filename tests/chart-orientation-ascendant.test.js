@@ -26,6 +26,12 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
+const centroid = (pts) => {
+  const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+  const n = pts.length;
+  return { cx: sx / n, cy: sy / n };
+};
+
 test('renderNorthIndian and Chart orient Aries ascendant clockwise', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h - 1;
@@ -44,9 +50,10 @@ test('renderNorthIndian and Chart orient Aries ascendant clockwise', () => {
   for (let i = 0; i < 12; i++) {
     const t = houseTexts.find((ht) => ht.textContent === String(i + 1));
     assert.ok(t, `house ${i + 1} missing`);
-    const expected = HOUSE_POLYGONS[i];
-    assert.strictEqual(Number(t.attributes.x), expected.cx);
-    assert.strictEqual(Number(t.attributes.y), expected.cy - 0.06);
+    const poly = HOUSE_POLYGONS[i];
+    const { cx, cy } = centroid(poly);
+    assert.strictEqual(Number(t.attributes.x), cx);
+    assert.strictEqual(Number(t.attributes.y), cy - 0.06);
   }
   delete global.document;
 

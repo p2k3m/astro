@@ -1,10 +1,6 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const {
-  renderNorthIndian,
-  diamondPath,
-  HOUSE_POLYGONS,
-} = require('../src/lib/astro.js');
+const { renderNorthIndian, CHART_PATHS } = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -30,7 +26,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('North Indian chart uses single outer diamond with internal grid', () => {
+test('North Indian chart uses one outer square and internal grid', () => {
   const svg = new Element('svg');
   global.document = doc;
   const signInHouse = [null];
@@ -38,13 +34,15 @@ test('North Indian chart uses single outer diamond with internal grid', () => {
   renderNorthIndian(svg, { ascSign: 0, signInHouse, planets: [] });
 
   const paths = svg.children.filter((c) => c.tagName === 'path');
-  assert.strictEqual(paths.length, 13);
-  assert.strictEqual(paths[0].attributes.d, diamondPath(0.5, 0.5, 0.5));
+  assert.strictEqual(paths.length, 4);
+  assert.strictEqual(paths[0].attributes.d, CHART_PATHS.outer);
   assert.strictEqual(paths[0].attributes['stroke-width'], '0.02');
-  for (let i = 0; i < 12; i++) {
-    assert.strictEqual(paths[i + 1].attributes['stroke-width'], '0.01');
-    assert.strictEqual(paths[i + 1].attributes.d, HOUSE_POLYGONS[i].d);
-  }
+  assert.strictEqual(paths[1].attributes.d, CHART_PATHS.diagonals[0]);
+  assert.strictEqual(paths[2].attributes.d, CHART_PATHS.diagonals[1]);
+  assert.strictEqual(paths[1].attributes['stroke-width'], '0.01');
+  assert.strictEqual(paths[2].attributes['stroke-width'], '0.01');
+  assert.strictEqual(paths[3].attributes.d, CHART_PATHS.inner);
+  assert.strictEqual(paths[3].attributes['stroke-width'], '0.01');
   assert.ok(svg.children.every((el) => el.tagName !== 'line'));
   delete global.document;
 });

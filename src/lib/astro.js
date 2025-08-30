@@ -72,13 +72,9 @@ function buildHouseGeometry(scale = 1) {
   ];
 
   const pathFrom = (pts) =>
-    pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x * scale} ${y * scale}`).join(' ') + ' Z';
-
-  const centroid = (pts) => {
-    const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
-    const n = pts.length;
-    return { cx: (sx / n) * scale, cy: (sy / n) * scale };
-  };
+    pts
+      .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x * scale} ${y * scale}`)
+      .join(' ') + ' Z';
 
   const cells = [];
   for (let i = 0; i < 4; i++) {
@@ -88,13 +84,13 @@ function buildHouseGeometry(scale = 1) {
     const pNext = mid[(i + 1) % 4];
 
     const kite = i === 3 ? [p0, pCW, O, pCCW] : [p0, pCCW, O, pCW];
-    cells.push({ d: pathFrom(kite), ...centroid(kite) });
+    cells.push(kite);
 
     const triSide = [pCW, O, p0];
-    cells.push({ d: pathFrom(triSide), ...centroid(triSide) });
+    cells.push(triSide);
 
     const triCorner = i === 2 ? [pNext, pCW, p0] : [pNext, p0, pCW];
-    cells.push({ d: pathFrom(triCorner), ...centroid(triCorner) });
+    cells.push(triCorner);
   }
 
   const outer = pathFrom(mid);
@@ -109,10 +105,16 @@ function buildHouseGeometry(scale = 1) {
     `M${mid[3][0] * scale} ${mid[3][1] * scale} L${mid[1][0] * scale} ${mid[1][1] * scale}`,
   ];
 
-  return { paths: { outer, inner, diagonals }, cells };
+  return { paths: { outer, inner, diagonals }, polys: cells };
 }
 
-export const { paths: CHART_PATHS, cells: HOUSE_POLYGONS } = buildHouseGeometry();
+export const { paths: CHART_PATHS, polys: HOUSE_POLYGONS } = buildHouseGeometry();
+
+export function polygonCentroid(pts) {
+  const [sx, sy] = pts.reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+  const n = pts.length;
+  return { cx: sx / n, cy: sy / n };
+}
 
 export function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
@@ -207,20 +209,20 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   svgEl.setAttribute('fill', 'none');
   svgEl.setAttribute('stroke', 'currentColor');
 
-  const outer = document.createElementNS(svgNS, 'path');
-  outer.setAttribute('d', diamondPath(0.5, 0.5, 0.5));
-  outer.setAttribute('stroke-width', '0.02');
-  svgEl.appendChild(outer);
+  const addPath = (d, width) => {
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke-width', width);
+    svgEl.appendChild(path);
+  };
+
+  addPath(CHART_PATHS.outer, '0.02');
+  CHART_PATHS.diagonals.forEach((d) => addPath(d, '0.01'));
+  addPath(CHART_PATHS.inner, '0.01');
 
   for (let h = 1; h <= 12; h++) {
     const poly = HOUSE_POLYGONS[h - 1];
-    const { d, cx, cy } = poly;
-
-    const path = document.createElementNS(svgNS, 'path');
-    path.setAttribute('d', d);
-    path.setAttribute('stroke-width', '0.01');
-    svgEl.appendChild(path);
-
+    const { cx, cy } = polygonCentroid(poly);
     const signIdx = data.signInHouse?.[h] ?? h - 1;
 
     const hText = document.createElementNS(svgNS, 'text');

@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CHART_PATHS, HOUSE_POLYGONS, getSignLabel } from '../lib/astro.js';
+import {
+  CHART_PATHS,
+  HOUSE_POLYGONS,
+  getSignLabel,
+  polygonCentroid,
+} from '../lib/astro.js';
 
 export default function Chart({ data, children, useAbbreviations = false }) {
   if (
@@ -49,7 +54,8 @@ export default function Chart({ data, children, useAbbreviations = false }) {
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
-        {HOUSE_POLYGONS.map(({ cx, cy }, idx) => {
+        {HOUSE_POLYGONS.map((poly, idx) => {
+          const { cx, cy } = polygonCentroid(poly);
           const houseNum = idx + 1;
           const signIdx = signInHouse[houseNum];
           return (

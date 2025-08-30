@@ -1,6 +1,6 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { computePositions, renderNorthIndian, diamondPath } = require('../src/lib/astro.js');
+const { computePositions, renderNorthIndian } = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -42,7 +42,7 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   renderNorthIndian(svgAm, am);
   assert.strictEqual(
     svgAm.children.filter((c) => c.tagName === 'path').length,
-    13
+    4
   );
 
   const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
@@ -57,7 +57,7 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   renderNorthIndian(svgPm, pm);
   assert.strictEqual(
     svgPm.children.filter((c) => c.tagName === 'path').length,
-    13
+    4
   );
   delete global.document;
 });
