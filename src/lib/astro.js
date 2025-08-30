@@ -59,28 +59,26 @@ export function getSignLabel(index, { useAbbreviations = false } = {}) {
 // The layout follows the North-Indian style used by AstroSage:
 // a square frame with two diagonals forming an "X" and an inner
 // diamond that joins the midpoints of the four sides. These
-// five strokes partition the canvas into twelve regions which we
-// expose as HOUSE_POLYGONS for labelling and hit‑testing.
-function buildHouseGeometry(scale = 1) {
+// five strokes partition the canvas into twelve regions.  The
+// routine below derives the SVG paths for the static frame.
+function buildChartPaths(scale = 1) {
   // Corner points of the unit square
   const TL = [0, 0];
   const TR = [1, 0];
   const BR = [1, 1];
   const BL = [0, 1];
 
-  // Midpoints of each side and the centre
+  // Midpoints of each side
   const MT = [0.5, 0];
   const MR = [1, 0.5];
   const MB = [0.5, 1];
   const ML = [0, 0.5];
-  const C = [0.5, 0.5];
 
   const pathFrom = (pts) =>
     pts
       .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x * scale} ${y * scale}`)
       .join(' ') + ' Z';
 
-  // Paths for outer square, diagonals and inner diamond
   const outer = pathFrom([TL, TR, BR, BL]);
   const inner = pathFrom([MT, MR, MB, ML]);
   const diagonals = [
@@ -88,44 +86,41 @@ function buildHouseGeometry(scale = 1) {
     `M${TR[0] * scale} ${TR[1] * scale} L${BL[0] * scale} ${BL[1] * scale}`,
   ];
 
-  // Define the twelve regions (8 corner triangles + 4 kites)
-  const cells = [
-    // Top hexagon (House 1)
-    [TL, MT, TR, MR, C, ML],
-    // Top-left triangle (House 2)
-    [TL, C, ML],
-    // Top-left corner triangle (House 3)
-    [TL, MT, C],
-    // Left hexagon (House 4)
-    [BL, ML, TL, MT, C, MB],
-    // Bottom-left triangle (House 5)
-    [BL, C, MB],
-    // Bottom-left corner triangle (House 6)
-    [BL, ML, C],
-    // Bottom hexagon (House 7)
-    [BR, MB, BL, ML, C, MR],
-    // Bottom-right triangle (House 8)
-    [BR, C, MR],
-    // Bottom-right corner triangle (House 9)
-    [BR, MB, C],
-    // Right hexagon (House 10)
-    [TR, MR, BR, MB, C, MT],
-    // Top-right triangle (House 11)
-    [TR, C, MT],
-    // Top-right corner triangle (House 12)
-    [TR, MR, C],
-  ];
-
-  const centroids = cells.map(polygonCentroid);
-
-  return { paths: { outer, inner, diagonals }, polys: cells, centroids };
+  return { outer, inner, diagonals };
 }
 
-export const {
-  paths: CHART_PATHS,
-  polys: HOUSE_POLYGONS,
-  centroids: HOUSE_CENTROIDS,
-} = buildHouseGeometry();
+export const CHART_PATHS = buildChartPaths();
+
+// Ordered mapping of house numbers (1-12) to their visual positions.
+// The coordinates were chosen so that text labels render near the
+// geometric centre of the intended chart cell.
+export const HOUSE_CENTROIDS = [
+  { cx: 0.5, cy: 0.25 }, // 1: Top Diamond
+  { cx: 1 / 3, cy: 1 / 3 }, // 2: Top-Left Triangle
+  { cx: 0.25, cy: 0.5 }, // 3: Left Diamond
+  { cx: 1 / 3, cy: 2 / 3 }, // 4: Bottom-Left Triangle
+  { cx: 1 / 6, cy: 5 / 6 }, // 5: Bottom-Left Main Triangle
+  { cx: 0.5, cy: 0.75 }, // 6: Bottom Diamond
+  { cx: 5 / 6, cy: 5 / 6 }, // 7: Bottom-Right Main Triangle
+  { cx: 2 / 3, cy: 2 / 3 }, // 8: Bottom-Right Triangle
+  { cx: 0.75, cy: 0.5 }, // 9: Right Diamond
+  { cx: 2 / 3, cy: 1 / 3 }, // 10: Top-Right Triangle
+  { cx: 5 / 6, cy: 1 / 6 }, // 11: Top-Right Main Triangle
+  { cx: 1 / 6, cy: 1 / 6 }, // 12: Top-Left Main Triangle
+];
+
+// Placeholder polygons used purely for iteration; each is a tiny diamond
+// centred on the corresponding HOUSE_CENTROIDS entry.
+const makeDiamond = (cx, cy, size = 0.01) => [
+  [cx, cy - size],
+  [cx + size, cy],
+  [cx, cy + size],
+  [cx - size, cy],
+];
+
+export const HOUSE_POLYGONS = HOUSE_CENTROIDS.map(({ cx, cy }) =>
+  makeDiamond(cx, cy)
+);
 
 export function polygonCentroid(pts) {
   // Compute the centroid using the area-weighted formula (shoelace theorem).
