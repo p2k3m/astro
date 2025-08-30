@@ -136,6 +136,10 @@ export default function Chart({ data, children, useAbbreviations = false }) {
               <div
                 className={`flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)] ${padClasses}`}
               >
+                <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
+                  {houseNum}
+                </span>
+
                 {houseNum === 1 && (
                   <div className="flex flex-col items-center">
                     <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
