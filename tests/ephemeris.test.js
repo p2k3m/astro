@@ -44,7 +44,8 @@ test('house cusps and retrograde flags', async () => {
       const data = {
         0: { longitude: 100, longitudeSpeed: 1 }, // Sun in Cancer
         1: { longitude: 210, longitudeSpeed: -0.5 }, // Moon retro in Libra
-        2: { longitude: 50, longitudeSpeed: 0.1 },
+        // Mercury has a tiny negative speed that should not count as retrograde
+        2: { longitude: 50, longitudeSpeed: -1e-6 },
         3: { longitude: 10, longitudeSpeed: 0.1 },
         4: { longitude: 80, longitudeSpeed: 0.1 },
         5: { longitude: 170, longitudeSpeed: 0.1 },
@@ -71,6 +72,7 @@ test('house cusps and retrograde flags', async () => {
   assert.strictEqual(planets.moon.sign, 8);
   assert.strictEqual(planets.moon.house, 3);
   assert.strictEqual(planets.moon.retro, true);
+  assert.strictEqual(planets.mercury.retro, false);
 
   assert.strictEqual(planets.rahu.retro, true);
   assert.strictEqual(planets.rahu.house, 9);
