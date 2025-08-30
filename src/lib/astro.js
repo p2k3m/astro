@@ -1,21 +1,7 @@
 import { DateTime } from 'luxon';
-import * as swisseph from '../../swisseph-v2/index.js';
+import { compute_positions } from './ephemeris.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
-
-// initialise Lahiri ayanāṃśa
-if (swisseph.swe_set_sid_mode) {
-  try {
-    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-  } catch {}
-}
-
-function lonToSignDeg(longitude) {
-  const norm = ((longitude % 360) + 360) % 360;
-  const sign = Math.floor(norm / 30); // 0..11
-  const deg = norm % 30;
-  return { sign, deg };
-}
 
 export const BOX_SIZE = 0.125;
 export const SIGN_BOX_CENTERS = [
@@ -154,52 +140,22 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
 
-  const date = dt.toJSDate();
-  const ut =
-    date.getUTCHours() +
-    date.getUTCMinutes() / 60 +
-    date.getUTCSeconds() / 3600 +
-    date.getUTCMilliseconds() / 3600000;
-
-  const jd = swisseph.swe_julday(
-    date.getUTCFullYear(),
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    ut,
-    swisseph.SE_GREG_CAL
-  );
-
-  const hres = swisseph.swe_houses_ex(
-    jd,
+  const base = compute_positions({
+    datetime: dt.toISO({ suppressMilliseconds: true, includeOffset: false }),
+    tz: dt.zoneName,
     lat,
     lon,
-    'P',
-    swisseph.SEFLG_SIDEREAL | swisseph.SEFLG_SWIEPH
-  );
-  if (!hres || typeof hres.ascendant === 'undefined') {
-    throw new Error('Could not compute ascendant from swisseph.');
-  }
-  const asc = lonToSignDeg(hres.ascendant);
+  });
 
-  // house -> sign mapping (1-indexed)
+  // house -> sign mapping (1-indexed, signs 0..11)
   const signInHouse = [null];
+  const signToHouse = {};
   for (let h = 1; h <= 12; h++) {
-    // Add the house offset so signs advance counter-clockwise, wrapping from 0..11
-    signInHouse[h] = (asc.sign + (h - 1)) % 12;
+    const sign = base.houses[h] - 1;
+    signInHouse[h] = sign;
+    signToHouse[sign] = h;
   }
 
-  const flag =
-    swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED | swisseph.SEFLG_SIDEREAL;
-  const planetCodes = {
-    sun: swisseph.SE_SUN,
-    moon: swisseph.SE_MOON,
-    mars: swisseph.SE_MARS,
-    mercury: swisseph.SE_MERCURY,
-    jupiter: swisseph.SE_JUPITER,
-    venus: swisseph.SE_VENUS,
-    saturn: swisseph.SE_SATURN,
-    rahu: swisseph.SE_TRUE_NODE,
-  };
   // combustion thresholds (degrees)
   const combustDeg = {
     moon: 12,
@@ -223,47 +179,27 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   };
 
   const planets = [];
-  const sunData = swisseph.swe_calc_ut(jd, swisseph.SE_SUN, flag);
-  const sunLon = sunData.longitude;
-  const rahuData = swisseph.swe_calc_ut(jd, swisseph.SE_TRUE_NODE, flag);
-  const { sign: rSign } = lonToSignDeg(rahuData.longitude);
+  const sun = base.planets.find((p) => p.name === 'sun');
+  const sunLon = (sun.sign - 1) * 30 + sun.deg;
 
-  for (const [name, code] of Object.entries(planetCodes)) {
-    const data = name === 'rahu' ? rahuData : name === 'sun' ? sunData : swisseph.swe_calc_ut(jd, code, flag);
-    const { sign, deg } = lonToSignDeg(data.longitude);
-    // Determine the house by advancing forward from the ascendant
-    const house = ((sign - asc.sign + 12) % 12) + 1;
-    const retro = data.longitudeSpeed < 0;
-    const cDeg = combustDeg[name];
+  for (const p of base.planets) {
+    const sign = p.sign - 1;
+    const house = signToHouse[sign];
+    const deg = p.deg;
+    const lon = sign * 30 + deg;
+    const retro = p.retro;
+    const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
-      const diff = Math.abs(((data.longitude - sunLon + 540) % 360) - 180);
+      const diff = Math.abs(((lon - sunLon + 540) % 360) - 180);
       combust = diff < cDeg;
     }
-    const exalt = exaltedSign[name];
+    const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
-    planets.push({ name, sign, house, deg, retro, combust, exalted });
+    planets.push({ name: p.name, sign, house, deg, retro, combust, exalted });
   }
 
-  // Ketu is always opposite Rahu
-  const ketuLon = (rahuData.longitude + 180) % 360;
-  const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
-  if (((kSign - rSign + 12) % 12) !== 6) {
-    throw new Error('Rahu and Ketu are not opposite');
-  }
-  const kExalted = exaltedSign.ketu !== undefined && kSign === exaltedSign.ketu;
-  planets.push({
-    name: 'ketu',
-    sign: kSign,
-    // Place Ketu forward from the ascendant
-    house: ((kSign - asc.sign + 12) % 12) + 1,
-    deg: kDeg,
-    retro: rahuData.longitudeSpeed < 0,
-    combust: false,
-    exalted: kExalted,
-  });
-
-  return { ascSign: asc.sign, signInHouse, planets };
+  return { ascSign: signInHouse[1], signInHouse, planets };
 }
 
 export function renderNorthIndian(svgEl, data, options = {}) {

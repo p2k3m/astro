@@ -28,14 +28,14 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('reference charts for Darbhanga on 1982-12-01 match expected placements', async () => {
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
-  assert.strictEqual(am.ascSign, 0);
+  assert.strictEqual(am.ascSign, 6);
   const amPlanets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
   assert.strictEqual(amPlanets.sun.sign, 7);
-  assert.strictEqual(amPlanets.sun.house, 8);
+  assert.strictEqual(amPlanets.sun.house, 2);
   assert.strictEqual(amPlanets.moon.sign, 1);
-  assert.strictEqual(amPlanets.moon.house, 2);
+  assert.strictEqual(amPlanets.moon.house, 8);
   assert.strictEqual(amPlanets.saturn.sign, 5);
-  assert.strictEqual(amPlanets.saturn.house, 6);
+  assert.strictEqual(amPlanets.saturn.house, 12);
 
   global.document = doc;
   const svgAm = new Element('svg');
@@ -46,12 +46,12 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   );
 
   const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
-  assert.strictEqual(pm.ascSign, 6);
+  assert.strictEqual(pm.ascSign, 0);
   const pmPlanets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(pmPlanets.sun.sign, 7);
-  assert.strictEqual(pmPlanets.sun.house, 2);
+  assert.strictEqual(pmPlanets.sun.house, 8);
   assert.strictEqual(pmPlanets.moon.sign, 1);
-  assert.strictEqual(pmPlanets.moon.house, 8);
+  assert.strictEqual(pmPlanets.moon.house, 2);
 
   const svgPm = new Element('svg');
   renderNorthIndian(svgPm, pm);
