@@ -63,3 +63,19 @@ npm run build
 ```
 
 Upload the contents of `dist/` to your hosting service.
+
+## Visual comparison with AstroSage
+
+To confirm that the chart output matches common astrology software, you can
+compare it against the AstroSage online chart using known reference data:
+
+1. Open the AstroSage birth chart calculator and set the location to
+   **Darbhanga, India** (26.152° N, 85.897° E).
+2. Generate charts for these reference times in the India/Calcutta time zone:
+   - **1 December 1982, 03:50**
+   - **1 December 1982, 15:50**
+3. Run this project and enter the same details. The ascendant sign and the
+   houses occupied by the Sun and Moon should match the AstroSage results.
+
+A regression test in `tests/astrosage-compare.test.js` hardcodes these
+AstroSage values so you can verify them automatically with `npm test`.
