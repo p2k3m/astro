@@ -90,26 +90,24 @@ export default function Chart({
     const signBottom = labelY + SIGN_FONT_SIZE / 2;
     const bottomLimit = maxPolyY - PLANET_PAD;
     let px = cx;
-    const baseline = cy + 0.07;
     let py = signBottom + PLANET_GAP;
-    if (py < baseline) py = baseline;
-    let downward = true;
-    if (py > bottomLimit) {
-      py = bottomLimit;
-      downward = false;
+    const baseline = cy + 0.07;
+    const shiftAway = () => {
       const shift = 0.06;
       px =
         signX < cx
           ? Math.min(maxX - PLANET_PAD, cx + shift)
           : Math.max(minX + PLANET_PAD, cx - shift);
+    };
+    if (py > bottomLimit) {
+      py = baseline;
+      shiftAway();
     }
     let step = 0;
     if (planets.length > 1) {
-      const available = downward
-        ? bottomLimit - py
-        : py - (minY + PLANET_PAD);
+      const available = bottomLimit - py;
       step = available > 0 ? Math.min(0.04, available / (planets.length - 1)) : 0;
-      if (!downward) step = -step;
+      if (step < PLANET_GAP) shiftAway();
     }
     return {
       houseNum,
