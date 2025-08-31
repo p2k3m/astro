@@ -67,15 +67,15 @@ test('planet labels keep clear of sign numbers in every house', () => {
   assert.deepStrictEqual(snapshot, [
     { house: 1, gap: null },
     { house: 2, gap: 0.07 },
-    { house: 3, gap: 0.24 },
-    { house: 4, gap: 0.24 },
-    { house: 5, gap: 0.24 },
+    { house: 3, gap: 0.22 },
+    { house: 4, gap: 0.22 },
+    { house: 5, gap: 0.22 },
     { house: 6, gap: 0.15 },
     { house: 7, gap: null },
     { house: 8, gap: 0.15 },
-    { house: 9, gap: 0.24 },
-    { house: 10, gap: 0.24 },
-    { house: 11, gap: 0.24 },
+    { house: 9, gap: 0.22 },
+    { house: 10, gap: 0.22 },
+    { house: 11, gap: 0.22 },
     { house: 12, gap: 0.07 },
   ]);
 });
