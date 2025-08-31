@@ -1,6 +1,10 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { renderNorthIndian, HOUSE_BBOXES } = require('../src/lib/astro.js');
+const {
+  renderNorthIndian,
+  HOUSE_BBOXES,
+  HOUSE_POLYGONS,
+} = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -26,6 +30,17 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
+function pointInPolygon(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
 test('sign labels stay inside each house polygon', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
@@ -49,6 +64,7 @@ test('sign labels stay inside each house polygon', () => {
 
   for (let h = 1; h <= 12; h++) {
     const bbox = HOUSE_BBOXES[h - 1];
+    const poly = HOUSE_POLYGONS[h - 1];
     const node = signNodes[h - 1];
     const x = Number(node.attributes.x);
     const y = Number(node.attributes.y);
@@ -59,6 +75,10 @@ test('sign labels stay inside each house polygon', () => {
       bbox.maxY - y
     );
     assert.ok(minPad >= 0.03, `label too close to edge in house ${h}`);
+    assert.ok(
+      pointInPolygon(x, y, poly),
+      `label lies outside polygon in house ${h}`
+    );
     const planetNodes = texts.filter((t) => t.textContent.startsWith(`p${h}_`));
     const planetYs = planetNodes.map((t) => Number(t.attributes.y));
     const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
