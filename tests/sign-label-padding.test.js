@@ -63,11 +63,13 @@ test('sign labels keep padding from borders and planets', () => {
 
     const xPad = +(bbox.maxX - signX).toFixed(2);
     const yPad = +(signY - bbox.minY).toFixed(2);
+    const touchesFrame = xPad < 0.04 || yPad < 0.08;
+    const overlapsPlanet = gap !== null && gap < 0.02;
+
     snapshot.push({ house: h, xPad, yPad, planetGap: gap });
 
-    assert.ok(xPad >= 0.04, 'label touches right border');
-    assert.ok(yPad >= 0.08, 'label touches top border');
-    if (gap !== null) assert.ok(gap >= 0.02, 'label overlaps planet');
+    assert.ok(!touchesFrame, 'label touches frame');
+    assert.ok(!overlapsPlanet, 'label overlaps planet');
   }
 
   assert.deepStrictEqual(snapshot, [

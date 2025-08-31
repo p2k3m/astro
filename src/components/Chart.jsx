@@ -81,7 +81,10 @@ export default function Chart({
     };
   });
 
-  const labelPad = (12 / 300) * size;
+  // Extra padding ensures the sign labels don't hug the chart frame
+  // and stay clear of any planet text. Empirically a slightly wider
+  // margin works well across chart sizes.
+  const labelPad = (20 / 300) * size;
 
   return (
     <div className="backdrop-blur-md bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center justify-center">
