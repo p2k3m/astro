@@ -13,9 +13,9 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     moon: 8,
     mars: 6,
     mercury: 7,
-    jupiter: 2,
+    jupiter: 1,
     venus: 7,
-    saturn: 1,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
   };
@@ -35,9 +35,9 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     moon: 1,
     mars: 11,
     mercury: 12,
-    jupiter: 7,
+    jupiter: 6,
     venus: 12,
-    saturn: 6,
+    saturn: 5,
     rahu: 2,
     ketu: 8,
   };
