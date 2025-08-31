@@ -7,5 +7,5 @@ test('sign sequence matches AstroSage for Darbhanga 1982-12-01 03:50', async () 
   // Ascendant sign should populate the first house
   assert.strictEqual(result.signInHouse[1], result.ascSign);
   // The sequence should progress sequentially
-  assert.deepStrictEqual(result.signInHouse.slice(1), [7, 8, 9, 10, 11, 1, 12, 2, 3, 4, 5, 6]);
+  assert.deepStrictEqual(result.signInHouse.slice(1), [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
 });

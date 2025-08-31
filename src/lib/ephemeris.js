@@ -86,18 +86,11 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const rahuFlags = rahuData.flags || 0;
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
   // Determine the whole-sign house for a given sign relative to the ascendant.
-  // AstroSage numbers houses such that the sign immediately preceding the
-  // ascendant occupies the 6th house and the sign opposite the ascendant the
-  // 7th.  The previous implementation simply counted forward from the ascendant
-  // and therefore mis-assigned signs 12 and 1 (adjacent and opposite to the
-  // ascendant) to houses 6 and 7 respectively.  Adjust by swapping those two
-  // houses so that the mapping matches AstroSage.
-  const houseOfSign = (sign) => {
-    const h = ((sign - ascSign + 12) % 12) + 1;
-    if (h === 6) return 7;
-    if (h === 7) return 6;
-    return h;
-  };
+  // With whole-sign houses the ascendant sign occupies the 1st house and the
+  // remaining signs follow sequentially anti-clockwise.  The house is therefore
+  // simply the offset between the sign and the ascendant within the 12‑sign
+  // cycle.
+  const houseOfSign = (sign) => ((sign - ascSign + 12) % 12) + 1;
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =

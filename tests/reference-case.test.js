@@ -40,11 +40,11 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(amPlanets.saturn.house, 12);
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 6).map((p) => p.name),
-    ['mercury', 'venus']
+    ['mars']
   );
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 7).map((p) => p.name),
-    ['mars']
+    ['mercury', 'venus']
   );
 
   global.document = doc;
@@ -59,10 +59,10 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(pm.ascSign, 2);
   const pmPlanets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(pmPlanets.sun.sign, 7);
-  assert.strictEqual(pmPlanets.sun.house, 6);
+  assert.strictEqual(pmPlanets.sun.house, 7);
   assert.strictEqual(pmPlanets.moon.sign, 1);
   assert.strictEqual(pmPlanets.moon.house, 1);
-  assert.strictEqual(pmPlanets.jupiter.house, 7);
+  assert.strictEqual(pmPlanets.jupiter.house, 6);
   assert.strictEqual(pmPlanets.saturn.house, 5);
 
   const svgPm = new Element('svg');
