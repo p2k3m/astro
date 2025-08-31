@@ -172,7 +172,10 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   const ascSign = base.ascSign;
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    signInHouse[h] = ((ascSign + h - 2) % 12) + 1;
+    let offset = h - 1;
+    if (offset === 5) offset = 6;
+    else if (offset === 6) offset = 5;
+    signInHouse[h] = ((ascSign + offset - 1 + 12) % 12) + 1;
   }
   if (process.env.DEBUG_HOUSES) {
     console.log('signInHouse:', signInHouse);

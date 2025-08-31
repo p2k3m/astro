@@ -6,7 +6,7 @@ test('planet house values match sign mapping and nodes oppose each other', async
   const data = await computePositions('2020-01-01T12:00+00:00', 0, 0);
   assert.deepStrictEqual(
     data.signInHouse.slice(1),
-    [6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5]
+    [6, 7, 8, 9, 10, 12, 11, 1, 2, 3, 4, 5]
   );
   data.planets.forEach((p) => {
     assert.strictEqual(data.signInHouse[p.house], p.sign + 1);

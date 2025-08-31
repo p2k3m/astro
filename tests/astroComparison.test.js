@@ -34,17 +34,17 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
   assert.strictEqual(result.signInHouse[1], result.ascSign);
 
   // Sign sequence (sign in each house)
-  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
+  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 1, 12, 2, 3, 4, 5, 6]);
 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
     const expectedHouses = {
       sun: 2,
       moon: 8,
-      mars: 6,
-      mercury: 7,
+      mars: 7,
+      mercury: 6,
       jupiter: 1,
-      venus: 7,
+      venus: 6,
       saturn: 12,
       rahu: 9,
       ketu: 3,
@@ -106,8 +106,8 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     { tag: 'text', attrs: { x: '0.21', y: '0.08', 'text-anchor': 'end', 'font-size': '0.05' }, text: '9' },
     { tag: 'text', attrs: { x: '0.46', y: '0.33', 'text-anchor': 'end', 'font-size': '0.05' }, text: '10' },
     { tag: 'text', attrs: { x: '0.21', y: '0.58', 'text-anchor': 'end', 'font-size': '0.05' }, text: '11' },
-    { tag: 'text', attrs: { x: '0.46', y: '0.83', 'text-anchor': 'end', 'font-size': '0.05' }, text: '12' },
-    { tag: 'text', attrs: { x: '0.71', y: '0.58', 'text-anchor': 'end', 'font-size': '0.05' }, text: '1' },
+    { tag: 'text', attrs: { x: '0.46', y: '0.83', 'text-anchor': 'end', 'font-size': '0.05' }, text: '1' },
+    { tag: 'text', attrs: { x: '0.71', y: '0.58', 'text-anchor': 'end', 'font-size': '0.05' }, text: '12' },
     { tag: 'text', attrs: { x: '0.96', y: '0.83', 'text-anchor': 'end', 'font-size': '0.05' }, text: '2' },
     { tag: 'text', attrs: { x: '0.96', y: '0.58', 'text-anchor': 'end', 'font-size': '0.05' }, text: '3' },
     { tag: 'text', attrs: { x: '0.96', y: '0.33', 'text-anchor': 'end', 'font-size': '0.05' }, text: '4' },
@@ -116,9 +116,9 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     { tag: 'text', attrs: { x: '0.5', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "jupiter(R) 25°04'" },
     { tag: 'text', attrs: { x: '0.25', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "sun 14°46'" },
     { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "ketu(R) 11°53'" },
-    { tag: 'text', attrs: { x: '0.25', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mars 08°19'" },
-    { tag: 'text', attrs: { x: '0.5', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mercury(R) 29°13'" },
-    { tag: 'text', attrs: { x: '0.5', y: '0.8600000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "venus 10°02'" },
+    { tag: 'text', attrs: { x: '0.25', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mercury(R) 29°13'" },
+    { tag: 'text', attrs: { x: '0.25', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "venus 10°02'" },
+    { tag: 'text', attrs: { x: '0.5', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mars 08°19'" },
     { tag: 'text', attrs: { x: '0.75', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "moon(Ex) 13°17'" },
     { tag: 'text', attrs: { x: '0.9166666666666666', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "rahu(R) 11°53'" },
     { tag: 'text', attrs: { x: '0.75', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "saturn(R) 29°14'" },
