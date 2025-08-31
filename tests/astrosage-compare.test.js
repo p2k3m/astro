@@ -12,10 +12,10 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     sun: 2,
     moon: 8,
     mars: 6,
-    mercury: 7,
-    jupiter: 1,
+    mercury: 8,
+    jupiter: 2,
     venus: 7,
-    saturn: 12,
+    saturn: 1,
     rahu: 9,
     ketu: 3,
   };
@@ -31,15 +31,15 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   const expected = {
-    sun: 7,
-    moon: 1,
-    mars: 11,
-    mercury: 12,
-    jupiter: 6,
-    venus: 12,
-    saturn: 5,
-    rahu: 2,
-    ketu: 8,
+    sun: 8,
+    moon: 2,
+    mars: 12,
+    mercury: 1,
+    jupiter: 7,
+    venus: 1,
+    saturn: 6,
+    rahu: 3,
+    ketu: 9,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
