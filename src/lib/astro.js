@@ -212,7 +212,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     const house = p.house;
     const deg = p.deg;
     const lon = sign * 30 + deg;
-    const retro = Boolean(p.retro);
+    const retro = p.retro;
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {

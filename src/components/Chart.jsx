@@ -50,7 +50,7 @@ export default function Chart({
       degree = `${d}°${String(m).padStart(2, '0')}'`;
     }
     let abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
-    const isRetro = Boolean(p.retro);
+    const isRetro = p.retro;
     if (isRetro) abbr += '(R)';
     if (p.combust) abbr += '(C)';
     if (p.exalted) abbr += '(Ex)';
