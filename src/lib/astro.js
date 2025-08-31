@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { compute_positions, lonToSignDeg } from './ephemeris.js';
+import { compute_positions } from './ephemeris.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
@@ -169,11 +169,11 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     lon,
   });
 
+  const ascSign = base.ascSign;
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    signInHouse[h] = lonToSignDeg(base.houses[h]).sign;
+    signInHouse[h] = ((ascSign + h - 2) % 12) + 1;
   }
-  const ascSign = signInHouse[1];
   if (process.env.DEBUG_HOUSES) {
     console.log('signInHouse:', signInHouse);
   }
