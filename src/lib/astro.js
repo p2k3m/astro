@@ -255,6 +255,10 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   CHART_PATHS.diagonals.forEach((d) => addPath(d, '0.01'));
   addPath(CHART_PATHS.inner, '0.01');
 
+  const SIGN_PAD_Y = 0.08;
+  const PLANET_GAP = 0.02;
+  const PLANET_PAD = 0.02;
+
   const signNodes = [];
   for (let h = 1; h <= 12; h++) {
     const bbox = HOUSE_BBOXES[h - 1];
@@ -264,7 +268,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
       ascText.setAttribute('x', minX + 0.04);
-      ascText.setAttribute('y', minY + 0.08);
+      ascText.setAttribute('y', minY + SIGN_PAD_Y);
       ascText.setAttribute('text-anchor', 'start');
       ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
@@ -273,7 +277,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
     const signText = document.createElementNS(svgNS, 'text');
     signText.setAttribute('x', maxX - 0.04);
-    signText.setAttribute('y', minY + 0.08);
+    signText.setAttribute('y', minY + SIGN_PAD_Y);
     signText.setAttribute('text-anchor', 'end');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
@@ -287,11 +291,13 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     const planets = data.planets.filter((p) => p.house === h);
     if (planets.length === 0) continue;
     const maxY = Math.max(...poly.map((pt) => pt[1]));
-    let py = cy + 0.07;
-    if (py > maxY - 0.02) py = maxY - 0.02;
+    const { minY } = HOUSE_BBOXES[h - 1];
+    const signBottom = minY + SIGN_PAD_Y; // baseline is bottom of text
+    let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
+    if (py > maxY - PLANET_PAD) py = maxY - PLANET_PAD;
     const step =
       planets.length > 1
-        ? Math.min(0.04, (maxY - 0.02 - py) / (planets.length - 1))
+        ? Math.min(0.04, (maxY - PLANET_PAD - py) / (planets.length - 1))
         : 0;
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');

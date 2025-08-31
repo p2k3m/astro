@@ -31,8 +31,11 @@ test('sign labels anchor to chart corners with padding', () => {
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
 
   const planets = [];
+  const counts = [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3];
   for (let h = 1; h <= 12; h++) {
-    planets.push({ name: `p${h}`, house: h, deg: 0 });
+    for (let i = 0; i < counts[h - 1]; i++) {
+      planets.push({ name: `p${h}_${i}`, house: h, deg: i * 10 });
+    }
   }
 
   global.document = doc;
@@ -55,7 +58,7 @@ test('sign labels anchor to chart corners with padding', () => {
     const xPad = +(bbox.maxX - x).toFixed(2);
     const yPad = +(y - bbox.minY).toFixed(2);
     const planetNodes = texts.filter((t) =>
-      t.textContent.startsWith(`p${h} `)
+      t.textContent.startsWith(`p${h}_`)
     );
     const planetYs = planetNodes.map((t) => Number(t.attributes.y));
     const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
@@ -67,15 +70,15 @@ test('sign labels anchor to chart corners with padding', () => {
   }
 
   assert.deepStrictEqual(snapshot, [
-    { house: 1, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 1, xPad: 0.04, yPad: 0.08, planetGap: null },
     { house: 2, xPad: 0.04, yPad: 0.08, planetGap: 0.07 },
     { house: 3, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
     { house: 4, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
-    { house: 5, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 5, xPad: 0.04, yPad: 0.08, planetGap: null },
     { house: 6, xPad: 0.04, yPad: 0.08, planetGap: 0.15 },
     { house: 7, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
     { house: 8, xPad: 0.04, yPad: 0.08, planetGap: 0.15 },
-    { house: 9, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 9, xPad: 0.04, yPad: 0.08, planetGap: null },
     { house: 10, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
     { house: 11, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
     { house: 12, xPad: 0.04, yPad: 0.08, planetGap: 0.07 },
