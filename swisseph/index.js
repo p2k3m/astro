@@ -204,19 +204,6 @@ function siderealLongitude(jd, planetId) {
     tropical = normalizeAngle(125.04452 - 0.0529538083 * days);
   } else {
     tropical = planetLongitudeTropical(jd, planetId);
-    // Apply simple perturbation corrections for outer planets.
-    // These coarse adjustments bring Jupiter and Saturn within
-    // roughly a degree of Swiss Ephemeris values for the 1980s,
-    // which is sufficient for sign/house determinations in tests.
-    if (planetId === SE_JUPITER) {
-      tropical += 10; // Jupiter runs ~10° behind without perturbations
-    }
-    if (planetId === SE_SATURN) {
-      tropical += 1; // Saturn trails by ~1° in the simplified model
-    }
-    // No bespoke correction for Mars. With the accurate ephemeris in place
-    // (see Issue 1) the additional offsets previously applied here are no
-    // longer required.
   }
   const ayan = lahiriAyanamsa(jd);
   return normalizeAngle(tropical - ayan);
@@ -231,9 +218,6 @@ function js_swe_calc_ut(jd, planetId, flags) {
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   let speed = diff / (2 * delta); // degrees per day
-  if (planetId === SE_MERCURY || planetId === SE_JUPITER || planetId === SE_SATURN) {
-    speed = Math.abs(speed);
-  }
   const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
   return { longitude: lon, longitudeSpeed: speed, flags: ret };
 }

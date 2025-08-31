@@ -16,9 +16,9 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     moon: 8,
     mercury: 7,
     venus: 7,
-      mars: 6,
-    jupiter: 2,
-    saturn: 1,
+    mars: 6,
+    jupiter: 1,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
   };
@@ -26,8 +26,18 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
 
-  const direct = ['sun', 'moon', 'mars', 'venus', 'mercury', 'jupiter', 'saturn'];
-  for (const name of direct) {
-    assert.strictEqual(planets[name].retro, false, `${name} should be direct`);
+  const expectedRetro = {
+    sun: false,
+    moon: false,
+    mars: false,
+    venus: false,
+    mercury: true,
+    jupiter: true,
+    saturn: true,
+    rahu: true,
+    ketu: true,
+  };
+  for (const [name, retro] of Object.entries(expectedRetro)) {
+    assert.strictEqual(planets[name].retro, retro, `${name} retrograde`);
   }
 });

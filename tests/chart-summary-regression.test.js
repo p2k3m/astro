@@ -12,8 +12,8 @@ test('Chart summary for reference chart matches expected output', async () => {
     moonSign: 'Taurus',
     houses: [
       '',
-      'Sa',
-      'Su Ju',
+      'Ju',
+      'Su',
       'Ke',
       '',
       '',
@@ -23,7 +23,7 @@ test('Chart summary for reference chart matches expected output', async () => {
       'Ra',
       '',
       '',
-      '',
+      'Sa',
     ],
   });
 });
