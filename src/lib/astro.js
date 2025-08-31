@@ -201,8 +201,8 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
-      // shortest angular separation from the Sun in degrees
-      const diff = Math.abs((sunLon - lon + 180) % 360 - 180); // 0..180
+      // Shortest Sun–planet separation in degrees (0..180)
+      const diff = Math.abs((sunLon - lon + 180) % 360 - 180);
       combust = diff < cDeg;
     }
     const exalt = exaltedSign[p.name];
