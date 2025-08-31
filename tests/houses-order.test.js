@@ -3,6 +3,7 @@ const test = require('node:test');
 const {
   renderNorthIndian,
   HOUSE_CENTROIDS,
+  HOUSE_BBOXES,
 } = require('../src/lib/astro.js');
 
 class Element {
@@ -44,9 +45,9 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
   for (let i = 0; i < 12; i++) {
     const t = signTexts.find((st) => st.textContent === String(i + 1));
     assert.ok(t, `sign ${i + 1} missing`);
-    const { cx, cy } = HOUSE_CENTROIDS[i];
-    assert.strictEqual(Number(t.attributes.x), cx);
-    assert.strictEqual(Number(t.attributes.y), cy);
+    const { minX, maxX, minY } = HOUSE_BBOXES[i];
+    assert.strictEqual(Number(t.attributes.x), maxX - 0.02);
+    assert.strictEqual(Number(t.attributes.y), minY + 0.05);
   }
   delete global.document;
 

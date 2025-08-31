@@ -1,6 +1,10 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { renderNorthIndian, HOUSE_CENTROIDS } = require('../src/lib/astro.js');
+const {
+  renderNorthIndian,
+  HOUSE_CENTROIDS,
+  HOUSE_BBOXES,
+} = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -26,7 +30,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('sign labels render before planets with stable spacing', () => {
+test('sign labels anchor to corners without overlapping planets', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
@@ -40,21 +44,27 @@ test('sign labels render before planets with stable spacing', () => {
   delete global.document;
 
   const { cx, cy } = HOUSE_CENTROIDS[0];
-  const texts = svg.children.filter(
-    (c) =>
-      c.tagName === 'text' &&
-      Number(c.attributes.x) === cx &&
-      Number(c.attributes.y) < 0.5
-  );
+  const { minX, maxX, minY, maxY } = HOUSE_BBOXES[0];
+  const xs = new Set([minX + 0.02, maxX - 0.02, cx]);
+  const texts = svg.children
+    .filter(
+      (c) =>
+        c.tagName === 'text' &&
+        xs.has(Number(c.attributes.x)) &&
+        Number(c.attributes.y) >= minY &&
+        Number(c.attributes.y) <= maxY
+    )
+    .sort((a, b) => Number(a.attributes.y) - Number(b.attributes.y));
   const snapshot = texts.map((t) => ({
     text: t.textContent,
+    x: Number(t.attributes.x),
     y: Number(t.attributes.y),
   }));
 
   assert.deepStrictEqual(snapshot, [
-    { text: 'Asc', y: cy + 0.08 },
-    { text: '1', y: cy },
-    { text: 'p1 00°00\'', y: cy + 0.07 },
-    { text: 'p2 10°00\'', y: cy + 0.11 },
+    { text: 'Asc', x: minX + 0.02, y: minY + 0.05 },
+    { text: '1', x: maxX - 0.02, y: minY + 0.05 },
+    { text: "p1 00°00'", x: cx, y: cy + 0.07 },
+    { text: "p2 10°00'", x: cx, y: cy + 0.11 },
   ]);
 });
