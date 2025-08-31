@@ -1,7 +1,6 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const calculateChart = require('../src/calculateChart.js').default;
-const { renderNorthIndian } = require('../src/lib/astro.js');
+const { computePositions, renderNorthIndian } = require('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -27,14 +26,8 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('calculateChart matches AstroSage for Darbhanga 1982-12-01 03:50', async () => {
-  const result = await calculateChart({
-    date: '1982-12-01',
-    time: '03:50',
-    lat: 26.152,
-    lon: 85.897,
-    timezone: 'Asia/Calcutta',
-  });
+test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async () => {
+  const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
 
   // Ascendant sign
   assert.strictEqual(result.ascSign, 7);
