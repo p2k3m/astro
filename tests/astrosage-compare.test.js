@@ -11,10 +11,10 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const expected = {
     sun: 2,
     moon: 8,
-    mars: 7,
-    mercury: 6,
+    mars: 6,
+    mercury: 7,
     jupiter: 1,
-    venus: 6,
+    venus: 7,
     saturn: 12,
     rahu: 9,
     ketu: 3,
@@ -31,11 +31,11 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   const expected = {
-    sun: 6,
+    sun: 7,
     moon: 1,
     mars: 11,
     mercury: 12,
-    jupiter: 7,
+    jupiter: 6,
     venus: 12,
     saturn: 5,
     rahu: 2,
@@ -48,6 +48,6 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
 
 test('Darbhanga 1982-12-01 03:50 sign sequence matches AstroSage', async () => {
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
-  const expected = [null, 7, 8, 9, 10, 11, 1, 12, 2, 3, 4, 5, 6];
+  const expected = [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
   assert.deepStrictEqual(am.signInHouse, expected);
 });
