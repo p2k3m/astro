@@ -60,33 +60,35 @@ export default function Chart({
     planetByHouse[houseIdx].push({ abbr, deg });
   });
 
-  const houses = HOUSE_POLYGONS.map((_, idx) => {
+  const SIGN_PAD_X = 0.04;
+  const SIGN_PAD_Y = 0.08;
+
+  const houses = HOUSE_POLYGONS.map((poly, idx) => {
     const bbox = HOUSE_BBOXES[idx];
-    const { minX, maxX, minY, maxY } = bbox;
+    const { minX, maxX, minY } = bbox;
     const centroid = HOUSE_CENTROIDS[idx];
-    // Offset the centroid slightly toward the chart centre so labels
-    // remain well within each house polygon even on small charts.
-    const inset = 0.92;
-    const sx = 0.5 + (centroid.cx - 0.5) * inset;
-    const sy = 0.5 + (centroid.cy - 0.5) * inset;
-    const bx = (minX + maxX) / 2;
-    const by = (minY + maxY) / 2;
+    const maxPolyY = Math.max(...poly.map((pt) => pt[1]));
+    const cx = centroid.cx;
+    const cy = centroid.cy;
     const houseNum = idx + 1;
     const signNum = signInHouse[houseNum] ?? houseNum;
-    const margin = (4 / 300) * size;
-    const width = (maxX - minX) * size - margin;
-    const height = (maxY - minY) * size - margin;
+    const planets = planetByHouse[houseNum] || [];
+    let py = cy + 0.07;
+    if (py > maxPolyY - 0.02) py = maxPolyY - 0.02;
+    const step =
+      planets.length > 1
+        ? Math.min(0.04, (maxPolyY - 0.02 - py) / (planets.length - 1))
+        : 0;
     return {
-      idx,
-      bbox,
-      bx,
-      by,
-      sx,
-      sy,
-      width,
-      height,
       houseNum,
       signNum,
+      signX: maxX - SIGN_PAD_X,
+      signY: minY + SIGN_PAD_Y,
+      ascX: minX + SIGN_PAD_X,
+      planets,
+      cx,
+      pyStart: py,
+      step,
     };
   });
 
@@ -105,54 +107,56 @@ export default function Chart({
           ))}
           <path d={CHART_PATHS.inner} strokeWidth={0.01} />
         </svg>
-        {/** Sign label overlay */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          {houses.map(({ houseNum, signNum, sx, sy }) => (
-            <div
-              key={`sign-${houseNum}`}
-              className="absolute flex flex-col items-center"
-              style={{
-                top: sy * size,
-                left: sx * size,
-                transform: 'translate(-50%, -50%)',
-                gap: (2 / 300) * size,
-              }}
-            >
-              <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
+        {/** Sign labels */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+          {houses.map(({ houseNum, signNum, signX, signY, ascX }) => (
+            <React.Fragment key={`sign-${houseNum}`}>
+              <div
+                className="absolute text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none"
+                style={{
+                  top: signY * size,
+                  left: signX * size,
+                  transform: 'translate(-100%, -50%)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {getSignLabel(signNum - 1, { useAbbreviations })}
-              </span>
+              </div>
               {houseNum === 1 && (
-                <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
+                <div
+                  className="absolute text-amber-700 text-[0.7rem] font-semibold leading-none"
+                  style={{
+                    top: signY * size,
+                    left: ascX * size,
+                    transform: 'translate(0, -50%)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   Asc
-                </span>
+                </div>
               )}
-            </div>
+            </React.Fragment>
           ))}
         </div>
         {/** Planet labels */}
-        {houses.map(({ houseNum, bx, by, width, height }) => (
-          <div
-            key={houseNum}
-            className="absolute overflow-hidden z-10"
-            style={{
-              top: by * size,
-              left: bx * size,
-              width,
-              height,
-              transform: 'translate(-50%, -50%)',
-              padding: (2 / 300) * size,
-            }}
-          >
-            <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]">
-              {planetByHouse[houseNum] &&
-                planetByHouse[houseNum].map((pl, i) => (
-                  <span key={i} className="text-center">
-                    {pl.abbr} {pl.deg}
-                  </span>
-                ))}
-            </div>
-          </div>
-        ))}
+        <div className="absolute inset-0 z-0">
+          {houses.map(({ houseNum, planets, cx, pyStart, step }) =>
+            planets.map((pl, i) => (
+              <div
+                key={`p-${houseNum}-${i}`}
+                className="absolute text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]"
+                style={{
+                  top: (pyStart + step * i) * size,
+                  left: cx * size,
+                  transform: 'translate(-50%, -50%)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {pl.abbr} {pl.deg}
+              </div>
+            ))
+          )}
+        </div>
         {children}
       </div>
     </div>
@@ -179,4 +183,3 @@ Chart.propTypes = {
   useAbbreviations: PropTypes.bool,
   size: PropTypes.number,
 };
-
