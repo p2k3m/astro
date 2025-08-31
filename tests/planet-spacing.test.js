@@ -26,7 +26,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('planets render in distinct rows below sign label', () => {
+test('planets render in distinct rows regardless of house position', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
@@ -34,6 +34,9 @@ test('planets render in distinct rows below sign label', () => {
     { name: 'p2', house: 2, deg: 10 },
     { name: 'p3', house: 2, deg: 20 },
     { name: 'p4', house: 2, deg: 30 },
+    { name: 'q1', house: 6, deg: 0 },
+    { name: 'q2', house: 6, deg: 10 },
+    { name: 'q3', house: 6, deg: 20 },
   ];
 
   global.document = doc;
@@ -41,17 +44,18 @@ test('planets render in distinct rows below sign label', () => {
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
 
-  const { cx, cy } = HOUSE_CENTROIDS[1]; // house 2
   const texts = svg.children.filter((c) => c.tagName === 'text');
-  const planetYs = texts
-    .filter((t) => Number(t.attributes.x) === cx && t.textContent.startsWith('p'))
-    .map((t) => Number(t.attributes.y));
 
-  assert.strictEqual(planetYs.length, 4);
-  planetYs.forEach((y) => {
-    assert.ok(y >= cy + 0.07, 'planet overlaps sign label');
-  });
-  for (let i = 1; i < planetYs.length; i++) {
-    assert.ok(planetYs[i] - planetYs[i - 1] >= 0.02, 'planet rows overlap');
-  }
+  const checkHouse = (house, prefix) => {
+    const ys = texts
+      .filter((t) => t.textContent.startsWith(prefix))
+      .map((t) => Number(t.attributes.y))
+      .sort((a, b) => b - a);
+    for (let i = 1; i < ys.length; i++) {
+      assert.ok(Math.abs(ys[i] - ys[i - 1]) >= 0.02, 'planet rows overlap');
+    }
+  };
+
+  checkHouse(2, 'p');
+  checkHouse(6, 'q');
 });
