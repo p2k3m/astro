@@ -30,7 +30,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('houses and signs increase anti-clockwise from ascendant', () => {
+test('houses and signs increase clockwise from ascendant', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const data = { ascSign: 1, signInHouse, planets: [] };
@@ -63,6 +63,6 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
     const x2 = cx2 - 0.5;
     const y2 = 0.5 - cy2;
     const cross = x1 * y2 - y1 * x2;
-    assert.ok(cross > 0, `houses ${i + 1} -> ${((i + 2) > 12 ? 1 : i + 2)} not anti-clockwise`);
+    assert.ok(cross < 0, `houses ${i + 1} -> ${((i + 2) > 12 ? 1 : i + 2)} not clockwise`);
   }
 });
