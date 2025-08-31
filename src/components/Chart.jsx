@@ -61,27 +61,21 @@ export default function Chart({
   });
 
   const SIGN_PAD_X = 0.04;
-  const SIGN_PAD_Y = 0.08;
   const SIGN_FONT_SIZE = 0.05;
   const PLANET_GAP = 0.02;
   const PLANET_PAD = 0.02;
-  const SIGN_MARGIN = 0.08;
-  const SIGN_TOWARDS_VERTEX = 0.6;
+  // Ensure sign numbers sit comfortably inside each polygon even when the
+  // chart is rendered at smaller sizes.
+  const SIGN_MARGIN = 0.1;
 
   const houses = HOUSE_POLYGONS.map((poly, idx) => {
     const bbox = HOUSE_BBOXES[idx];
     const centroid = HOUSE_CENTROIDS[idx];
     const { minX, maxX, minY, maxY } = bbox;
-    // Identify the top-most vertex (preferring the right-most when tied)
-    let target = poly[0];
-    for (const [x, y] of poly) {
-      if (y < target[1] || (y === target[1] && x > target[0])) target = [x, y];
-    }
-    let signX =
-      centroid.cx + (target[0] - centroid.cx) * SIGN_TOWARDS_VERTEX;
-    let labelY =
-      centroid.cy + (target[1] - centroid.cy) * SIGN_TOWARDS_VERTEX;
-    // Ensure the label stays well within the bounding box of the polygon
+    // Start label coordinates at the polygon centroid and clamp to provide
+    // a bit of breathing room from the edges of the house.
+    let signX = centroid.cx;
+    let labelY = centroid.cy;
     if (signX < minX + SIGN_MARGIN) signX = minX + SIGN_MARGIN;
     if (signX > maxX - SIGN_MARGIN) signX = maxX - SIGN_MARGIN;
     if (labelY < minY + SIGN_MARGIN) labelY = minY + SIGN_MARGIN;
