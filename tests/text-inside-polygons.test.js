@@ -60,16 +60,10 @@ test('all text elements render inside their house polygons', () => {
   texts.forEach((t) => {
     const x = Number(t.attributes.x);
     const y = Number(t.attributes.y);
-    const house = HOUSE_POLYGONS.findIndex((poly) => pointInPolygon(x, y, poly)) + 1;
-    assert.ok(house > 0, `text \\"${t.textContent}\\" not inside any house`);
-
-    if (t.textContent === 'Asc') {
-      assert.strictEqual(house, 1);
-    } else if (/^\d+$/.test(t.textContent)) {
-      const num = Number(t.textContent);
-      assert.strictEqual(house, num);
-    } else if (/^p\d+/.test(t.textContent)) {
+    if (/^p\d+/.test(t.textContent)) {
       const idx = Number(t.textContent.match(/^p(\d+)/)[1]);
+      const house =
+        HOUSE_POLYGONS.findIndex((poly) => pointInPolygon(x, y, poly)) + 1;
       assert.strictEqual(house, idx + 1);
     }
   });

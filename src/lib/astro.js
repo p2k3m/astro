@@ -103,6 +103,18 @@ export const CHART_PATHS = buildChartPaths();
 
 export const HOUSE_POLYGONS = CHART_PATHS.housePolygons;
 export const HOUSE_CENTROIDS = HOUSE_POLYGONS.map(polygonCentroid);
+// Bounding boxes for each house polygon. Useful for positioning labels
+// at specific corners without overlap.
+export const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
+  const xs = poly.map(([x]) => x);
+  const ys = poly.map(([, y]) => y);
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys),
+  };
+});
 
 export function polygonCentroid(pts) {
   // Compute the centroid using the area-weighted formula (shoelace theorem).
@@ -232,23 +244,24 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
   const signNodes = [];
   for (let h = 1; h <= 12; h++) {
-    const { cx, cy } = HOUSE_CENTROIDS[h - 1];
+    const bbox = HOUSE_BBOXES[h - 1];
+    const { minX, maxX, minY } = bbox;
     const signNum = data.signInHouse?.[h] ?? h;
 
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
-      ascText.setAttribute('x', cx);
-      ascText.setAttribute('y', cy + 0.08);
-      ascText.setAttribute('text-anchor', 'middle');
+      ascText.setAttribute('x', minX + 0.02);
+      ascText.setAttribute('y', minY + 0.05);
+      ascText.setAttribute('text-anchor', 'start');
       ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
       signNodes.push(ascText);
     }
 
     const signText = document.createElementNS(svgNS, 'text');
-    signText.setAttribute('x', cx);
-    signText.setAttribute('y', cy);
-    signText.setAttribute('text-anchor', 'middle');
+    signText.setAttribute('x', maxX - 0.02);
+    signText.setAttribute('y', minY + 0.05);
+    signText.setAttribute('text-anchor', 'end');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
     signNodes.push(signText);
