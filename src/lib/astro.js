@@ -155,15 +155,12 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     lon,
   });
 
-  // Derive sign numbers (1–12) for each house from the returned cusp
-  // longitudes. Swiss Ephemeris gives cusp longitudes in degrees with the
-  // array starting at the ascendant (index 1). For the North Indian chart
-  // layout the sign sequence effectively begins two houses later, so rotate
-  // the cusps by two positions before converting them to sign numbers.
+  // Derive sign numbers (1–12) for each house directly from the cusp
+  // longitudes returned by Swiss Ephemeris. The `houses` array is 1-indexed
+  // with index 1 representing the ascendant.
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    const idx = ((h + 1) % 12) + 1; // 3..12,1,2
-    signInHouse[h] = lonToSignDeg(base.houses[idx]).sign;
+    signInHouse[h] = lonToSignDeg(base.houses[h]).sign;
   }
   if (process.env.DEBUG_HOUSES) {
     console.log('signInHouse:', signInHouse);
