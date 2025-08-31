@@ -86,6 +86,7 @@ export default function Chart({
           const width = (maxX - minX) * size - margin;
           const height = (maxY - minY) * size - margin;
 
+          const labelPad = (4 / 300) * size;
           return (
             <div
               key={houseNum}
@@ -99,19 +100,24 @@ export default function Chart({
                 padding: (2 / 300) * size,
               }}
             >
-              <div className="absolute top-1 right-1 z-0 pointer-events-none">
-                <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
-                  {getSignLabel(signNum - 1, { useAbbreviations })}
-                </span>
-              </div>
-
-              {houseNum === 1 && (
-                <div className="absolute top-1 left-1 z-0 pointer-events-none">
-                  <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
-                    Asc
+              <div
+                className="absolute inset-0 pointer-events-none z-0"
+                style={{ padding: labelPad }}
+              >
+                <div className="absolute top-0 right-0">
+                  <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
+                    {getSignLabel(signNum - 1, { useAbbreviations })}
                   </span>
                 </div>
-              )}
+
+                {houseNum === 1 && (
+                  <div className="absolute top-0 left-0">
+                    <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
+                      Asc
+                    </span>
+                  </div>
+                )}
+              </div>
 
               <div className="flex flex-col items-center justify-center h-full gap-1 text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)] z-10">
                 {planetByHouse[houseNum] &&
