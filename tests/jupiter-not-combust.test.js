@@ -10,6 +10,9 @@ test('Jupiter is not combust near opposition', async () => {
   const sunLon = sun.sign * 30 + sun.deg;
   const jLon = jupiter.sign * 30 + jupiter.deg;
   const diff = Math.abs((sunLon - jLon + 180) % 360 - 180);
-  assert.ok(diff > 11, 'separation should exceed combust threshold');
+  assert.ok(
+    diff > 11,
+    `separation should exceed combust threshold (got ${diff.toFixed(2)}°)`
+  );
   assert.ok(!jupiter.combust, 'Jupiter should not be combust');
 });
