@@ -40,7 +40,7 @@ test('calculateChart matches AstroSage for Darbhanga 1982-12-01 03:50', async ()
   assert.strictEqual(result.ascSign, 7);
 
   // Sign sequence (sign in each house)
-  assert.deepStrictEqual(result.signInHouse, [null, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
@@ -107,18 +107,18 @@ test('calculateChart matches AstroSage for Darbhanga 1982-12-01 03:50', async ()
     { tag: 'path', attrs: { d: 'M1 0 L0 1', 'stroke-width': '0.01' }, text: '' },
     { tag: 'path', attrs: { d: 'M0.5 0 L1 0.5 L0.5 1 L0 0.5 Z', 'stroke-width': '0.01' }, text: '' },
     { tag: 'text', attrs: { x: '0.27', y: '0.05', 'text-anchor': 'start', 'font-size': '0.03' }, text: 'Asc' },
-    { tag: 'text', attrs: { x: '0.73', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '9' },
-    { tag: 'text', attrs: { x: '0.48', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '10' },
-    { tag: 'text', attrs: { x: '0.23', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '11' },
-    { tag: 'text', attrs: { x: '0.48', y: '0.3', 'text-anchor': 'end', 'font-size': '0.05' }, text: '12' },
-    { tag: 'text', attrs: { x: '0.23', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '1' },
-    { tag: 'text', attrs: { x: '0.48', y: '0.8', 'text-anchor': 'end', 'font-size': '0.05' }, text: '2' },
-    { tag: 'text', attrs: { x: '0.73', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '3' },
-    { tag: 'text', attrs: { x: '0.98', y: '0.8', 'text-anchor': 'end', 'font-size': '0.05' }, text: '4' },
-    { tag: 'text', attrs: { x: '0.98', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '5' },
-    { tag: 'text', attrs: { x: '0.98', y: '0.3', 'text-anchor': 'end', 'font-size': '0.05' }, text: '6' },
-    { tag: 'text', attrs: { x: '0.98', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '7' },
-    { tag: 'text', attrs: { x: '0.98', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '8' },
+    { tag: 'text', attrs: { x: '0.73', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '7' },
+    { tag: 'text', attrs: { x: '0.48', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '8' },
+    { tag: 'text', attrs: { x: '0.23', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '9' },
+    { tag: 'text', attrs: { x: '0.48', y: '0.3', 'text-anchor': 'end', 'font-size': '0.05' }, text: '10' },
+    { tag: 'text', attrs: { x: '0.23', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '11' },
+    { tag: 'text', attrs: { x: '0.48', y: '0.8', 'text-anchor': 'end', 'font-size': '0.05' }, text: '12' },
+    { tag: 'text', attrs: { x: '0.73', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '1' },
+    { tag: 'text', attrs: { x: '0.98', y: '0.8', 'text-anchor': 'end', 'font-size': '0.05' }, text: '2' },
+    { tag: 'text', attrs: { x: '0.98', y: '0.55', 'text-anchor': 'end', 'font-size': '0.05' }, text: '3' },
+    { tag: 'text', attrs: { x: '0.98', y: '0.3', 'text-anchor': 'end', 'font-size': '0.05' }, text: '4' },
+    { tag: 'text', attrs: { x: '0.98', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '5' },
+    { tag: 'text', attrs: { x: '0.98', y: '0.05', 'text-anchor': 'end', 'font-size': '0.05' }, text: '6' },
     { tag: 'text', attrs: { x: '0.5', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "saturn(R)(Ex) 00°14'" },
     { tag: 'text', attrs: { x: '0.25', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "sun 14°46'" },
     { tag: 'text', attrs: { x: '0.25', y: '0.19333333333333333', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "jupiter(R)(C) 05°04'" },

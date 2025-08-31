@@ -5,10 +5,7 @@ const { computePositions } = require('../src/lib/astro.js');
 test('planet house values match sign mapping and nodes oppose each other', async () => {
   const data = await computePositions('2020-01-01T12:00+00:00', 0, 0);
   data.planets.forEach((p) => {
-    assert.strictEqual(
-      data.signInHouse[p.house],
-      ((p.sign + 2) % 12) + 1
-    );
+    assert.strictEqual(data.signInHouse[p.house], p.sign + 1);
   });
   const rahu = data.planets.find((p) => p.name === 'rahu');
   const ketu = data.planets.find((p) => p.name === 'ketu');
