@@ -256,25 +256,41 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   addPath(CHART_PATHS.inner, '0.01');
 
   const signNodes = [];
+  const SIGN_MARGIN = 0.08;
+  const SIGN_TOWARDS_VERTEX = 0.6;
   for (let h = 1; h <= 12; h++) {
+    const poly = HOUSE_POLYGONS[h - 1];
+    const centroid = HOUSE_CENTROIDS[h - 1];
     const bbox = HOUSE_BBOXES[h - 1];
-    const { minX, maxX, minY } = bbox;
+    const { minX, maxX, minY, maxY } = bbox;
     const signNum = data.signInHouse?.[h] ?? h;
 
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
-      ascText.setAttribute('x', minX + 0.04);
-      ascText.setAttribute('y', minY + 0.08);
+      ascText.setAttribute('x', minX + SIGN_MARGIN);
+      ascText.setAttribute('y', minY + SIGN_MARGIN);
       ascText.setAttribute('text-anchor', 'start');
       ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
       signNodes.push(ascText);
     }
 
+    // Determine a point towards the top corner of the polygon
+    let target = poly[0];
+    for (const [x, y] of poly) {
+      if (y < target[1] || (y === target[1] && x > target[0])) target = [x, y];
+    }
+    let sx = centroid.cx + (target[0] - centroid.cx) * SIGN_TOWARDS_VERTEX;
+    let sy = centroid.cy + (target[1] - centroid.cy) * SIGN_TOWARDS_VERTEX;
+    if (sx < minX + SIGN_MARGIN) sx = minX + SIGN_MARGIN;
+    if (sx > maxX - SIGN_MARGIN) sx = maxX - SIGN_MARGIN;
+    if (sy < minY + SIGN_MARGIN) sy = minY + SIGN_MARGIN;
+    if (sy > maxY - SIGN_MARGIN) sy = maxY - SIGN_MARGIN;
+
     const signText = document.createElementNS(svgNS, 'text');
-    signText.setAttribute('x', maxX - 0.04);
-    signText.setAttribute('y', minY + 0.08);
-    signText.setAttribute('text-anchor', 'end');
+    signText.setAttribute('x', sx);
+    signText.setAttribute('y', sy);
+    signText.setAttribute('text-anchor', 'middle');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
     signNodes.push(signText);

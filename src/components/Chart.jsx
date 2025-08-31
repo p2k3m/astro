@@ -60,13 +60,28 @@ export default function Chart({
     planetByHouse[houseIdx].push({ abbr, deg });
   });
 
-  const SIGN_PAD_X = 0.04;
-  const SIGN_PAD_Y = 0.08;
+  const SIGN_MARGIN = 0.08;
+  const SIGN_TOWARDS_VERTEX = 0.6;
 
   const houses = HOUSE_POLYGONS.map((poly, idx) => {
     const bbox = HOUSE_BBOXES[idx];
-    const { minX, maxX, minY } = bbox;
     const centroid = HOUSE_CENTROIDS[idx];
+    const { minX, maxX, minY, maxY } = bbox;
+    // Identify the top-most vertex (preferring the right-most when tied)
+    let target = poly[0];
+    for (const [x, y] of poly) {
+      if (y < target[1] || (y === target[1] && x > target[0])) target = [x, y];
+    }
+    let signX =
+      centroid.cx + (target[0] - centroid.cx) * SIGN_TOWARDS_VERTEX;
+    let signY =
+      centroid.cy + (target[1] - centroid.cy) * SIGN_TOWARDS_VERTEX;
+    // Ensure the label stays well within the bounding box of the polygon
+    if (signX < minX + SIGN_MARGIN) signX = minX + SIGN_MARGIN;
+    if (signX > maxX - SIGN_MARGIN) signX = maxX - SIGN_MARGIN;
+    if (signY < minY + SIGN_MARGIN) signY = minY + SIGN_MARGIN;
+    if (signY > maxY - SIGN_MARGIN) signY = maxY - SIGN_MARGIN;
+
     const maxPolyY = Math.max(...poly.map((pt) => pt[1]));
     const cx = centroid.cx;
     const cy = centroid.cy;
@@ -82,9 +97,9 @@ export default function Chart({
     return {
       houseNum,
       signNum,
-      signX: maxX - SIGN_PAD_X,
-      signY: minY + SIGN_PAD_Y,
-      ascX: minX + SIGN_PAD_X,
+      signX,
+      signY,
+      ascX: minX + SIGN_MARGIN,
       planets,
       cx,
       pyStart: py,
@@ -116,7 +131,7 @@ export default function Chart({
                 style={{
                   top: signY * size,
                   left: signX * size,
-                  transform: 'translate(-100%, -50%)',
+                  transform: 'translate(-50%, -50%)',
                   whiteSpace: 'nowrap',
                 }}
               >

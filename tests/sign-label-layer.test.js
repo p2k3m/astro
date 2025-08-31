@@ -4,6 +4,7 @@ const {
   renderNorthIndian,
   HOUSE_CENTROIDS,
   HOUSE_BBOXES,
+  HOUSE_POLYGONS,
 } = require('../src/lib/astro.js');
 
 class Element {
@@ -30,7 +31,26 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('sign labels anchor to corners without overlapping planets', () => {
+const SIGN_MARGIN = 0.08;
+
+function signPosition(h) {
+  const poly = HOUSE_POLYGONS[h - 1];
+  const centroid = HOUSE_CENTROIDS[h - 1];
+  const bbox = HOUSE_BBOXES[h - 1];
+  let target = poly[0];
+  for (const [x, y] of poly) {
+    if (y < target[1] || (y === target[1] && x > target[0])) target = [x, y];
+  }
+  let sx = centroid.cx + (target[0] - centroid.cx) * 0.6;
+  let sy = centroid.cy + (target[1] - centroid.cy) * 0.6;
+  if (sx < bbox.minX + SIGN_MARGIN) sx = bbox.minX + SIGN_MARGIN;
+  if (sx > bbox.maxX - SIGN_MARGIN) sx = bbox.maxX - SIGN_MARGIN;
+  if (sy < bbox.minY + SIGN_MARGIN) sy = bbox.minY + SIGN_MARGIN;
+  if (sy > bbox.maxY - SIGN_MARGIN) sy = bbox.maxY - SIGN_MARGIN;
+  return { x: sx, y: sy };
+}
+
+test('sign labels anchor without overlapping planets', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
@@ -44,8 +64,10 @@ test('sign labels anchor to corners without overlapping planets', () => {
   delete global.document;
 
   const { cx, cy } = HOUSE_CENTROIDS[0];
-  const { minX, maxX, minY, maxY } = HOUSE_BBOXES[0];
-  const xs = new Set([minX + 0.04, maxX - 0.04, cx]);
+  const { minX, minY, maxY } = HOUSE_BBOXES[0];
+  const signPos = signPosition(1);
+  const ascX = minX + SIGN_MARGIN;
+  const xs = new Set([ascX, signPos.x, cx]);
   const texts = svg.children
     .filter(
       (c) =>
@@ -62,8 +84,8 @@ test('sign labels anchor to corners without overlapping planets', () => {
   }));
 
   assert.deepStrictEqual(snapshot, [
-    { text: 'Asc', x: minX + 0.04, y: minY + 0.08 },
-    { text: '1', x: maxX - 0.04, y: minY + 0.08 },
+    { text: 'Asc', x: ascX, y: minY + SIGN_MARGIN },
+    { text: '1', x: signPos.x, y: signPos.y },
     { text: "p1 00°00'", x: cx, y: cy + 0.07 },
     { text: "p2 10°00'", x: cx, y: cy + 0.11 },
   ]);
