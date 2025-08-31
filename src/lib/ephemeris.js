@@ -85,18 +85,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
   const rahuFlags = rahuData.flags || 0;
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
-  const houseOf = (bodyLon) => {
-    const rawHouse = swe.swe_house_pos(
-      jd,
-      Number(lat),
-      Number(lon),
-      'P',
-      bodyLon,
-      houses
-    );
-    // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
-    return ((Math.floor(rawHouse) - 1 + 12) % 12) + 1; // 1..12
-  };
+  const houseOfSign = (sign) => ((sign - ascSign + 12) % 12) + 1;
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =
@@ -110,7 +99,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
       speed: data.longitudeSpeed,
       flags,
       retro,
-      house: houseOf(data.longitude),
+      house: houseOfSign(sign),
     });
   }
   // Ketu opposite Rahu
@@ -127,7 +116,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     speed: -rahuData.longitudeSpeed,
     flags: rahuFlags,
     retro: ketuRetro,
-    house: houseOf(ketuLon),
+    house: houseOfSign(kSign),
   });
 
   return { ascSign, houses, planets };
