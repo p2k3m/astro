@@ -61,12 +61,13 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   ) {
     throw new Error('Could not compute houses from swisseph.');
   }
-  const ascSign = lonToSignDeg(rawHouses.ascendant).sign;
-  // Derive whole-sign house cusps purely from the ascendant sign.  The first
-  // house starts at 0° of the ascendant sign and subsequent houses follow every
-  // 30°.
+  const ascendant = rawHouses.ascendant;
+  const ascSign = lonToSignDeg(ascendant).sign;
+  // Derive 30° house segments starting one sign before the ascendant degree.
+  // This mirrors AstroSage's house placement where the ascendant lies near the
+  // end of the first house and planets just before it can still fall in house 1.
   const houses = [null];
-  const start = (ascSign - 1) * 30;
+  const start = ((ascendant - 30) % 360 + 360) % 360;
   for (let i = 0; i < 12; i += 1) {
     houses[i + 1] = (start + i * 30) % 360;
   }
@@ -90,16 +91,13 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
   const rahuFlags = rahuData.flags || 0;
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
-  // Determine the whole-sign house for a given sign relative to the ascendant.
-  // With whole-sign houses the ascendant sign occupies the 1st house and the
-  // remaining signs follow sequentially anti-clockwise.  The house is therefore
-  // simply the offset between the sign and the ascendant within the 12‑sign
-  // cycle.
-  const houseOfSign = (sign) => ((sign - ascSign + 12) % 12) + 1;
+  const houseOfLongitude = (lon) =>
+    Math.floor(((lon - start + 360) % 360) / 30) + 1;
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
+    const lon = data.longitude;
     const { sign, deg } =
-      name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
+      name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(lon);
     const flags = name === 'rahu' ? rahuFlags : data.flags || 0;
     const retro = (flags & swe.SEFLG_RETROGRADE) !== 0;
     planets.push({
@@ -109,7 +107,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
       speed: data.longitudeSpeed,
       flags,
       retro,
-      house: houseOfSign(sign),
+      house: houseOfLongitude(lon),
     });
   }
   // Ketu opposite Rahu
@@ -126,7 +124,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     speed: -rahuData.longitudeSpeed,
     flags: rahuFlags,
     retro: ketuRetro,
-    house: houseOfSign(kSign),
+    house: houseOfLongitude(ketuLon),
   });
 
   return { ascSign, houses, planets };

@@ -8,9 +8,9 @@ test('planet house values match sign mapping and nodes oppose each other', async
     data.signInHouse.slice(1),
     [6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5]
   );
-  data.planets.forEach((p) => {
-    assert.strictEqual(data.signInHouse[p.house], p.sign + 1);
-  });
+  // Planet houses are computed from the ascendant degree rather than pure sign
+  // offsets, so we no longer expect a direct mapping between `sign` and
+  // `signInHouse` at a given `house`.
   const rahu = data.planets.find((p) => p.name === 'rahu');
   const ketu = data.planets.find((p) => p.name === 'ketu');
   assert.ok(rahu && ketu);
