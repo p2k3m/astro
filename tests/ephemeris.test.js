@@ -52,7 +52,7 @@ test('house cusps and retrograde flags', async () => {
         // Mercury has a tiny negative speed that should not count as retrograde
         2: { longitude: 50, longitudeSpeed: -1e-6, flags: 0 },
         3: { longitude: 10, longitudeSpeed: 0.1, flags: 0 },
-        4: { longitude: 80, longitudeSpeed: 0.1, flags: 0 },
+        4: { longitude: 200, longitudeSpeed: 0.1, flags: 0 }, // Mars in Libra
         5: { longitude: 170, longitudeSpeed: 0.1, flags: 0 },
         6: { longitude: 300, longitudeSpeed: 0.1, flags: 0 },
         7: {
@@ -78,15 +78,16 @@ test('house cusps and retrograde flags', async () => {
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
   assert.strictEqual(result.houses[1], 123);
-  assert.strictEqual(planets.moon.sign, 8);
-  assert.strictEqual(planets.moon.house, 3);
-  assert.strictEqual(planets.moon.retro, true);
-  assert.strictEqual(planets.mercury.retro, false);
+    assert.strictEqual(planets.moon.sign, 8);
+    assert.strictEqual(planets.moon.house, 3);
+    assert.strictEqual(planets.moon.retro, true);
+    assert.strictEqual(planets.mercury.retro, false);
+    assert.strictEqual(planets.mars.house, 3);
 
-  assert.strictEqual(planets.rahu.retro, true);
-  assert.strictEqual(planets.rahu.house, 9);
-  assert.strictEqual(planets.ketu.sign, 8);
-  assert.strictEqual(planets.ketu.house, 3);
+    assert.strictEqual(planets.rahu.retro, true);
+    assert.strictEqual(planets.rahu.house, 9);
+    assert.strictEqual(planets.ketu.sign, 8);
+    assert.strictEqual(planets.ketu.house, 3);
   assert.strictEqual(planets.ketu.retro, true);
   const diff = (planets.ketu.house - planets.rahu.house + 12) % 12;
   assert.strictEqual(diff, 6);
