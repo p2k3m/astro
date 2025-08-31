@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import BirthForm from './components/BirthForm.jsx';
 import Chart from './components/Chart.jsx';
+import ChartSummary from './components/ChartSummary.jsx';
 import calculateChart from './calculateChart.js';
 
 export default function App() {
@@ -37,7 +38,12 @@ export default function App() {
             {error}
           </div>
         )}
-        {chartData && !loading && <Chart data={chartData} />}
+        {chartData && !loading && (
+          <div>
+            <Chart data={chartData} />
+            <ChartSummary data={chartData} />
+          </div>
+        )}
       </div>
     </div>
   );

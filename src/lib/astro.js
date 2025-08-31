@@ -35,6 +35,20 @@ export const SIGN_ABBREVIATIONS = [
   'Aq',
   'Pi',
 ];
+export const SIGN_NAMES = [
+  'Aries',
+  'Taurus',
+  'Gemini',
+  'Cancer',
+  'Leo',
+  'Virgo',
+  'Libra',
+  'Scorpio',
+  'Sagittarius',
+  'Capricorn',
+  'Aquarius',
+  'Pisces',
+];
 
 export function getSignLabel(index, { useAbbreviations = false } = {}) {
   const labels = useAbbreviations ? SIGN_ABBREVIATIONS : SIGN_NUMBERS;
