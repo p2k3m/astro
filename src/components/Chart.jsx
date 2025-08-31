@@ -43,12 +43,21 @@ export default function Chart({
   data.planets.forEach((p) => {
     const houseIdx = p.house;
     if (houseIdx === undefined) return;
-    const degreeValue = Number(p.deg ?? p.degree);
     let degree = 'No data';
-    if (!Number.isNaN(degreeValue)) {
-      const d = Math.floor(degreeValue);
-      const m = Math.round((degreeValue - d) * 60);
-      degree = `${d}°${String(m).padStart(2, '0')}'`;
+    if (typeof p.deg === 'number') {
+      let d = p.deg;
+      let m = p.min;
+      let s = p.sec;
+      if (typeof m !== 'number' || typeof s !== 'number') {
+        const dVal = Math.floor(p.deg);
+        const mFloat = (p.deg - dVal) * 60;
+        const mVal = Math.floor(mFloat);
+        const sVal = Math.round((mFloat - mVal) * 60);
+        d = dVal;
+        m = mVal;
+        s = sVal;
+      }
+      degree = `${d}°${String(m).padStart(2, '0')}′${String(s).padStart(2, '0')}″`;
     }
     let abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
     const isRetro = p.retro;
@@ -203,6 +212,8 @@ Chart.propTypes = {
         sign: PropTypes.number,
         house: PropTypes.number.isRequired,
         deg: PropTypes.number,
+        min: PropTypes.number,
+        sec: PropTypes.number,
         retro: PropTypes.bool,
         combust: PropTypes.bool,
         exalted: PropTypes.bool,

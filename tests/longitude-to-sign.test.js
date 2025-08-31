@@ -7,17 +7,32 @@ async function getFn() {
 
 test('longitudeToSign handles negative degrees', async () => {
   const longitudeToSign = await getFn();
-  assert.deepStrictEqual(longitudeToSign(-5), { sign: 11, degree: 25 });
+  assert.deepStrictEqual(longitudeToSign(-5), {
+    sign: 11,
+    deg: 25,
+    min: 0,
+    sec: 0,
+  });
 });
 
 test('longitudeToSign handles degrees over 360', async () => {
   const longitudeToSign = await getFn();
-  assert.deepStrictEqual(longitudeToSign(365), { sign: 0, degree: 5 });
+  assert.deepStrictEqual(longitudeToSign(365), {
+    sign: 0,
+    deg: 5,
+    min: 0,
+    sec: 0,
+  });
 });
 
 test('exact boundary cases', async () => {
   const fn = await getFn();
-  assert.deepStrictEqual(fn(0), { sign: 0, degree: 0 });
-  assert.deepStrictEqual(fn(29.99), { sign: 0, degree: 29.99 });
-  assert.deepStrictEqual(fn(30), { sign: 1, degree: 0 });
+  assert.deepStrictEqual(fn(0), { sign: 0, deg: 0, min: 0, sec: 0 });
+  assert.deepStrictEqual(fn(29.99), {
+    sign: 0,
+    deg: 29,
+    min: 59,
+    sec: 24,
+  });
+  assert.deepStrictEqual(fn(30), { sign: 1, deg: 0, min: 0, sec: 0 });
 });

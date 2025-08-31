@@ -40,4 +40,22 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   for (const [name, retro] of Object.entries(expectedRetro)) {
     assert.strictEqual(planets[name].retro, retro, `${name} retrograde`);
   }
+
+  const expectedDMS = {
+    sun: { deg: 14, min: 46, sec: 28 },
+    moon: { deg: 13, min: 16, sec: 59 },
+    mercury: { deg: 29, min: 13, sec: 15 },
+    venus: { deg: 10, min: 2, sec: 30 },
+    mars: { deg: 8, min: 19, sec: 13 },
+    jupiter: { deg: 25, min: 3, sec: 25 },
+    saturn: { deg: 29, min: 14, sec: 20 },
+    rahu: { deg: 11, min: 53, sec: 18 },
+    ketu: { deg: 11, min: 53, sec: 18 },
+  };
+  for (const [name, exp] of Object.entries(expectedDMS)) {
+    const p = planets[name];
+    assert.strictEqual(p.deg, exp.deg, `${name} deg`);
+    assert.strictEqual(p.min, exp.min, `${name} min`);
+    assert.strictEqual(p.sec, exp.sec, `${name} sec`);
+  }
 });

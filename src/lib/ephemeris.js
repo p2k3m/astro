@@ -19,9 +19,25 @@ swisseph.ready.then(() => {
 
 export function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
-  const sign = Math.floor(norm / 30) + 1; // 1..12
-  const deg = +(norm % 30).toFixed(2);
-  return { sign, deg };
+  let sign = Math.floor(norm / 30) + 1; // 1..12
+  let rem = norm % 30;
+  let deg = Math.floor(rem);
+  rem = (rem - deg) * 60;
+  let min = Math.floor(rem);
+  let sec = Math.round((rem - min) * 60);
+  if (sec === 60) {
+    sec = 0;
+    min += 1;
+  }
+  if (min === 60) {
+    min = 0;
+    deg += 1;
+  }
+  if (deg === 30) {
+    deg = 0;
+    sign = (sign % 12) + 1;
+  }
+  return { sign, deg, min, sec };
 }
 
 function toUTC({ datetime, zone }) {
@@ -90,20 +106,26 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const planets = [];
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
   const rahuFlags = rahuData.flags || 0;
-  const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
+  const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
+    rahuData.longitude
+  );
   const houseOfLongitude = (lon) =>
     Math.floor(((lon - start + 360) % 360) / 30) + 1;
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const lon = data.longitude;
-    const { sign, deg } =
-      name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(lon);
+    const { sign, deg, min, sec } =
+      name === 'rahu'
+        ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
+        : lonToSignDeg(lon);
     const flags = name === 'rahu' ? rahuFlags : data.flags || 0;
     const retro = (flags & swe.SEFLG_RETROGRADE) !== 0;
     planets.push({
       name,
       sign,
       deg,
+      min,
+      sec,
       speed: data.longitudeSpeed,
       flags,
       retro,
@@ -112,7 +134,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   }
   // Ketu opposite Rahu
   const ketuLon = (rahuData.longitude + 180) % 360;
-  const { sign: kSign, deg: kDeg } = lonToSignDeg(ketuLon);
+  const { sign: kSign, deg: kDeg, min: kMin, sec: kSec } = lonToSignDeg(
+    ketuLon
+  );
   if (((kSign - rSign + 12) % 12) !== 6) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
@@ -121,6 +145,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     name: 'ketu',
     sign: kSign,
     deg: kDeg,
+    min: kMin,
+    sec: kSec,
     speed: -rahuData.longitudeSpeed,
     flags: rahuFlags,
     retro: ketuRetro,

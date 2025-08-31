@@ -88,7 +88,7 @@ test('sign labels anchor without overlapping planets', () => {
   assert.deepStrictEqual(snapshot, [
     { text: 'Asc', x: ascX, y: signY },
     { text: '1', x: signX, y: signY },
-    { text: "p1 00°00'", x: cx, y: cy + 0.07 },
-    { text: "p2 10°00'", x: cx, y: cy + 0.11 },
+    { text: 'p1 00°00′00″', x: cx, y: cy + 0.07 },
+    { text: 'p2 10°00′00″', x: cx, y: cy + 0.11 },
   ]);
 });
