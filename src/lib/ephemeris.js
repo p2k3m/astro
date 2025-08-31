@@ -23,7 +23,8 @@ export function lonToSignDeg(longitude) {
 }
 
 function toUTC({ datetime, zone }) {
-  const dt = DateTime.fromISO(datetime, { zone });
+  // Interpret the local time in the provided zone and convert to UTC.
+  const dt = DateTime.fromISO(datetime, { zone }).toUTC();
   return dt.toJSDate();
 }
 
@@ -46,8 +47,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
 
   const rawHouses = swe.swe_houses_ex(
     jd,
-    lat,
-    lon,
+    Number(lat),
+    Number(lon),
     'P',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );
@@ -62,9 +63,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   if (process.env.DEBUG_HOUSES) {
     console.log('swe_houses_ex houses:', houses);
   }
-  // The house array follows the Swiss Ephemeris convention: index 1 is the
-  // first house cusp (ascendant) and 12 the twelfth. Index 0 is unused.
-  const asc = lonToSignDeg(houses[1]);
+  // The house array follows the Swiss Ephemeris convention: index 1 is the
+  // first house cusp (ascendant) and 12 the twelfth. Index 0 is unused.
+  const ascSign = lonToSignDeg(rawHouses.ascendant).sign;
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;
   const planetCodes = {
@@ -118,5 +119,5 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     house: houseOf(ketuLon),
   });
 
-  return { ascSign: asc.sign, houses, planets };
+  return { ascSign, houses, planets };
 }
