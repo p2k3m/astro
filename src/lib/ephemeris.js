@@ -80,6 +80,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
 
   const planets = [];
   const rahuData = swe.swe_calc_ut(jd, swe.SE_TRUE_NODE, flag);
+  const rahuFlags = rahuData.flags || 0;
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
   const houseOf = (bodyLon) => {
     let house = swe.swe_house_pos(jd, lat, lon, 'P', bodyLon, houses);
@@ -91,7 +92,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const { sign, deg } =
       name === 'rahu' ? { sign: rSign, deg: rDeg } : lonToSignDeg(data.longitude);
-    const flags = data.flags || 0;
+    const flags = name === 'rahu' ? rahuFlags : data.flags || 0;
     planets.push({
       name,
       sign,
@@ -112,7 +113,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     sign: kSign,
     deg: kDeg,
     speed: -rahuData.longitudeSpeed,
-    retro: (rahuData.flags & swe.SEFLG_RETROGRADE) !== 0,
+    retro: (rahuFlags & swe.SEFLG_RETROGRADE) !== 0,
     house: houseOf(ketuLon),
   });
 
