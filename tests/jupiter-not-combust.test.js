@@ -7,8 +7,10 @@ test('Jupiter is not combust', async () => {
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   const jupiter = planets.jupiter;
   const sun = planets.sun;
-  const sunLon = sun.sign * 30 + sun.deg;
-  const jLon = jupiter.sign * 30 + jupiter.deg;
+  const sunLon =
+    sun.sign * 30 + sun.deg + sun.min / 60 + sun.sec / 3600;
+  const jLon =
+    jupiter.sign * 30 + jupiter.deg + jupiter.min / 60 + jupiter.sec / 3600;
   const diff = Math.abs((sunLon - jLon + 180) % 360 - 180);
   assert.ok(
     diff > 11,

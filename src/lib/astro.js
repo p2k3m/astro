@@ -204,12 +204,13 @@ export async function computePositions(dtISOWithZone, lat, lon) {
 
   const planets = [];
   const sun = base.planets.find((p) => p.name === 'sun');
-  const sunLon = (sun.sign - 1) * 30 + sun.deg;
+  const sunLon =
+    (sun.sign - 1) * 30 + sun.deg + sun.min / 60 + sun.sec / 3600;
 
   for (const p of base.planets) {
     const sign = p.sign - 1;
     const house = p.house;
-    const deg = p.deg;
+    const deg = p.deg + p.min / 60 + p.sec / 3600;
     const lon = sign * 30 + deg;
     const retro = p.retro;
     const cDeg = combustDeg[p.name];
@@ -227,7 +228,9 @@ export async function computePositions(dtISOWithZone, lat, lon) {
       name: p.name,
       sign,
       house,
-      deg,
+      deg: p.deg,
+      min: p.min,
+      sec: p.sec,
       retro,
       combust,
       exalted,
@@ -347,9 +350,21 @@ export function renderNorthIndian(svgEl, data, options = {}) {
       t.setAttribute('y', py);
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-size', '0.03');
-      const dVal = Math.floor(p.deg);
-      const m = Math.round((p.deg - dVal) * 60);
-      const degStr = `${String(dVal).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
+      let d = p.deg;
+      let m = p.min;
+      let s = p.sec;
+      if (typeof m !== 'number' || typeof s !== 'number') {
+        const dVal = Math.floor(p.deg);
+        const mFloat = (p.deg - dVal) * 60;
+        const mVal = Math.floor(mFloat);
+        const sVal = Math.round((mFloat - mVal) * 60);
+        d = dVal;
+        m = mVal;
+        s = sVal;
+      }
+      const degStr = `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}′${String(
+        s
+      ).padStart(2, '0')}″`;
       let name = p.name;
       if (p.retro) name += '(R)';
       if (p.combust) name += '(C)';

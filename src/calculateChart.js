@@ -7,8 +7,20 @@ import { computePositions } from './lib/astro.js';
 export function longitudeToSign(longitude) {
   longitude = ((longitude % 360) + 360) % 360;
   const sign = Math.floor(longitude / 30); // 0..11
-  const degree = longitude % 30;
-  return { sign, degree: +degree.toFixed(2) };
+  let rem = longitude % 30;
+  let deg = Math.floor(rem);
+  rem = (rem - deg) * 60;
+  let min = Math.floor(rem);
+  let sec = Math.round((rem - min) * 60);
+  if (sec === 60) {
+    sec = 0;
+    min += 1;
+  }
+  if (min === 60) {
+    min = 0;
+    deg += 1;
+  }
+  return { sign, deg, min, sec };
 }
 
 export default async function calculateChart({
