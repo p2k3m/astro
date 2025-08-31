@@ -51,23 +51,28 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     jd,
     Number(lat),
     Number(lon),
-    'P',
+    'W',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );
   if (
     !rawHouses ||
     typeof rawHouses.ascendant === 'undefined' ||
-    !Array.isArray(rawHouses.houses)
+    typeof rawHouses.ascendant === 'undefined'
   ) {
     throw new Error('Could not compute houses from swisseph.');
   }
-  const houses = rawHouses.houses;
-  if (process.env.DEBUG_HOUSES) {
-    console.log('swe_houses_ex houses:', houses);
-  }
-  // The house array follows the Swiss Ephemeris convention: index 1 is the
-  // first house cusp (ascendant) and 12 the twelfth. Index 0 is unused.
   const ascSign = lonToSignDeg(rawHouses.ascendant).sign;
+  // Derive whole-sign house cusps purely from the ascendant sign.  The first
+  // house starts at 0° of the ascendant sign and subsequent houses follow every
+  // 30°.
+  const houses = [null];
+  const start = (ascSign - 1) * 30;
+  for (let i = 0; i < 12; i += 1) {
+    houses[i + 1] = (start + i * 30) % 360;
+  }
+  if (process.env.DEBUG_HOUSES) {
+    console.log('computed houses:', houses);
+  }
 
   const flag = swe.SEFLG_SWIEPH | swe.SEFLG_SPEED | swe.SEFLG_SIDEREAL;
   const planetCodes = {

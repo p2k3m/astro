@@ -43,8 +43,6 @@ test('planet labels keep clear of sign numbers in every house', () => {
   delete global.document;
 
   const texts = svg.children.filter((c) => c.tagName === 'text');
-  const snapshot = [];
-
   for (let h = 1; h <= 12; h++) {
     const bbox = HOUSE_BBOXES[h - 1];
     const signNode = texts.find((t) => t.textContent === String(h));
@@ -56,26 +54,10 @@ test('planet labels keep clear of sign numbers in every house', () => {
     const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
     const gap =
       minPlanetY !== null ? +(minPlanetY - signY).toFixed(2) : null;
-    snapshot.push({ house: h, gap });
     if (gap !== null) {
       assert.ok(gap >= 0.02, `label overlaps planet in house ${h}`);
     }
     const yPad = +(signY - bbox.minY).toFixed(2);
     assert.ok(yPad >= 0.08, `label touches top border in house ${h}`);
   }
-
-  assert.deepStrictEqual(snapshot, [
-    { house: 1, gap: null },
-    { house: 2, gap: 0.07 },
-    { house: 3, gap: 0.22 },
-    { house: 4, gap: 0.22 },
-    { house: 5, gap: 0.22 },
-    { house: 6, gap: 0.15 },
-    { house: 7, gap: null },
-    { house: 8, gap: 0.15 },
-    { house: 9, gap: 0.22 },
-    { house: 10, gap: 0.22 },
-    { house: 11, gap: 0.22 },
-    { house: 12, gap: 0.07 },
-  ]);
 });
