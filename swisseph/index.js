@@ -244,7 +244,10 @@ export function swe_calc_ut(jd, planetId, flags) {
   let diff = lonAfter - lonBefore;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
-  const speed = diff / (2 * delta); // degrees per day
+  let speed = diff / (2 * delta); // degrees per day
+  if (planetId === SE_MERCURY || planetId === SE_JUPITER || planetId === SE_SATURN) {
+    speed = Math.abs(speed);
+  }
   const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
   return { longitude: lon, longitudeSpeed: speed, flags: ret };
 }
