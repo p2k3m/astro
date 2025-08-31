@@ -16,12 +16,13 @@ export function summarizeChart(data) {
   const ascendant = SIGN_NAMES[data.ascSign - 1];
   const moon = data.planets.find((p) => p.name === 'moon');
   const moonSign = SIGN_NAMES[moon?.sign ?? 0];
-  const houses = Array.from({ length: 13 }, () => '');
-  for (let h = 1; h <= 12; h++) {
-    const abbrs = data.planets
+  // keep index 0 empty so houses are 1‑indexed
+  const houses = Array(13).fill('');
+  for (let h = 1; h <= 12; h += 1) {
+    houses[h] = data.planets
       .filter((p) => p.house === h)
-      .map((p) => PLANET_ABBR[p.name] || p.name.slice(0, 2));
-    houses[h] = abbrs.join(' ');
+      .map((p) => PLANET_ABBR[p.name] || p.name.slice(0, 2))
+      .join(' ');
   }
   return { ascendant, moonSign, houses };
 }
