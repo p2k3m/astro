@@ -227,6 +227,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   CHART_PATHS.diagonals.forEach((d) => addPath(d, '0.01'));
   addPath(CHART_PATHS.inner, '0.01');
 
+  const signNodes = [];
   for (let h = 1; h <= 12; h++) {
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const signNum = data.signInHouse?.[h] ?? h;
@@ -238,7 +239,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
       ascText.setAttribute('text-anchor', 'middle');
       ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
-      svgEl.appendChild(ascText);
+      signNodes.push(ascText);
     }
 
     const signText = document.createElementNS(svgNS, 'text');
@@ -247,18 +248,21 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.setAttribute('text-anchor', 'middle');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
-    svgEl.appendChild(signText);
+    signNodes.push(signText);
+  }
+  signNodes.forEach((n) => svgEl.appendChild(n));
 
+  for (let h = 1; h <= 12; h++) {
+    const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const poly = HOUSE_POLYGONS[h - 1];
     const planets = data.planets.filter((p) => p.house === h);
+    if (planets.length === 0) continue;
     const maxY = Math.max(...poly.map((pt) => pt[1]));
-    let py = Math.min(cy + 0.06, maxY - 0.02);
+    let py = cy + 0.07;
+    if (py > maxY - 0.02) py = maxY - 0.02;
     const step =
       planets.length > 1
-        ? Math.min(
-            0.04,
-            (maxY - 0.02 - py) / (planets.length - 1)
-          )
+        ? Math.min(0.04, (maxY - 0.02 - py) / (planets.length - 1))
         : 0;
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');
