@@ -21,11 +21,11 @@ export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
 export const SE_GREG_CAL = 1;
 
 // no-op setters for path and sidereal mode
-export function swe_set_ephe_path() {}
-export function swe_set_sid_mode() {}
+function js_swe_set_ephe_path() {}
+function js_swe_set_sid_mode() {}
 
 // Julian day computation (Gregorian calendar only)
-export function swe_julday(year, month, day, ut, calflag) {
+function js_swe_julday(year, month, day, ut, calflag) {
   if (month <= 2) {
     year -= 1;
     month += 12;
@@ -40,7 +40,7 @@ export function swe_julday(year, month, day, ut, calflag) {
     1524.5 +
     ut / 24;
   return jd;
-};
+}
 
 // Simple approximate Lahiri ayanamsa
 function lahiriAyanamsa(jd) {
@@ -222,7 +222,7 @@ function siderealLongitude(jd, planetId) {
   return normalizeAngle(tropical - ayan);
 }
 
-export function swe_calc_ut(jd, planetId, flags) {
+function js_swe_calc_ut(jd, planetId, flags) {
   const lon = siderealLongitude(jd, planetId);
   const delta = 1 / 1440; // one minute step for speed
   const lonBefore = siderealLongitude(jd - delta, planetId);
@@ -269,7 +269,7 @@ function ascendantTropical(jd, lat, lon) {
   return normalizeAngle(asc * RAD2DEG);
 }
 
-export function swe_houses_ex(jd, lat, lon, hsys, flags) {
+function js_swe_houses_ex(jd, lat, lon, hsys, flags) {
   const ascTropical = ascendantTropical(jd, lat, lon);
   const ayan = lahiriAyanamsa(jd);
   const ascSid = normalizeAngle(ascTropical - ayan);
@@ -287,13 +287,68 @@ export function swe_houses_ex(jd, lat, lon, hsys, flags) {
 // Determine the house position of a planet given its ecliptic longitude.
 // This simplified version merely compares the planet longitude against the
 // first house cusp and assumes 30° houses, adequate for our tests.
-export function swe_house_pos(jd, lat, lon, hsys, bodyLon, houses) {
+function js_swe_house_pos(jd, lat, lon, hsys, bodyLon, houses) {
   const asc = houses?.[1];
   const ascendant =
     typeof asc === 'number'
       ? asc
-      : swe_houses_ex(jd, lat, lon, hsys, 0).houses[1];
+      : js_swe_houses_ex(jd, lat, lon, hsys, 0).houses[1];
   const ascSign = Math.floor(ascendant / 30);
   const bodySign = Math.floor(bodyLon / 30);
   return ((bodySign - ascSign + 12) % 12) + 1;
+}
+
+const jsImpl = {
+  swe_set_ephe_path: js_swe_set_ephe_path,
+  swe_set_sid_mode: js_swe_set_sid_mode,
+  swe_julday: js_swe_julday,
+  swe_calc_ut: js_swe_calc_ut,
+  swe_houses_ex: js_swe_houses_ex,
+  swe_house_pos: js_swe_house_pos,
+};
+
+let wasmModule;
+async function init(options) {
+  if (wasmModule) return wasmModule;
+  try {
+    const mod = await import('./wasm/swe.js');
+    const initFn = mod.default || mod.init || mod;
+    wasmModule = await initFn(options);
+  } catch {
+    // WASM module unavailable; JS fallback will be used.
+  }
+  return wasmModule;
+}
+
+export const ready = init();
+
+function call(name, args) {
+  if (wasmModule && typeof wasmModule[name] === 'function') {
+    return wasmModule[name](...args);
+  }
+  return jsImpl[name](...args);
+}
+
+export function swe_set_ephe_path(...args) {
+  return call('swe_set_ephe_path', args);
+}
+
+export function swe_set_sid_mode(...args) {
+  return call('swe_set_sid_mode', args);
+}
+
+export function swe_julday(...args) {
+  return call('swe_julday', args);
+}
+
+export function swe_calc_ut(...args) {
+  return call('swe_calc_ut', args);
+}
+
+export function swe_houses_ex(...args) {
+  return call('swe_houses_ex', args);
+}
+
+export function swe_house_pos(...args) {
+  return call('swe_house_pos', args);
 }

@@ -25,17 +25,20 @@ if (!fs.existsSync(ephemerisPath)) {
   process.exit(1);
 }
 
-try {
-  // The setEphemerisPath function belongs to the Swiss Ephemeris package.
-  // We must configure it directly.
-  swisseph.swe_set_ephe_path(ephemerisPath);
-  // Enable Lahiri sidereal mode
-  swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-  console.log('Swiss Ephemeris path configured successfully.');
-} catch (err) {
-  console.error('Failed to configure Swiss Ephemeris:', err);
-  process.exit(1);
-}
+(async () => {
+  try {
+    await swisseph.ready;
+    // The setEphemerisPath function belongs to the Swiss Ephemeris package.
+    // We must configure it directly.
+    swisseph.swe_set_ephe_path(ephemerisPath);
+    // Enable Lahiri sidereal mode
+    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
+    console.log('Swiss Ephemeris path configured successfully.');
+  } catch (err) {
+    console.error('Failed to configure Swiss Ephemeris:', err);
+    process.exit(1);
+  }
+})();
 
 // --- Express Server Setup ---
 
