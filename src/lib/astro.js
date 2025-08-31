@@ -255,30 +255,22 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   CHART_PATHS.diagonals.forEach((d) => addPath(d, '0.01'));
   addPath(CHART_PATHS.inner, '0.01');
 
+  const SIGN_PAD_X = 0.04;
   const SIGN_PAD_Y = 0.08;
+  const SIGN_FONT_SIZE = 0.05;
   const PLANET_GAP = 0.02;
   const PLANET_PAD = 0.02;
 
   const signNodes = [];
   const SIGN_MARGIN = 0.08;
   const SIGN_TOWARDS_VERTEX = 0.6;
+  const signBottoms = [];
   for (let h = 1; h <= 12; h++) {
     const poly = HOUSE_POLYGONS[h - 1];
     const centroid = HOUSE_CENTROIDS[h - 1];
     const bbox = HOUSE_BBOXES[h - 1];
     const { minX, maxX, minY, maxY } = bbox;
     const signNum = data.signInHouse?.[h] ?? h;
-
-    if (h === 1) {
-      const ascText = document.createElementNS(svgNS, 'text');
-      ascText.setAttribute('x', minX + 0.04);
-      ascText.setAttribute('y', minY + SIGN_PAD_Y);
-
-      ascText.setAttribute('text-anchor', 'start');
-      ascText.setAttribute('font-size', '0.03');
-      ascText.textContent = 'Asc';
-      signNodes.push(ascText);
-    }
 
     // Determine a point towards the top corner of the polygon
     let target = poly[0];
@@ -292,13 +284,26 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     if (sy < minY + SIGN_MARGIN) sy = minY + SIGN_MARGIN;
     if (sy > maxY - SIGN_MARGIN) sy = maxY - SIGN_MARGIN;
 
+    if (h === 1) {
+      const ascText = document.createElementNS(svgNS, 'text');
+      ascText.setAttribute('x', minX + SIGN_PAD_X);
+      ascText.setAttribute('y', sy);
+      ascText.setAttribute('text-anchor', 'start');
+      ascText.setAttribute('dominant-baseline', 'middle');
+      ascText.setAttribute('font-size', '0.03');
+      ascText.textContent = 'Asc';
+      signNodes.push(ascText);
+    }
+
     const signText = document.createElementNS(svgNS, 'text');
-    signText.setAttribute('x', maxX - 0.04);
-    signText.setAttribute('y', minY + SIGN_PAD_Y);
-    signText.setAttribute('text-anchor', 'end');
+    signText.setAttribute('x', sx);
+    signText.setAttribute('y', sy);
+    signText.setAttribute('text-anchor', 'middle');
+    signText.setAttribute('dominant-baseline', 'middle');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
     signNodes.push(signText);
+    signBottoms[h] = sy + SIGN_FONT_SIZE / 2;
   }
   signNodes.forEach((n) => svgEl.appendChild(n));
 
@@ -308,8 +313,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     const planets = data.planets.filter((p) => p.house === h);
     if (planets.length === 0) continue;
     const maxY = Math.max(...poly.map((pt) => pt[1]));
-    const { minY } = HOUSE_BBOXES[h - 1];
-    const signBottom = minY + SIGN_PAD_Y; // baseline is bottom of text
+    const signBottom = signBottoms[h];
     let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
     if (py > maxY - PLANET_PAD) py = maxY - PLANET_PAD;
     const step =

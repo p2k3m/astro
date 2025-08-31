@@ -62,7 +62,11 @@ test('sign labels stay inside each house polygon', () => {
     const planetNodes = texts.filter((t) => t.textContent.startsWith(`p${h}_`));
     const planetYs = planetNodes.map((t) => Number(t.attributes.y));
     const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
+    const signBottom = y + 0.025;
     if (minPlanetY !== null)
-      assert.ok(minPlanetY - y >= 0.02, `label overlaps planet in house ${h}`);
+      assert.ok(
+        minPlanetY - signBottom >= 0.02,
+        `label overlaps planet in house ${h}`
+      );
   }
 });

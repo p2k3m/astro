@@ -63,7 +63,7 @@ test('sign numbers remain clear and non-overlapping', () => {
       .filter((t) => t.textContent.startsWith(`p${h}`))
       .map((t) => Number(t.attributes.y));
     const minPlanetY = Math.min(...planetYs);
-    const gap = +(minPlanetY - sy).toFixed(2);
+    const gap = +(minPlanetY - (sy + 0.025)).toFixed(2);
     assert.ok(gap >= 0.02, `label overlaps planet in house ${h}`);
   }
 });

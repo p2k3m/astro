@@ -103,7 +103,7 @@ export default function Chart({
     return {
       houseNum,
       signNum,
-      signX: maxX - SIGN_PAD_X,
+      signX,
       signY: labelY,
       ascX: minX + SIGN_PAD_X,
       planets,

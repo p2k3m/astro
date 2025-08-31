@@ -57,11 +57,11 @@ test('sign labels keep padding from borders and planets', () => {
       bbox.maxY - y
     );
     assert.ok(minPad >= 0.03, 'label touches frame');
-
     const planetNodes = texts.filter((t) => t.textContent.startsWith(`p${h} `));
     const planetYs = planetNodes.map((t) => Number(t.attributes.y));
     const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
+    const signBottom = y + 0.025;
     if (minPlanetY !== null)
-      assert.ok(minPlanetY - y >= 0.02, 'label overlaps planet');
+      assert.ok(minPlanetY - signBottom >= 0.02, 'label overlaps planet');
   }
 });
