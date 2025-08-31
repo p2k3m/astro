@@ -10,7 +10,18 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
   );
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.moon.house, 8);
-  assert.strictEqual(planets.mars.house, 6);
-  assert.strictEqual(planets.ketu.house, 3);
+  const expected = {
+    sun: 2,
+    moon: 8,
+    mercury: 7,
+    venus: 7,
+    mars: 6,
+    jupiter: 2,
+    saturn: 1,
+    rahu: 9,
+    ketu: 3,
+  };
+  for (const [name, house] of Object.entries(expected)) {
+    assert.strictEqual(planets[name].house, house, `${name} house`);
+  }
 });
