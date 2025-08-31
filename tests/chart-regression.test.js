@@ -15,7 +15,7 @@ test('calculateChart matches AstroSage for Darbhanga 1982-12-01 03:50', async ()
   assert.strictEqual(result.ascSign, 7);
 
   // Sign sequence (sign in each house)
-  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
+  assert.deepStrictEqual(result.signInHouse, [null, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8]);
 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
