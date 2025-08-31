@@ -45,7 +45,7 @@ test('sign labels anchor to corners without overlapping planets', () => {
 
   const { cx, cy } = HOUSE_CENTROIDS[0];
   const { minX, maxX, minY, maxY } = HOUSE_BBOXES[0];
-  const xs = new Set([minX + 0.02, maxX - 0.02, cx]);
+  const xs = new Set([minX + 0.04, maxX - 0.04, cx]);
   const texts = svg.children
     .filter(
       (c) =>
@@ -62,8 +62,8 @@ test('sign labels anchor to corners without overlapping planets', () => {
   }));
 
   assert.deepStrictEqual(snapshot, [
-    { text: 'Asc', x: minX + 0.02, y: minY + 0.05 },
-    { text: '1', x: maxX - 0.02, y: minY + 0.05 },
+    { text: 'Asc', x: minX + 0.04, y: minY + 0.08 },
+    { text: '1', x: maxX - 0.04, y: minY + 0.08 },
     { text: "p1 00°00'", x: cx, y: cy + 0.07 },
     { text: "p2 10°00'", x: cx, y: cy + 0.11 },
   ]);

@@ -46,8 +46,8 @@ test('houses and signs increase anti-clockwise from ascendant', () => {
     const t = signTexts.find((st) => st.textContent === String(i + 1));
     assert.ok(t, `sign ${i + 1} missing`);
     const { minX, maxX, minY } = HOUSE_BBOXES[i];
-    assert.strictEqual(Number(t.attributes.x), maxX - 0.02);
-    assert.strictEqual(Number(t.attributes.y), minY + 0.05);
+    assert.strictEqual(Number(t.attributes.x), maxX - 0.04);
+    assert.strictEqual(Number(t.attributes.y), minY + 0.08);
   }
   delete global.document;
 

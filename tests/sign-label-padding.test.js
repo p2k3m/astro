@@ -44,8 +44,8 @@ test('sign labels keep padding from borders and planets', () => {
 
   for (let h = 1; h <= 12; h++) {
     const bbox = HOUSE_BBOXES[h - 1];
-    const signX = bbox.maxX - 0.02;
-    const signY = bbox.minY + 0.05;
+    const signX = bbox.maxX - 0.04;
+    const signY = bbox.minY + 0.08;
 
     const signNode = texts.find(
       (t) =>
@@ -65,23 +65,23 @@ test('sign labels keep padding from borders and planets', () => {
     const yPad = +(signY - bbox.minY).toFixed(2);
     snapshot.push({ house: h, xPad, yPad, planetGap: gap });
 
-    assert.ok(xPad >= 0.02, 'label touches right border');
-    assert.ok(yPad >= 0.05, 'label touches top border');
+    assert.ok(xPad >= 0.04, 'label touches right border');
+    assert.ok(yPad >= 0.08, 'label touches top border');
     if (gap !== null) assert.ok(gap >= 0.02, 'label overlaps planet');
   }
 
   assert.deepStrictEqual(snapshot, [
-    { house: 1, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 2, xPad: 0.02, yPad: 0.05, planetGap: 0.1 },
-    { house: 3, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 4, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 5, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 6, xPad: 0.02, yPad: 0.05, planetGap: 0.18 },
-    { house: 7, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 8, xPad: 0.02, yPad: 0.05, planetGap: 0.18 },
-    { house: 9, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 10, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 11, xPad: 0.02, yPad: 0.05, planetGap: 0.27 },
-    { house: 12, xPad: 0.02, yPad: 0.05, planetGap: 0.1 },
+    { house: 1, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 2, xPad: 0.04, yPad: 0.08, planetGap: 0.07 },
+    { house: 3, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 4, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 5, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 6, xPad: 0.04, yPad: 0.08, planetGap: 0.15 },
+    { house: 7, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 8, xPad: 0.04, yPad: 0.08, planetGap: 0.15 },
+    { house: 9, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 10, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 11, xPad: 0.04, yPad: 0.08, planetGap: 0.24 },
+    { house: 12, xPad: 0.04, yPad: 0.08, planetGap: 0.07 },
   ]);
 });

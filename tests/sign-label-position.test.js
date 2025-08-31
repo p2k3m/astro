@@ -1,40 +1,61 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { HOUSE_POLYGONS, polygonCentroid } = require('../src/lib/astro.js');
+const { renderNorthIndian, HOUSE_BBOXES } = require('../src/lib/astro.js');
 
-function closestCornerClass(cx, cy) {
-  const EPS = 1e-9;
-  let vert;
-  if (cy < 0.5 - EPS) vert = 'bottom-0';
-  else if (cy > 0.5 + EPS) vert = 'top-0';
-  else vert = cx < 0.5 ? 'top-0' : 'bottom-0';
-
-  let horiz;
-  if (cx < 0.5 - EPS) horiz = 'right-0';
-  else if (cx > 0.5 + EPS) horiz = 'left-0';
-  else horiz = cy < 0.5 ? 'right-0' : 'left-0';
-
-  return `${vert} ${horiz}`;
+class Element {
+  constructor(tag) {
+    this.tagName = tag;
+    this.attributes = {};
+    this.children = [];
+    this.textContent = '';
+  }
+  setAttribute(name, value) {
+    this.attributes[name] = String(value);
+  }
+  appendChild(child) {
+    this.children.push(child);
+  }
+  removeChild(child) {
+    const i = this.children.indexOf(child);
+    if (i >= 0) this.children.splice(i, 1);
+  }
+  get firstChild() {
+    return this.children[0];
+  }
 }
 
-test('sign labels positioned at AstroSage corners', () => {
-  const positions = HOUSE_POLYGONS.map((poly) => {
-    const { cx, cy } = polygonCentroid(poly);
-    return closestCornerClass(cx, cy);
-  });
-  const expected = [
-    'bottom-0 right-0', // 1
-    'bottom-0 right-0', // 2
-    'bottom-0 right-0', // 3
-    'top-0 right-0', // 4
-    'top-0 right-0', // 5
-    'top-0 right-0', // 6
-    'top-0 left-0', // 7
-    'top-0 left-0', // 8
-    'top-0 left-0', // 9
-    'bottom-0 left-0', // 10
-    'bottom-0 left-0', // 11
-    'bottom-0 left-0', // 12
-  ];
-  assert.deepStrictEqual(positions, expected);
+const doc = { createElementNS: (ns, tag) => new Element(tag) };
+
+test('sign labels anchor to chart corners with padding', () => {
+  const signInHouse = [null];
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
+
+  global.document = doc;
+  const svg = new Element('svg');
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets: [] });
+  delete global.document;
+
+  const texts = svg.children.filter(
+    (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.05'
+  );
+  assert.strictEqual(texts.length, 12);
+
+  const snapshot = [];
+  for (let h = 1; h <= 12; h++) {
+    const bbox = HOUSE_BBOXES[h - 1];
+    const node = texts[h - 1];
+    const x = Number(node.attributes.x);
+    const y = Number(node.attributes.y);
+    const xPad = +(bbox.maxX - x).toFixed(2);
+    const yPad = +(y - bbox.minY).toFixed(2);
+    snapshot.push({ house: h, xPad, yPad });
+    assert.ok(xPad >= 0.04, 'label touches right border');
+    assert.ok(yPad >= 0.08, 'label touches top border');
+  }
+
+  assert.deepStrictEqual(
+    snapshot,
+    Array.from({ length: 12 }, (_, i) => ({ house: i + 1, xPad: 0.04, yPad: 0.08 }))
+  );
 });
+
