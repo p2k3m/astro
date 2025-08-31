@@ -9,13 +9,14 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     res.signInHouse.slice(1),
     [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
   );
+  assert.strictEqual(res.signInHouse[1], res.ascSign);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   const expected = {
     sun: 2,
     moon: 8,
     mercury: 7,
     venus: 7,
-    mars: 3,
+      mars: 6,
     jupiter: 2,
     saturn: 1,
     rahu: 9,

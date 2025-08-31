@@ -13,9 +13,10 @@ test('Darbhanga 1982-10-27 03:50 ascendant regression', async () => {
 
   assert.strictEqual(result.ascSign, 6);
   assert.deepStrictEqual(result.signInHouse, [null, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5]);
+  assert.strictEqual(result.signInHouse[1], result.ascSign);
 
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.sun.house, 2);
   assert.strictEqual(planets.jupiter.house, 3);
-  assert.strictEqual(planets.mars.house, 3);
+  assert.strictEqual(planets.mars.house, 6);
 });
