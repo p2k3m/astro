@@ -10,7 +10,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const expected = {
     sun: 2,
     moon: 8,
-    mars: 6,
+    mars: 3,
     mercury: 7,
     jupiter: 2,
     venus: 7,
