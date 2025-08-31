@@ -24,4 +24,9 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
+
+  const direct = ['sun', 'moon', 'mars', 'venus'];
+  for (const name of direct) {
+    assert.strictEqual(planets[name].retro, false, `${name} should be direct`);
+  }
 });

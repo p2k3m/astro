@@ -99,6 +99,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
       sign,
       deg,
       speed: data.longitudeSpeed,
+      flags,
       retro,
       house: houseOf(data.longitude),
     });
@@ -115,6 +116,7 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     sign: kSign,
     deg: kDeg,
     speed: -rahuData.longitudeSpeed,
+    flags: rahuFlags,
     retro: ketuRetro,
     house: houseOf(ketuLon),
   });
