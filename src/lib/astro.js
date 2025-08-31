@@ -261,8 +261,8 @@ export function renderNorthIndian(svgEl, data, options = {}) {
 
     if (h === 1) {
       const ascText = document.createElementNS(svgNS, 'text');
-      ascText.setAttribute('x', minX + 0.02);
-      ascText.setAttribute('y', minY + 0.05);
+      ascText.setAttribute('x', minX + 0.04);
+      ascText.setAttribute('y', minY + 0.08);
       ascText.setAttribute('text-anchor', 'start');
       ascText.setAttribute('font-size', '0.03');
       ascText.textContent = 'Asc';
@@ -270,8 +270,8 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     }
 
     const signText = document.createElementNS(svgNS, 'text');
-    signText.setAttribute('x', maxX - 0.02);
-    signText.setAttribute('y', minY + 0.05);
+    signText.setAttribute('x', maxX - 0.04);
+    signText.setAttribute('y', minY + 0.08);
     signText.setAttribute('text-anchor', 'end');
     signText.setAttribute('font-size', '0.05');
     signText.textContent = getSignLabel(signNum - 1, options);
