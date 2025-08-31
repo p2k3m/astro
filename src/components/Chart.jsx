@@ -79,13 +79,13 @@ export default function Chart({
     }
     let signX =
       centroid.cx + (target[0] - centroid.cx) * SIGN_TOWARDS_VERTEX;
-    let signY =
+    let labelY =
       centroid.cy + (target[1] - centroid.cy) * SIGN_TOWARDS_VERTEX;
     // Ensure the label stays well within the bounding box of the polygon
     if (signX < minX + SIGN_MARGIN) signX = minX + SIGN_MARGIN;
     if (signX > maxX - SIGN_MARGIN) signX = maxX - SIGN_MARGIN;
-    if (signY < minY + SIGN_MARGIN) signY = minY + SIGN_MARGIN;
-    if (signY > maxY - SIGN_MARGIN) signY = maxY - SIGN_MARGIN;
+    if (labelY < minY + SIGN_MARGIN) labelY = minY + SIGN_MARGIN;
+    if (labelY > maxY - SIGN_MARGIN) labelY = maxY - SIGN_MARGIN;
 
     const maxPolyY = Math.max(...poly.map((pt) => pt[1]));
     const cx = centroid.cx;
@@ -93,8 +93,7 @@ export default function Chart({
     const houseNum = idx + 1;
     const signNum = signInHouse[houseNum] ?? houseNum;
     const planets = planetByHouse[houseNum] || [];
-    const signY = minY + SIGN_PAD_Y;
-    const signBottom = signY + SIGN_FONT_SIZE / 2;
+    const signBottom = labelY + SIGN_FONT_SIZE / 2;
     let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
     if (py > maxPolyY - PLANET_PAD) py = maxPolyY - PLANET_PAD;
     const step =
@@ -105,7 +104,7 @@ export default function Chart({
       houseNum,
       signNum,
       signX: maxX - SIGN_PAD_X,
-      signY,
+      signY: labelY,
       ascX: minX + SIGN_PAD_X,
       planets,
       cx,
