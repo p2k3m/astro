@@ -12,5 +12,5 @@ test('Mercury/Venus in 2nd and Mars in 3rd house for reference chart', () => {
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p.house]));
   assert.strictEqual(planets.mercury, 2);
   assert.strictEqual(planets.venus, 2);
-    assert.strictEqual(planets.mars, 1);
-  });
+  assert.strictEqual(planets.mars, 3);
+});
