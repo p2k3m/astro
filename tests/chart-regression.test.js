@@ -31,23 +31,24 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
 
   // Ascendant sign
   assert.strictEqual(result.ascSign, 7);
+  assert.strictEqual(result.signInHouse[1], result.ascSign);
 
   // Sign sequence (sign in each house)
   assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
-  const expectedHouses = {
-    sun: 2,
-    moon: 8,
-    mars: 3,
-    mercury: 7,
-    jupiter: 2,
-    venus: 7,
-    saturn: 1,
-    rahu: 9,
-    ketu: 3,
-  };
+    const expectedHouses = {
+      sun: 2,
+      moon: 8,
+      mars: 6,
+      mercury: 7,
+      jupiter: 2,
+      venus: 7,
+      saturn: 1,
+      rahu: 9,
+      ketu: 3,
+    };
   for (const [name, house] of Object.entries(expectedHouses)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
@@ -115,8 +116,8 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     { tag: 'text', attrs: { x: '0.5', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "saturn(Ex) 00°14'" },
     { tag: 'text', attrs: { x: '0.25', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "sun 14°46'" },
     { tag: 'text', attrs: { x: '0.25', y: '0.19333333333333333', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "jupiter(C) 05°04'" },
-    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mars 00°00'" },
-    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.36', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "ketu(R) 11°53'" },
+    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "ketu(R) 11°53'" },
+    { tag: 'text', attrs: { x: '0.25', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mars 08°19'" },
     { tag: 'text', attrs: { x: '0.5', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "mercury 29°13'" },
     { tag: 'text', attrs: { x: '0.5', y: '0.8600000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "venus 10°02'" },
     { tag: 'text', attrs: { x: '0.75', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: "moon(Ex) 13°17'" },

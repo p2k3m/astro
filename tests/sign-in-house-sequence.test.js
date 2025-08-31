@@ -6,9 +6,5 @@ test('Darbhanga 1982-12-01 03:50 ascendant and sign sequence', async () => {
   const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   assert.strictEqual(result.ascSign, 7);
   assert.strictEqual(result.signInHouse[1], result.ascSign);
-  for (let h = 1; h <= 12; h++) {
-    const next = (h % 12) + 1;
-    const expected = (result.signInHouse[h] % 12) + 1;
-    assert.strictEqual(result.signInHouse[next], expected);
-  }
+  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
 });
