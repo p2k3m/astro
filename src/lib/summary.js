@@ -15,7 +15,7 @@ const PLANET_ABBR = {
 export function summarizeChart(data) {
   const ascendant = SIGN_NAMES[data.ascSign - 1];
   const moon = data.planets.find((p) => p.name === 'moon');
-  const moonSign = SIGN_NAMES[(moon?.sign ?? 1) - 1];
+  const moonSign = SIGN_NAMES[moon?.sign ?? 0];
   const houses = Array.from({ length: 13 }, () => '');
   for (let h = 1; h <= 12; h++) {
     const abbrs = data.planets
