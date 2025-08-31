@@ -60,6 +60,11 @@ export default function Chart({
     planetByHouse[houseIdx].push({ abbr, deg });
   });
 
+  const SIGN_PAD_X = 0.04;
+  const SIGN_PAD_Y = 0.08;
+  const SIGN_FONT_SIZE = 0.05;
+  const PLANET_GAP = 0.02;
+  const PLANET_PAD = 0.02;
   const SIGN_MARGIN = 0.08;
   const SIGN_TOWARDS_VERTEX = 0.6;
 
@@ -88,18 +93,20 @@ export default function Chart({
     const houseNum = idx + 1;
     const signNum = signInHouse[houseNum] ?? houseNum;
     const planets = planetByHouse[houseNum] || [];
-    let py = cy + 0.07;
-    if (py > maxPolyY - 0.02) py = maxPolyY - 0.02;
+    const signY = minY + SIGN_PAD_Y;
+    const signBottom = signY + SIGN_FONT_SIZE / 2;
+    let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
+    if (py > maxPolyY - PLANET_PAD) py = maxPolyY - PLANET_PAD;
     const step =
       planets.length > 1
-        ? Math.min(0.04, (maxPolyY - 0.02 - py) / (planets.length - 1))
+        ? Math.min(0.04, (maxPolyY - PLANET_PAD - py) / (planets.length - 1))
         : 0;
     return {
       houseNum,
       signNum,
-      signX,
+      signX: maxX - SIGN_PAD_X,
       signY,
-      ascX: minX + SIGN_MARGIN,
+      ascX: minX + SIGN_PAD_X,
       planets,
       cx,
       pyStart: py,

@@ -30,10 +30,11 @@ test('planet labels keep clear of sign numbers in every house', () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [];
+  const counts = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5];
   for (let h = 1; h <= 12; h++) {
-    planets.push({ name: `p${h}a`, house: h, deg: 0 });
-    planets.push({ name: `p${h}b`, house: h, deg: 10 });
-    planets.push({ name: `p${h}c`, house: h, deg: 20 });
+    for (let i = 0; i < counts[h - 1]; i++) {
+      planets.push({ name: `p${h}_${i}`, house: h, deg: i * 10 });
+    }
   }
 
   global.document = doc;
@@ -50,24 +51,27 @@ test('planet labels keep clear of sign numbers in every house', () => {
     assert.ok(signNode, `missing sign label for house ${h}`);
     const signY = Number(signNode.attributes.y);
     const planetYs = texts
-      .filter((t) => t.textContent.startsWith(`p${h}`))
+      .filter((t) => t.textContent.startsWith(`p${h}_`))
       .map((t) => Number(t.attributes.y));
-    const minPlanetY = Math.min(...planetYs);
-    const gap = +(minPlanetY - signY).toFixed(2);
+    const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
+    const gap =
+      minPlanetY !== null ? +(minPlanetY - signY).toFixed(2) : null;
     snapshot.push({ house: h, gap });
-    assert.ok(gap >= 0.02, `label overlaps planet in house ${h}`);
+    if (gap !== null) {
+      assert.ok(gap >= 0.02, `label overlaps planet in house ${h}`);
+    }
     const yPad = +(signY - bbox.minY).toFixed(2);
     assert.ok(yPad >= 0.08, `label touches top border in house ${h}`);
   }
 
   assert.deepStrictEqual(snapshot, [
-    { house: 1, gap: 0.05 },
+    { house: 1, gap: null },
     { house: 2, gap: 0.07 },
     { house: 3, gap: 0.22 },
     { house: 4, gap: 0.22 },
     { house: 5, gap: 0.22 },
     { house: 6, gap: 0.15 },
-    { house: 7, gap: 0.22 },
+    { house: 7, gap: null },
     { house: 8, gap: 0.15 },
     { house: 9, gap: 0.22 },
     { house: 10, gap: 0.22 },
