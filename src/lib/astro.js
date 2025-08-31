@@ -169,11 +169,13 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     lon,
   });
 
-  // Derive sign numbers (1–12) for each house directly from the cusp
-  // longitudes returned by Swiss Ephemeris. The `houses` array is 1-indexed
+  const ascSign = base.ascSign;
+
+  // Derive sign numbers (1–12) for each house directly from the returned
+  // cusp longitudes without any rotation. The `houses` array is 1-indexed
   // with index 1 representing the ascendant.
   const signInHouse = [null];
-  for (let h = 1; h <= 12; h++) {
+  for (let h = 1; h <= 12; h += 1) {
     signInHouse[h] = lonToSignDeg(base.houses[h]).sign;
   }
   if (process.env.DEBUG_HOUSES) {
@@ -233,7 +235,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
     });
   }
 
-  return { ascSign: base.ascSign, signInHouse, planets };
+  return { ascSign, signInHouse, planets };
 }
 
 export function renderNorthIndian(svgEl, data, options = {}) {

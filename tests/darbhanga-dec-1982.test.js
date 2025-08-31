@@ -4,6 +4,11 @@ const { computePositions } = require('../src/lib/astro.js');
 
 test('Darbhanga 1982-12-01 03:50 positions', async () => {
   const res = await computePositions('1982-12-01T03:50+05:30', 26.15216, 85.89707);
+  assert.strictEqual(res.ascSign, 7);
+  assert.deepStrictEqual(
+    res.signInHouse.slice(1),
+    [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
+  );
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.moon.house, 8);
   assert.strictEqual(planets.mars.house, 6);
