@@ -94,12 +94,29 @@ export default function Chart({
     const signNum = signInHouse[houseNum] ?? houseNum;
     const planets = planetByHouse[houseNum] || [];
     const signBottom = labelY + SIGN_FONT_SIZE / 2;
-    let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
-    if (py > maxPolyY - PLANET_PAD) py = maxPolyY - PLANET_PAD;
-    const step =
-      planets.length > 1
-        ? Math.min(0.04, (maxPolyY - PLANET_PAD - py) / (planets.length - 1))
-        : 0;
+    const bottomLimit = maxPolyY - PLANET_PAD;
+    let px = cx;
+    const baseline = cy + 0.07;
+    let py = signBottom + PLANET_GAP;
+    if (py < baseline) py = baseline;
+    let downward = true;
+    if (py > bottomLimit) {
+      py = bottomLimit;
+      downward = false;
+      const shift = 0.06;
+      px =
+        signX < cx
+          ? Math.min(maxX - PLANET_PAD, cx + shift)
+          : Math.max(minX + PLANET_PAD, cx - shift);
+    }
+    let step = 0;
+    if (planets.length > 1) {
+      const available = downward
+        ? bottomLimit - py
+        : py - (minY + PLANET_PAD);
+      step = available > 0 ? Math.min(0.04, available / (planets.length - 1)) : 0;
+      if (!downward) step = -step;
+    }
     return {
       houseNum,
       signNum,
@@ -107,7 +124,7 @@ export default function Chart({
       signY: labelY,
       ascX: minX + SIGN_PAD_X,
       planets,
-      cx,
+      cx: px,
       pyStart: py,
       step,
     };

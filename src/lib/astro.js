@@ -265,6 +265,7 @@ export function renderNorthIndian(svgEl, data, options = {}) {
   const SIGN_MARGIN = 0.08;
   const SIGN_TOWARDS_VERTEX = 0.6;
   const signBottoms = [];
+  const signXs = [];
   for (let h = 1; h <= 12; h++) {
     const poly = HOUSE_POLYGONS[h - 1];
     const centroid = HOUSE_CENTROIDS[h - 1];
@@ -304,25 +305,45 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     signText.textContent = getSignLabel(signNum - 1, options);
     signNodes.push(signText);
     signBottoms[h] = sy + SIGN_FONT_SIZE / 2;
+    signXs[h] = sx;
   }
   signNodes.forEach((n) => svgEl.appendChild(n));
 
   for (let h = 1; h <= 12; h++) {
     const { cx, cy } = HOUSE_CENTROIDS[h - 1];
     const poly = HOUSE_POLYGONS[h - 1];
+    const bbox = HOUSE_BBOXES[h - 1];
+    const { minX, maxX } = bbox;
     const planets = data.planets.filter((p) => p.house === h);
     if (planets.length === 0) continue;
     const maxY = Math.max(...poly.map((pt) => pt[1]));
+    const bottomLimit = maxY - PLANET_PAD;
     const signBottom = signBottoms[h];
-    let py = Math.max(signBottom + PLANET_GAP, cy + 0.07);
-    if (py > maxY - PLANET_PAD) py = maxY - PLANET_PAD;
-    const step =
-      planets.length > 1
-        ? Math.min(0.04, (maxY - PLANET_PAD - py) / (planets.length - 1))
-        : 0;
+    let px = cx;
+    const baseline = cy + 0.07;
+    let py = signBottom + PLANET_GAP;
+    if (py < baseline) py = baseline;
+    let downward = true;
+    if (py > bottomLimit) {
+      py = bottomLimit;
+      downward = false;
+      const shift = 0.06;
+      px =
+        signXs[h] < cx
+          ? Math.min(maxX - PLANET_PAD, cx + shift)
+          : Math.max(minX + PLANET_PAD, cx - shift);
+    }
+    let step = 0;
+    if (planets.length > 1) {
+      const available = downward
+        ? bottomLimit - py
+        : py - (bbox.minY + PLANET_PAD);
+      step = available > 0 ? Math.min(0.04, available / (planets.length - 1)) : 0;
+      if (!downward) step = -step;
+    }
     planets.forEach((p) => {
       const t = document.createElementNS(svgNS, 'text');
-      t.setAttribute('x', cx);
+      t.setAttribute('x', px);
       t.setAttribute('y', py);
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-size', '0.03');

@@ -47,16 +47,16 @@ test('planet labels keep clear of sign numbers in every house', () => {
     const bbox = HOUSE_BBOXES[h - 1];
     const signNode = texts.find((t) => t.textContent === String(h));
     assert.ok(signNode, `missing sign label for house ${h}`);
+    const signX = Number(signNode.attributes.x);
     const signY = Number(signNode.attributes.y);
-    const planetYs = texts
-      .filter((t) => t.textContent.startsWith(`p${h}_`))
-      .map((t) => Number(t.attributes.y));
-    const minPlanetY = planetYs.length ? Math.min(...planetYs) : null;
-    const gap =
-      minPlanetY !== null ? +(minPlanetY - signY).toFixed(2) : null;
-    if (gap !== null) {
-      assert.ok(gap >= 0.02, `label overlaps planet in house ${h}`);
-    }
+    const planetNodes = texts.filter((t) => t.textContent.startsWith(`p${h}_`));
+    planetNodes.forEach((p) => {
+      const px = Number(p.attributes.x);
+      const py = Number(p.attributes.y);
+      const dx = Math.abs(px - signX);
+      const dy = Math.abs(py - signY);
+      assert.ok(dy >= 0.02 || dx >= 0.05, `label overlaps planet in house ${h}`);
+    });
     const yPad = +(signY - bbox.minY).toFixed(2);
     assert.ok(yPad >= 0.08, `label touches top border in house ${h}`);
   }
