@@ -86,7 +86,7 @@ export default function Chart({
           const width = (maxX - minX) * size - margin;
           const height = (maxY - minY) * size - margin;
 
-          const labelPad = (4 / 300) * size;
+          const labelPad = (8 / 300) * size;
           return (
             <div
               key={houseNum}
@@ -104,14 +104,14 @@ export default function Chart({
                 className="absolute inset-0 pointer-events-none z-0"
                 style={{ padding: labelPad }}
               >
-                <div className="absolute top-0 right-0">
+                <div className="absolute top-1 right-1">
                   <span className="text-amber-700 font-bold text-[clamp(0.9rem,1.5vw,1.2rem)] leading-none">
                     {getSignLabel(signNum - 1, { useAbbreviations })}
                   </span>
                 </div>
 
                 {houseNum === 1 && (
-                  <div className="absolute top-0 left-0">
+                  <div className="absolute top-1 left-1">
                     <span className="text-amber-700 text-[0.7rem] font-semibold leading-none">
                       Asc
                     </span>
