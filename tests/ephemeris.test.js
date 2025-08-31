@@ -63,10 +63,6 @@ test('house cusps and retrograde flags', async () => {
       };
       return data[id];
     },
-    swe_house_pos: (jd, lat, lon, hsys, bodyLon, houses) => {
-      const asc = houses[1];
-      return Math.floor(((bodyLon - asc + 360) % 360) / 30) + 1;
-    },
   };
 
   const result = compute_positions(
@@ -78,16 +74,16 @@ test('house cusps and retrograde flags', async () => {
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
   assert.strictEqual(result.houses[1], 123);
-    assert.strictEqual(planets.moon.sign, 8);
-    assert.strictEqual(planets.moon.house, 3);
-    assert.strictEqual(planets.moon.retro, true);
-    assert.strictEqual(planets.mercury.retro, false);
-    assert.strictEqual(planets.mars.house, 3);
+  assert.strictEqual(planets.moon.sign, 8);
+  assert.strictEqual(planets.moon.house, 4);
+  assert.strictEqual(planets.moon.retro, true);
+  assert.strictEqual(planets.mercury.retro, false);
+  assert.strictEqual(planets.mars.house, 3);
 
-    assert.strictEqual(planets.rahu.retro, true);
-    assert.strictEqual(planets.rahu.house, 9);
-    assert.strictEqual(planets.ketu.sign, 8);
-    assert.strictEqual(planets.ketu.house, 3);
+  assert.strictEqual(planets.rahu.retro, true);
+  assert.strictEqual(planets.rahu.house, 10);
+  assert.strictEqual(planets.ketu.sign, 8);
+  assert.strictEqual(planets.ketu.house, 4);
   assert.strictEqual(planets.ketu.retro, true);
   const diff = (planets.ketu.house - planets.rahu.house + 12) % 12;
   assert.strictEqual(diff, 6);
