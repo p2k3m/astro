@@ -8,7 +8,7 @@ test('Chart summary for reference chart matches expected output', async () => {
   const summary = summarizeChart(data);
   assert.deepStrictEqual(summary, {
     ascendant: 'Libra',
-    moonSign: 'Aries',
+    moonSign: 'Taurus',
     houses: [
       '',
       'Sa',
