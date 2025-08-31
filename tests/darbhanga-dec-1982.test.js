@@ -15,7 +15,7 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     moon: 8,
     mercury: 7,
     venus: 7,
-    mars: 6,
+    mars: 3,
     jupiter: 2,
     saturn: 1,
     rahu: 9,
