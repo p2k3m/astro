@@ -83,10 +83,9 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const rahuFlags = rahuData.flags || 0;
   const { sign: rSign, deg: rDeg } = lonToSignDeg(rahuData.longitude);
   const houseOf = (bodyLon) => {
-    let house = swe.swe_house_pos(jd, lat, lon, 'P', bodyLon, houses);
+    const rawHouse = swe.swe_house_pos(jd, lat, lon, 'P', bodyLon, houses);
     // Normalize to 1–12 to prevent cusp drift (e.g. 0 or 13)
-    house = ((Math.floor(house) - 1 + 12) % 12) + 1; // 1..12
-    return house;
+    return ((Math.floor(rawHouse) - 1 + 12) % 12) + 1; // 1..12
   };
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);

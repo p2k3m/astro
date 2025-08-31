@@ -2,7 +2,7 @@ const assert = require('node:assert');
 const test = require('node:test');
 const { compute_positions } = require('../src/lib/ephemeris.js');
 
-test('Mercury and Venus occupy 2nd house in reference chart', () => {
+test('Mercury/Venus in 2nd and Mars in 3rd house for reference chart', () => {
   const result = compute_positions({
     datetime: '1982-12-01T13:00',
     tz: 'Asia/Calcutta',
@@ -12,4 +12,5 @@ test('Mercury and Venus occupy 2nd house in reference chart', () => {
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p.house]));
   assert.strictEqual(planets.mercury, 2);
   assert.strictEqual(planets.venus, 2);
+  assert.strictEqual(planets.mars, 3);
 });

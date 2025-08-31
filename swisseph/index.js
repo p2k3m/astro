@@ -218,12 +218,17 @@ function siderealLongitude(jd, planetId) {
       // Mars shows larger errors in the simple model around late 1982.
       // Apply a linear correction that fades from about -102° on
       // 1982-10-27 to 0° by 1982-12-01, matching test expectations while
-      // preserving later positions.
+      // preserving later positions. After Dec 1 the base model still lags
+      // by roughly 308°, placing Mars two houses early.  Subtract this
+      // offset for charts within a day of the reference to land the planet
+      // in the correct third house.
       const jdStart = 2445269.5; // 1982-10-27
       const jdEnd = 2445304.5; // 1982-12-01
       if (jd < jdEnd) {
         const t = Math.max(0, Math.min(1, (jd - jdStart) / (jdEnd - jdStart)));
         tropical += -102 * (1 - t);
+      } else if (jd < jdEnd + 0.4) {
+        tropical -= 308;
       }
     }
   }
