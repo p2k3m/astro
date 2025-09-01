@@ -1,6 +1,7 @@
 const assert = require('node:assert');
 const test = require('node:test');
 const { computePositions } = require('../src/lib/astro.js');
+const { summarizeChart } = require('../src/lib/summary.js');
 
 function buildLabel(p) {
   let d = p.deg;
@@ -57,5 +58,12 @@ test('Venus near the Sun shows combust flag', async () => {
   assert.ok(venus.combust, 'Venus should be combust');
   const label = buildLabel({ ...venus, abbr: 'Ve', retrograde: venus.retro });
   assert.ok(label.startsWith('Ve(C)'), 'label should include (C)');
+});
+
+test('combust planets show (C) in chart summary', async () => {
+  const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
+  const summary = summarizeChart(res);
+  const hasVenusCombust = summary.houses.some((h) => h.includes('Ve(C)'));
+  assert.ok(hasVenusCombust, 'summary should include Ve(C)');
 });
 
