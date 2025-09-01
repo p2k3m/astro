@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import * as swe from '../../swisseph/index.js';
 
 const epheUrl = new URL('../../swisseph/ephe/', import.meta.url);
+await swe.ready;
 if (epheUrl.protocol === 'file:') {
   try {
     swe.swe_set_ephe_path(epheUrl.pathname);
@@ -39,7 +40,9 @@ function toUTC({ datetime, zone }) {
   return dt.toJSDate();
 }
 
-function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
+async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
+  await sweInst.ready;
+
   const date = toUTC({ datetime, zone: tz });
   const ut =
     date.getUTCHours() +
@@ -55,27 +58,17 @@ function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   );
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
-  const raw = sweInst.swe_houses_ex(jd, flag, Number(lat), Number(lon), 'W');
-  let houses;
-  if (Array.isArray(raw?.house)) {
-    houses = [null, ...raw.house];
-  } else if (Array.isArray(raw?.houses)) {
-    houses = raw.houses;
-  } else {
-    throw new Error('Could not compute houses from swisseph.');
-  }
-  if (typeof raw.ascendant === 'undefined') {
+  const raw = sweInst.swe_houses_ex(jd, flag, Number(lat), Number(lon), 'P');
+  if (typeof raw?.ascendant === 'undefined') {
     throw new Error('Could not compute houses from swisseph.');
   }
   const ascendant = raw.ascendant;
   const ascSign = lonToSignDeg(ascendant).sign;
-  const start = houses[1];
-
-  const houseOfLongitude = (bodyLon) => {
-    const diff = ((bodyLon - start + 360) % 360 + 360) % 360;
-    const segHouse = Math.floor((Math.round(diff * 1e9) / 1e9) / 30) + 1;
-    return segHouse;
-  };
+  const start = (ascSign - 1) * 30;
+  const houses = [null];
+  for (let i = 0; i < 12; i++) {
+    houses[i + 1] = (start + i * 30) % 360;
+  }
 
   const planetCodes = {
     sun: sweInst.SE_SUN,
@@ -107,7 +100,7 @@ function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       sec,
       speed: data.longitudeSpeed,
       retro,
-      house: houseOfLongitude(lon),
+      house: ((sign - ascSign + 12) % 12) + 1,
     });
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -120,7 +113,7 @@ function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     sec: kSec,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
-    house: houseOfLongitude(ketuLon),
+    house: ((kSign - ascSign + 12) % 12) + 1,
   });
 
   return { ascSign, houses, planets };

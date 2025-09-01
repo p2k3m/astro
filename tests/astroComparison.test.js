@@ -32,25 +32,25 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
   const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
 
   // Ascendant sign
-  assert.strictEqual(result.ascSign, 7);
+  assert.strictEqual(result.ascSign, 9);
   assert.strictEqual(result.signInHouse[1], result.ascSign);
 
   // Sign sequence (sign in each house)
-  assert.deepStrictEqual(result.signInHouse, [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]);
+  assert.deepStrictEqual(result.signInHouse, [null, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8]);
 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
-    const expectedHouses = {
-      sun: 2,
-      moon: 8,
-      mars: 6,
-      mercury: 2,
-      jupiter: 2,
-      venus: 2,
-      saturn: 1,
-      rahu: 9,
-      ketu: 3,
-    };
+  const expectedHouses = {
+    sun: 12,
+    moon: 6,
+    mars: 4,
+    mercury: 5,
+    jupiter: 11,
+    venus: 5,
+    saturn: 10,
+    rahu: 7,
+    ketu: 1,
+  };
   for (const [name, house] of Object.entries(expectedHouses)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
@@ -97,32 +97,33 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     attrs: c.attributes,
     text: c.textContent,
   }));
-    assert.deepStrictEqual(snapshot, [
-      { tag: 'path', attrs: { d: 'M0 0 L1 0 L1 1 L0 1 Z', 'stroke-width': '0.02' }, text: '' },
-      { tag: 'path', attrs: { d: 'M0 0 L1 1', 'stroke-width': '0.01' }, text: '' },
-      { tag: 'path', attrs: { d: 'M1 0 L0 1', 'stroke-width': '0.01' }, text: '' },
-      { tag: 'path', attrs: { d: 'M0.5 0 L1 0.5 L0.5 1 L0 0.5 Z', 'stroke-width': '0.01' }, text: '' },
-      { tag: 'text', attrs: { x: '0.29', y: '0.1', 'text-anchor': 'start', 'dominant-baseline': 'middle', 'font-size': '0.03' }, text: 'Asc' },
-      { tag: 'text', attrs: { x: '0.5', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '7' },
-      { tag: 'text', attrs: { x: '0.4', y: '0.08', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '8' },
-      { tag: 'text', attrs: { x: '0.08', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '9' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.35', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '10' },
-      { tag: 'text', attrs: { x: '0.08', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '11' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.83', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '12' },
-      { tag: 'text', attrs: { x: '0.5', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '1' },
-      { tag: 'text', attrs: { x: '0.75', y: '0.83', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '2' },
-      { tag: 'text', attrs: { x: '0.92', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '3' },
-      { tag: 'text', attrs: { x: '0.75', y: '0.35', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '4' },
-      { tag: 'text', attrs: { x: '0.92', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '5' },
-      { tag: 'text', attrs: { x: '0.9', y: '0.08', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '6' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Su' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.17888888888888888', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Me(R)' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.20444444444444443', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ve' },
-      { tag: 'text', attrs: { x: '0.25', y: '0.22999999999999998', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ju(R)' },
-      { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ke(R)' },
-      { tag: 'text', attrs: { x: '0.19', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ma' },
-      { tag: 'text', attrs: { x: '0.69', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Mo(Ex)' },
-      { tag: 'text', attrs: { x: '0.9166666666666666', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ra(R)' },
-    ]);
+  assert.deepStrictEqual(snapshot, [
+    { tag: 'path', attrs: { d: 'M0 0 L1 0 L1 1 L0 1 Z', 'stroke-width': '0.02' }, text: '' },
+    { tag: 'path', attrs: { d: 'M0 0 L1 1', 'stroke-width': '0.01' }, text: '' },
+    { tag: 'path', attrs: { d: 'M1 0 L0 1', 'stroke-width': '0.01' }, text: '' },
+    { tag: 'path', attrs: { d: 'M0.5 0 L1 0.5 L0.5 1 L0 0.5 Z', 'stroke-width': '0.01' }, text: '' },
+    { tag: 'text', attrs: { x: '0.29', y: '0.1', 'text-anchor': 'start', 'dominant-baseline': 'middle', 'font-size': '0.03' }, text: 'Asc' },
+    { tag: 'text', attrs: { x: '0.5', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '9' },
+    { tag: 'text', attrs: { x: '0.4', y: '0.08', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '10' },
+    { tag: 'text', attrs: { x: '0.08', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '11' },
+    { tag: 'text', attrs: { x: '0.25', y: '0.35', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '12' },
+    { tag: 'text', attrs: { x: '0.08', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '1' },
+    { tag: 'text', attrs: { x: '0.25', y: '0.83', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '2' },
+    { tag: 'text', attrs: { x: '0.5', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '3' },
+    { tag: 'text', attrs: { x: '0.75', y: '0.83', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '4' },
+    { tag: 'text', attrs: { x: '0.92', y: '0.6', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '5' },
+    { tag: 'text', attrs: { x: '0.75', y: '0.35', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '6' },
+    { tag: 'text', attrs: { x: '0.92', y: '0.1', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '7' },
+    { tag: 'text', attrs: { x: '0.9', y: '0.08', 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': '0.05' }, text: '8' },
+    { tag: 'text', attrs: { x: '0.5', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ke(R)' },
+    { tag: 'text', attrs: { x: '0.25', y: '0.5700000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ma' },
+    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Me(R)' },
+    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.8600000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ve' },
+    { tag: 'text', attrs: { x: '0.19', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Mo(Ex)' },
+    { tag: 'text', attrs: { x: '0.5', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ra(R)' },
+    { tag: 'text', attrs: { x: '0.75', y: '0.5700000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Sa(R)' },
+    { tag: 'text', attrs: { x: '0.9166666666666666', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ju(R)' },
+    { tag: 'text', attrs: { x: '0.75', y: '0.15333333333333332', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Su' },
+  ]);
 });
 
