@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
+import astro from '../lib/astro.js';
+const {
   CHART_PATHS,
   HOUSE_POLYGONS,
   HOUSE_BBOXES,
   HOUSE_CENTROIDS,
   getSignLabel,
-} from '../lib/astro.js';
+} = astro;
 
 const PLANET_ABBR = {
   sun: 'Su',

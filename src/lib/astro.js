@@ -407,4 +407,6 @@ module.exports = {
   computePositions,
   renderNorthIndian,
 };
+// Allow default import interop in ESM contexts
+module.exports.default = module.exports;
 
