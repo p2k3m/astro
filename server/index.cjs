@@ -72,7 +72,12 @@ app.get('/api/positions', async (req, res) => {
       return res.status(400).json({ error: 'Invalid longitude parameter' });
     }
     const { compute_positions } = await getEphemeris();
-    const result = compute_positions({ datetime, tz, lat: latNum, lon: lonNum });
+    const result = await compute_positions({
+      datetime,
+      tz,
+      lat: latNum,
+      lon: lonNum,
+    });
     res.json(result);
   } catch (err) {
     console.error('Error in /api/positions:', err);

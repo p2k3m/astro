@@ -174,7 +174,7 @@ async function computePositions(dtISOWithZone, lat, lon) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
 
-  const base = compute_positions({
+  const base = await compute_positions({
     datetime: dt.toISO({ suppressMilliseconds: true, includeOffset: false }),
     tz: dt.zoneName,
     lat,

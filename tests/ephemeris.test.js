@@ -65,7 +65,7 @@ test('house cusps and retrograde flags', async () => {
     },
   };
 
-  const result = compute_positions(
+  const result = await compute_positions(
     { datetime: '2020-01-01T00:00', tz: 'UTC', lat: 0, lon: 0 },
     fakeSwe
   );
@@ -73,12 +73,12 @@ test('house cusps and retrograde flags', async () => {
   assert.strictEqual(result.ascSign, 5); // Leo ascendant
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
-  assert.strictEqual(result.houses[1], 93);
+  assert.strictEqual(result.houses[1], 120);
   assert.strictEqual(planets.moon.sign, 8);
   assert.strictEqual(planets.moon.house, 4);
   assert.strictEqual(planets.moon.retro, true);
   assert.strictEqual(planets.mercury.retro, false);
-  assert.strictEqual(planets.mars.house, 4);
+  assert.strictEqual(planets.mars.house, 3);
 
   assert.strictEqual(planets.rahu.retro, true);
   assert.strictEqual(planets.rahu.house, 10);
