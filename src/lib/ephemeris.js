@@ -109,8 +109,18 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
     rahuData.longitude
   );
-  const houseOfLongitude = (lon) =>
-    Math.floor(((lon - start + 360) % 360) / 30) + 1;
+  // Normalise the longitude relative to our house start and divide into 30°
+  // segments.  Due to floating point rounding, values that should fall exactly
+  // on a cusp can occasionally be a hair below the boundary (e.g. 179.9999999
+  // instead of 180).  Rounding to a tiny epsilon before the floor prevents such
+  // cases from mapping to the previous house which mirrors AstroSage's
+  // behaviour near cusps 6 and 7.
+  const houseOfLongitude = (lon) => {
+    const diff = ((lon - start + 360) % 360 + 360) % 360;
+    // Round to the nearest 1e-9° to stabilise cusp classification
+    const index = Math.floor((Math.round(diff * 1e9) / 1e9) / 30);
+    return index + 1; // Houses are 1-indexed
+  };
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
     const lon = data.longitude;

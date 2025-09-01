@@ -38,6 +38,9 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(amPlanets.jupiter.house, 2);
   assert.strictEqual(amPlanets.saturn.sign, 5);
   assert.strictEqual(amPlanets.saturn.house, 1);
+  // Ensure Mars and Rahu mirror AstroSage placements near the 6/7 house cusp
+  assert.strictEqual(amPlanets.mars.house, 6);
+  assert.strictEqual(amPlanets.rahu.house, 9);
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 6).map((p) => p.name),
     ['mars']
@@ -68,6 +71,7 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(pmPlanets.moon.house, 2);
   assert.strictEqual(pmPlanets.jupiter.house, 7);
   assert.strictEqual(pmPlanets.saturn.house, 6);
+  assert.strictEqual(pmPlanets.rahu.house, 3);
 
   const svgPm = new Element('svg');
   renderNorthIndian(svgPm, pm);
