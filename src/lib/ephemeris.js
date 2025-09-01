@@ -3,20 +3,6 @@ import * as swisseph from '../../swisseph/index.js';
 
 const ephePath = new URL('../../swisseph/ephe/', import.meta.url).pathname;
 
-swisseph.ready.then(() => {
-  if (swisseph.swe_set_ephe_path) {
-    try {
-      swisseph.swe_set_ephe_path(ephePath);
-    } catch {}
-  }
-
-  if (swisseph.swe_set_sid_mode) {
-    try {
-      swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-    } catch {}
-  }
-});
-
 export function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
   let sign = Math.floor(norm / 30) + 1; // 1..12
@@ -47,6 +33,17 @@ function toUTC({ datetime, zone }) {
 }
 
 export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
+  if (swe.swe_set_ephe_path) {
+    try {
+      swe.swe_set_ephe_path(ephePath);
+    } catch {}
+  }
+  if (swe.swe_set_sid_mode) {
+    try {
+      swe.swe_set_sid_mode(swe.SE_SIDM_LAHIRI, 0, 0);
+    } catch {}
+  }
+
   const date = toUTC({ datetime, zone: tz });
 
   const ut =
@@ -73,20 +70,17 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   if (
     !rawHouses ||
     typeof rawHouses.ascendant === 'undefined' ||
-    typeof rawHouses.ascendant === 'undefined'
+    !Array.isArray(rawHouses.houses)
   ) {
     throw new Error('Could not compute houses from swisseph.');
   }
+  const houses = rawHouses.houses.slice();
   const ascendant = rawHouses.ascendant;
   const ascSign = lonToSignDeg(ascendant).sign;
-  // Derive 30° house segments anchored to the start of the ascendant sign.
-  // Using the sign instead of the exact ascendant degree mirrors AstroSage's
-  // whole‑sign house layout where each house spans an entire zodiac sign.
-  const houses = [null];
-  const start = ((ascSign - 1) * 30) % 360;
-  for (let i = 0; i < 12; i += 1) {
-    houses[i + 1] = (start + i * 30) % 360;
-  }
+  const start =
+    typeof houses[1] === 'number'
+      ? houses[1]
+      : ((ascSign - 1) * 30) % 360;
   if (process.env.DEBUG_HOUSES) {
     console.log('computed houses:', houses);
   }
@@ -109,13 +103,25 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
     rahuData.longitude
   );
-  // Normalise the longitude relative to our house start and divide into 30°
-  // segments.  Due to floating point rounding, values that should fall exactly
-  // on a cusp can occasionally be a hair below the boundary (e.g. 179.9999999
-  // instead of 180).  Rounding to a tiny epsilon before the floor prevents such
-  // cases from mapping to the previous house which mirrors AstroSage's
-  // behaviour near cusps 6 and 7.
+  // Determine which house a longitude falls into. Prefer the Swiss Ephemeris
+  // swe_house_pos() calculation when available, falling back to simple
+  // segmentation anchored to the first cusp if necessary.
   const houseOfLongitude = (lon) => {
+    if (swe.swe_house_pos) {
+      try {
+        const h = swe.swe_house_pos(
+          jd,
+          Number(lat),
+          Number(lon),
+          'W',
+          lon,
+          houses
+        );
+        if (typeof h === 'number' && Number.isFinite(h)) {
+          return Math.floor(h);
+        }
+      } catch {}
+    }
     const diff = ((lon - start + 360) % 360 + 360) % 360;
     // Round to the nearest 1e-9° to stabilise cusp classification
     const index = Math.floor((Math.round(diff * 1e9) / 1e9) / 30);
@@ -129,7 +135,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
         ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
         : lonToSignDeg(lon);
     const flags = name === 'rahu' ? rahuFlags : data.flags || 0;
-    const retro = data.longitudeSpeed < 0;
+    const retro =
+      (flags & swe.SEFLG_RETROGRADE) !== 0 || data.longitudeSpeed < 0;
     planets.push({
       name,
       sign,
@@ -151,7 +158,8 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
     throw new Error('Rahu and Ketu must be six signs apart');
   }
   const ketuSpeed = rahuData.longitudeSpeed;
-  const ketuRetro = ketuSpeed < 0;
+  const ketuRetro =
+    (rahuFlags & swe.SEFLG_RETROGRADE) !== 0 || ketuSpeed < 0;
   planets.push({
     name: 'ketu',
     sign: kSign,
