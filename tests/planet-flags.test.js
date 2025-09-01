@@ -1,5 +1,6 @@
 const assert = require('node:assert');
 const test = require('node:test');
+const { computePositions } = require('../src/lib/astro.js');
 
 function buildLabel(p) {
   let d = p.deg;
@@ -47,5 +48,14 @@ test('sample planets are direct by default', () => {
     const label = buildLabel(p);
     assert.ok(!label.includes('(R)'), `${p.abbr} should be direct`);
   }
+});
+
+test('Venus near the Sun shows combust flag', async () => {
+  const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
+  const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
+  const venus = planets.venus;
+  assert.ok(venus.combust, 'Venus should be combust');
+  const label = buildLabel({ ...venus, abbr: 'Ve', retrograde: venus.retro });
+  assert.ok(label.startsWith('Ve(C)'), 'label should include (C)');
 });
 
