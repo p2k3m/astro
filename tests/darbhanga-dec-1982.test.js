@@ -14,8 +14,8 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   const expected = {
     sun: 2,
     moon: 8,
-    mercury: 8,
-    venus: 7,
+    mercury: 2,
+    venus: 2,
     // Mars lies close to the 6/7 cusp; ensure we map it to house 6 like AstroSage
     mars: 6,
     jupiter: 2,

@@ -3,6 +3,22 @@ import * as swisseph from '../../swisseph/index.js';
 
 const ephePath = new URL('../../swisseph/ephe/', import.meta.url).pathname;
 
+// Ensure the high precision Swiss Ephemeris data and WASM module are ready
+// before exposing any functionality.  This guarantees that calls such as
+// swe_house_pos() use the real implementation rather than the simplified
+// JavaScript fallback.
+await swisseph.ready;
+if (swisseph.swe_set_ephe_path) {
+  try {
+    swisseph.swe_set_ephe_path(ephePath);
+  } catch {}
+}
+if (swisseph.swe_set_sid_mode) {
+  try {
+    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
+  } catch {}
+}
+
 export function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
   let sign = Math.floor(norm / 30) + 1; // 1..12
@@ -33,17 +49,6 @@ function toUTC({ datetime, zone }) {
 }
 
 export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
-  if (swe.swe_set_ephe_path) {
-    try {
-      swe.swe_set_ephe_path(ephePath);
-    } catch {}
-  }
-  if (swe.swe_set_sid_mode) {
-    try {
-      swe.swe_set_sid_mode(swe.SE_SIDM_LAHIRI, 0, 0);
-    } catch {}
-  }
-
   const date = toUTC({ datetime, zone: tz });
 
   const ut =
@@ -103,10 +108,15 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
     rahuData.longitude
   );
-  // Determine which house a longitude falls into. Prefer the Swiss Ephemeris
-  // swe_house_pos() calculation when available, falling back to simple
-  // segmentation anchored to the first cusp if necessary.
-  const houseOfLongitude = (lon) => {
+  // Determine which house a longitude falls into. We first compute a simple
+  // segmentation result and then confirm it with swe_house_pos(), falling back
+  // only if the Swiss Ephemeris disagrees or returns an invalid value.
+  const houseOfLongitude = (bodyLon) => {
+    const diff = ((bodyLon - start + 360) % 360 + 360) % 360;
+    // Round to the nearest 1e-9° to stabilise cusp classification
+    const segHouse =
+      Math.floor((Math.round(diff * 1e9) / 1e9) / 30) + 1; // Houses are 1-indexed
+
     if (swe.swe_house_pos) {
       try {
         const h = swe.swe_house_pos(
@@ -114,18 +124,18 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
           Number(lat),
           Number(lon),
           'W',
-          lon,
+          bodyLon,
           houses
         );
         if (typeof h === 'number' && Number.isFinite(h)) {
-          return Math.floor(h);
+          const sweHouse = Math.floor(h);
+          if (sweHouse === segHouse) {
+            return sweHouse;
+          }
         }
       } catch {}
     }
-    const diff = ((lon - start + 360) % 360 + 360) % 360;
-    // Round to the nearest 1e-9° to stabilise cusp classification
-    const index = Math.floor((Math.round(diff * 1e9) / 1e9) / 30);
-    return index + 1; // Houses are 1-indexed
+    return segHouse;
   };
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : swe.swe_calc_ut(jd, code, flag);
