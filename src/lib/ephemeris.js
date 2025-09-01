@@ -79,11 +79,11 @@ export function compute_positions({ datetime, tz, lat, lon }, swe = swisseph) {
   }
   const ascendant = rawHouses.ascendant;
   const ascSign = lonToSignDeg(ascendant).sign;
-  // Derive 30° house segments starting one sign before the ascendant degree.
-  // This mirrors AstroSage's house placement where the ascendant lies near the
-  // end of the first house and planets just before it can still fall in house 1.
+  // Derive 30° house segments anchored to the start of the ascendant sign.
+  // Using the sign instead of the exact ascendant degree mirrors AstroSage's
+  // whole‑sign house layout where each house spans an entire zodiac sign.
   const houses = [null];
-  const start = ((ascendant - 30) % 360 + 360) % 360;
+  const start = ((ascSign - 1) * 30) % 360;
   for (let i = 0; i < 12; i += 1) {
     houses[i + 1] = (start + i * 30) % 360;
   }
