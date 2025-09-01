@@ -1,5 +1,5 @@
-const assert = require('node:assert');
-const test = require('node:test');
+import assert from 'node:assert';
+import test from 'node:test';
 
 // Verify that raw values from the WASM Swiss Ephemeris are
 // returned without any manual adjustments.  Jupiter and Saturn

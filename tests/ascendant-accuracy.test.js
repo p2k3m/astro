@@ -1,6 +1,6 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const swe = require('../swisseph/index.js');
+import assert from 'node:assert';
+import test from 'node:test';
+import * as swe from '../swisseph/index.js';
 
 test('Ascendant matches AstroSage for London 2023-03-21 00:00 UTC', () => {
   const jd = swe.swe_julday(2023, 3, 21, 0, swe.SE_GREG_CAL);

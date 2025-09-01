@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { summarizeChart } from '../lib/summary.js';
-import * as astro from '../lib/astro.js';
-const { SIGN_NAMES } = astro;
+import { SIGN_NAMES } from '../lib/astro.js';
 
 const PLANET_ABBR = {
   sun: 'Su',

@@ -1,8 +1,10 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 test('planet house values match sign mapping and nodes oppose each other', async () => {
+  const { computePositions } = await astro;
   const data = await computePositions('2020-01-01T12:00+00:00', 0, 0);
   assert.deepStrictEqual(
     data.signInHouse.slice(1),

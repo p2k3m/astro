@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions, renderNorthIndian } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -27,6 +28,7 @@ class Element {
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async () => {
+  const { computePositions, renderNorthIndian } = await astro;
   const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
 
   // Ascendant sign

@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { renderNorthIndian, HOUSE_BBOXES } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -28,7 +29,7 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 const MIN_GAP = 0.02;
 const MIN_SHIFT = 0.05;
 
-test('planet labels keep clear of sign numbers in every house', () => {
+test('planet labels keep clear of sign numbers in every house', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [];
@@ -41,6 +42,7 @@ test('planet labels keep clear of sign numbers in every house', () => {
 
   global.document = doc;
   const svg = new Element('svg');
+  const { renderNorthIndian, HOUSE_BBOXES } = await astro;
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
 

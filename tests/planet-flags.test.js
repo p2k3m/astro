@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions, SIGN_NAMES } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 const PLANET_ABBR = {
   sun: 'Su',
@@ -79,6 +80,7 @@ test('sample planets are direct by default', () => {
 });
 
 test('Venus near the Sun shows combust flag', async () => {
+  const { computePositions } = await astro;
   const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   const venus = planets.venus;
@@ -88,6 +90,7 @@ test('Venus near the Sun shows combust flag', async () => {
 });
 
 test('combust planets show (C) in chart summary', async () => {
+  const { computePositions, SIGN_NAMES } = await astro;
   const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
   const rows = res.planets.map((p) => {
     let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);

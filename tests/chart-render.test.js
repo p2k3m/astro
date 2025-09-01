@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { renderNorthIndian, CHART_PATHS } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -26,11 +27,12 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('North Indian chart uses one outer square and internal grid', () => {
+test('North Indian chart uses one outer square and internal grid', async () => {
   const svg = new Element('svg');
   global.document = doc;
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
+  const { renderNorthIndian, CHART_PATHS } = await astro;
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets: [] });
 
   const paths = svg.children.filter((c) => c.tagName === 'path');
@@ -47,7 +49,7 @@ test('North Indian chart uses one outer square and internal grid', () => {
   delete global.document;
 });
 
-test('planet labels show abbreviations without degrees', () => {
+test('planet labels show abbreviations without degrees', async () => {
   const svg = new Element('svg');
   global.document = doc;
   const signInHouse = [null];
@@ -56,6 +58,7 @@ test('planet labels show abbreviations without degrees', () => {
     { name: 'sun', house: 1, deg: 15 },
     { name: 'mercury', house: 1, deg: 20, retro: true },
   ];
+  const { renderNorthIndian } = await astro;
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
   const labels = svg.children.filter((c) => c.tagName === 'text').map((t) => t.textContent);

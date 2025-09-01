@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { renderNorthIndian, HOUSE_CENTROIDS } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -26,7 +27,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('planets render in distinct rows regardless of house position', () => {
+test('planets render in distinct rows regardless of house position', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
@@ -41,6 +42,7 @@ test('planets render in distinct rows regardless of house position', () => {
 
   global.document = doc;
   const svg = new Element('svg');
+  const { renderNorthIndian } = await astro;
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
 

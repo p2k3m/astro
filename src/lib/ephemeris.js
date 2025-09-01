@@ -1,6 +1,9 @@
-const { DateTime } = require('luxon');
-const swe = require('swisseph-v2');
-const path = require('path');
+import { DateTime } from 'luxon';
+import swe from 'swisseph-v2';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const ephePath = path.join(__dirname, '../../swisseph/ephe');
 try {
@@ -125,4 +128,4 @@ function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   return { ascSign, houses, planets };
 }
 
-module.exports = { lonToSignDeg, compute_positions };
+export { lonToSignDeg, compute_positions };
