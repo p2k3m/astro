@@ -1,11 +1,13 @@
 import { DateTime } from 'luxon';
+import { fileURLToPath } from 'node:url';
 import * as swe from '../../swisseph/index.js';
 
 const epheUrl = new URL('../../swisseph/ephe/', import.meta.url);
 await swe.ready;
 if (epheUrl.protocol === 'file:') {
   try {
-    swe.swe_set_ephe_path(epheUrl.pathname);
+    const ephePath = fileURLToPath(epheUrl);
+    swe.swe_set_ephe_path(ephePath);
   } catch {}
 }
 try {
@@ -58,16 +60,19 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   );
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
-  const raw = sweInst.swe_houses_ex(jd, flag, Number(lat), Number(lon), 'P');
+  const raw = sweInst.swe_houses_ex(jd, Number(lat), Number(lon), 'P', flag);
   if (typeof raw?.ascendant === 'undefined') {
     throw new Error('Could not compute houses from swisseph.');
   }
-  const ascendant = raw.ascendant;
-  const ascSign = lonToSignDeg(ascendant).sign;
-  const start = (ascSign - 1) * 30;
+  const { sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec } = lonToSignDeg(
+    raw.ascendant
+  );
+  const cusps = raw.houseCusps || raw.houses;
   const houses = [null];
-  for (let i = 0; i < 12; i++) {
-    houses[i + 1] = (start + i * 30) % 360;
+  if (Array.isArray(cusps)) {
+    for (let i = 1; i <= 12; i++) {
+      houses[i] = cusps[i];
+    }
   }
 
   const planetCodes = {
@@ -103,7 +108,8 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       lon,
       speed: data.longitudeSpeed,
       retro,
-      house: ((sign - ascSign + 12) % 12) + 1,
+      house:
+        Math.floor(((lon - raw.ascendant + 360) % 360) / 30) + 1,
     });
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -117,10 +123,15 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     lon: ketuLon,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
-    house: ((kSign - ascSign + 12) % 12) + 1,
+    house: Math.floor(((ketuLon - raw.ascendant + 360) % 360) / 30) + 1,
   });
 
-  return { ascSign, houses, planets };
+  return {
+    ascSign,
+    ascendant: { lon: raw.ascendant, sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec },
+    houses,
+    planets,
+  };
 }
 
 export { lonToSignDeg, compute_positions };
