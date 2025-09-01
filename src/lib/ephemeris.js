@@ -90,7 +90,9 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     const data = name === 'rahu' ? rahuData : sweInst.swe_calc_ut(jd, code, flag);
     const lon = data.longitude;
     const { sign, deg, min, sec } =
-      name === 'rahu' ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec } : lonToSignDeg(lon);
+      name === 'rahu'
+        ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
+        : lonToSignDeg(lon);
     const retro = data.longitudeSpeed < 0;
     planets.push({
       name,
@@ -98,6 +100,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       deg,
       min,
       sec,
+      lon,
       speed: data.longitudeSpeed,
       retro,
       house: ((sign - ascSign + 12) % 12) + 1,
@@ -111,6 +114,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     deg: kDeg,
     min: kMin,
     sec: kSec,
+    lon: ketuLon,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
     house: ((kSign - ascSign + 12) % 12) + 1,
