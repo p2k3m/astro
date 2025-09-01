@@ -204,14 +204,34 @@ export async function computePositions(dtISOWithZone, lat, lon) {
 
   const planets = [];
   const sun = base.planets.find((p) => p.name === 'sun');
-  const sunLon =
-    (sun.sign - 1) * 30 + sun.deg + sun.min / 60 + sun.sec / 3600;
+  // Sun longitude in degrees (0..360)
+  const sunDeg =
+    typeof sun.min === 'number' && typeof sun.sec === 'number'
+      ? sun.deg + sun.min / 60 + sun.sec / 3600
+      : sun.deg;
+  const sunLon = (sun.sign - 1) * 30 + sunDeg;
 
   for (const p of base.planets) {
     const sign = p.sign - 1;
     const house = p.house;
-    const deg = p.deg + p.min / 60 + p.sec / 3600;
-    const lon = sign * 30 + deg;
+    let d = p.deg;
+    let m = p.min;
+    let s = p.sec;
+    let degFloat;
+    if (typeof m === 'number' && typeof s === 'number') {
+      degFloat = d + m / 60 + s / 3600;
+    } else {
+      // derive minutes and seconds from decimal degrees
+      degFloat = d;
+      const dVal = Math.floor(d);
+      const mFloat = (d - dVal) * 60;
+      const mVal = Math.floor(mFloat);
+      const sVal = Math.round((mFloat - mVal) * 60);
+      d = dVal;
+      m = mVal;
+      s = sVal;
+    }
+    const lon = sign * 30 + degFloat;
     const retro = p.retro;
     const cDeg = combustDeg[p.name];
     let combust = false;
@@ -228,9 +248,9 @@ export async function computePositions(dtISOWithZone, lat, lon) {
       name: p.name,
       sign,
       house,
-      deg: p.deg,
-      min: p.min,
-      sec: p.sec,
+      deg: d,
+      min: m,
+      sec: s,
       retro,
       combust,
       exalted,
