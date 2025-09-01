@@ -36,6 +36,7 @@ export default function ChartSummary({ data }) {
   const planetRows = data.planets.map((p) => {
     let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
     if (p.retro) abbr += '(R)';
+    if (p.combust) abbr += '(C)';
     const signNum = data.signInHouse?.[p.house] || p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
