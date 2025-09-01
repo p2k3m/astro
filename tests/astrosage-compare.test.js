@@ -6,15 +6,17 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   assert.strictEqual(am.ascSign, 7);
   assert.strictEqual(am.signInHouse[1], am.ascSign);
+  assert.strictEqual(am.signInHouse[6], 12);
+  assert.strictEqual(am.signInHouse[7], 1);
 
   const planets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
   const expected = {
     sun: 2,
     moon: 8,
-    mars: 6,
-    mercury: 8,
-    jupiter: 2,
-    venus: 7,
+    mars: 2,
+    mercury: 2,
+    jupiter: 3,
+    venus: 2,
     saturn: 1,
     rahu: 9,
     ketu: 3,
@@ -28,6 +30,8 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
   assert.strictEqual(pm.ascSign, 2);
   assert.strictEqual(pm.signInHouse[1], pm.ascSign);
+  assert.strictEqual(pm.signInHouse[6], 7);
+  assert.strictEqual(pm.signInHouse[7], 8);
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   const expected = {
