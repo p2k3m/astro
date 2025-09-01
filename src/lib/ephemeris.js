@@ -1,14 +1,12 @@
 import { DateTime } from 'luxon';
 import * as swe from '../../swisseph/index.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const ephePath = path.join(__dirname, '../../swisseph/ephe');
-try {
-  swe.swe_set_ephe_path(ephePath);
-} catch {}
+const epheUrl = new URL('../../swisseph/ephe/', import.meta.url);
+if (epheUrl.protocol === 'file:') {
+  try {
+    swe.swe_set_ephe_path(epheUrl.pathname);
+  } catch {}
+}
 try {
   swe.swe_set_sid_mode(swe.SE_SIDM_LAHIRI, 0, 0);
 } catch {}
