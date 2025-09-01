@@ -1,4 +1,5 @@
-import { SIGN_NAMES } from './astro.js';
+import astro from './astro.js';
+const { SIGN_NAMES } = astro;
 
 const PLANET_ABBR = {
   sun: 'Su',
