@@ -40,6 +40,7 @@ export function summarizeChart(data) {
       .map((p) => {
         let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
         if (p.retro) abbr += '(R)';
+        if (p.combust) abbr += '(C)';
         const degStr = formatDMS(p);
         return `${abbr} ${degStr}`;
       })
