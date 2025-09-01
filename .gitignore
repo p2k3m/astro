@@ -6,3 +6,13 @@ node_modules/*
 .DS_Store
 dist
 .env
+
+# Swiss Ephemeris build artifacts
+swisseph/bin/
+swisseph/swetest
+swisseph/wasm/lib/sweph/src/swemini
+swisseph/wasm/lib/sweph/src/swetest
+swisseph/wasm/lib/sweph/src/swetests
+swisseph/wasm/lib/sweph/src/sweevents
+swisseph/wasm/lib/sweph/src/*.swp
+swisseph/windows/programs/*.exe
