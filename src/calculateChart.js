@@ -2,8 +2,7 @@
 
 import { DateTime } from 'luxon';
 import { getTimezoneName } from './lib/timezone.js';
-import * as astro from './lib/astro.js';
-const { computePositions } = astro;
+import { computePositions } from './lib/astro.js';
 
 export function longitudeToSign(longitude) {
   longitude = ((longitude % 360) + 360) % 360;

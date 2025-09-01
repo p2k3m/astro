@@ -1,8 +1,11 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const assert = require('node:assert');
-const test = require('node:test');
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function loadGetTimezoneOffset() {
   let code = fs.readFileSync(path.join(__dirname, '../src/lib/timezone.js'), 'utf8');

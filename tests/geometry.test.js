@@ -1,8 +1,10 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const { HOUSE_POLYGONS } = require('../src/lib/astro.js');
+import test from 'node:test';
+import assert from 'node:assert';
 
-test('build house grid with 12 valid, non-overlapping cells', () => {
+const astro = import('../src/lib/astro.js');
+
+test('build house grid with 12 valid, non-overlapping cells', async () => {
+  const { HOUSE_POLYGONS } = await astro;
   const cells = HOUSE_POLYGONS;
   assert.strictEqual(cells.length, 12);
 

@@ -1,8 +1,10 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 test('Jupiter is not combust', async () => {
+  const { computePositions } = await astro;
   const res = await computePositions('2022-10-07T00:00+00:00', 0, 0);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   const jupiter = planets.jupiter;

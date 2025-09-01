@@ -1,8 +1,10 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const calculateChart = require('../src/calculateChart.js').default;
+import assert from 'node:assert';
+import test from 'node:test';
+
+const chart = import('../src/calculateChart.js');
 
 test('Darbhanga 1982-10-27 03:50 ascendant regression', async () => {
+  const { default: calculateChart } = await chart;
   const result = await calculateChart({
     date: '1982-10-27',
     time: '03:50',

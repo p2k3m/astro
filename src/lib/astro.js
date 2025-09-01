@@ -1,5 +1,5 @@
-const { DateTime } = require('luxon');
-const { compute_positions } = require('./ephemeris.js');
+import { DateTime } from 'luxon';
+import { compute_positions } from './ephemeris.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
@@ -391,7 +391,7 @@ function renderNorthIndian(svgEl, data, options = {}) {
   }
 }
 
-module.exports = {
+export {
   BOX_SIZE,
   SIGN_BOX_CENTERS,
   SIGN_NUMBERS,
@@ -407,6 +407,21 @@ module.exports = {
   computePositions,
   renderNorthIndian,
 };
-// Allow default import interop in ESM contexts
-module.exports.default = module.exports;
+
+export default {
+  BOX_SIZE,
+  SIGN_BOX_CENTERS,
+  SIGN_NUMBERS,
+  SIGN_ABBREVIATIONS,
+  SIGN_NAMES,
+  getSignLabel,
+  CHART_PATHS,
+  HOUSE_POLYGONS,
+  HOUSE_CENTROIDS,
+  HOUSE_BBOXES,
+  polygonCentroid,
+  diamondPath,
+  computePositions,
+  renderNorthIndian,
+};
 

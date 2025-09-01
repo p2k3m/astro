@@ -1,11 +1,8 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const {
-  renderNorthIndian,
-  HOUSE_CENTROIDS,
-  HOUSE_BBOXES,
-  HOUSE_POLYGONS,
-} = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
+let renderNorthIndian, HOUSE_CENTROIDS, HOUSE_BBOXES, HOUSE_POLYGONS;
 
 class Element {
   constructor(tag) {
@@ -53,7 +50,7 @@ function computeSignPoint(h) {
   return { sx, sy };
 }
 
-test('sign labels anchor without overlapping planets', () => {
+test('sign labels anchor without overlapping planets', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [
@@ -63,6 +60,7 @@ test('sign labels anchor without overlapping planets', () => {
 
   global.document = doc;
   const svg = new Element('svg');
+  ({ renderNorthIndian, HOUSE_CENTROIDS, HOUSE_BBOXES, HOUSE_POLYGONS } = await astro);
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
   const { cx, cy } = HOUSE_CENTROIDS[0];

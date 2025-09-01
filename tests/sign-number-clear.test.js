@@ -1,9 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const {
-  renderNorthIndian,
-  HOUSE_BBOXES,
-} = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -29,7 +27,7 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('sign numbers remain clear and non-overlapping', () => {
+test('sign numbers remain clear and non-overlapping', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = [];
@@ -40,6 +38,7 @@ test('sign numbers remain clear and non-overlapping', () => {
 
   global.document = doc;
   const svg = new Element('svg');
+  const { renderNorthIndian, HOUSE_BBOXES } = await astro;
   renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
   delete global.document;
 

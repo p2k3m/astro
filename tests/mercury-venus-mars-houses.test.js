@@ -1,8 +1,10 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { compute_positions } = require('../src/lib/ephemeris.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const ephemeris = import('../src/lib/ephemeris.js');
 
 test('Mercury, Venus, and Mars in 2nd house for reference chart', async () => {
+  const { compute_positions } = await ephemeris;
   const result = await compute_positions({
     datetime: '1982-12-01T13:00',
     tz: 'Asia/Calcutta',

@@ -1,10 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const {
-  renderNorthIndian,
-  HOUSE_CENTROIDS,
-  HOUSE_BBOXES,
-} = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -30,13 +27,14 @@ class Element {
 
 const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
-test('houses and signs increase anti-clockwise from ascendant', () => {
+test('houses and signs increase anti-clockwise from ascendant', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const data = { ascSign: 1, signInHouse, planets: [] };
 
   global.document = doc;
   const svg = new Element('svg');
+  const { renderNorthIndian, HOUSE_CENTROIDS } = await astro;
   renderNorthIndian(svg, data);
   const signTexts = svg.children.filter(
     (c) => c.tagName === 'text' && c.attributes['font-size'] === '0.05'

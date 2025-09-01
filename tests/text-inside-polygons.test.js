@@ -1,9 +1,7 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const {
-  renderNorthIndian,
-  HOUSE_POLYGONS,
-} = require('../src/lib/astro.js');
+import test from 'node:test';
+import assert from 'node:assert';
+
+const astro = import('../src/lib/astro.js');
 
 class Element {
   constructor(tag) {
@@ -40,7 +38,7 @@ function pointInPolygon(x, y, poly) {
   return inside;
 }
 
-test('all text elements render inside their house polygons', () => {
+test('all text elements render inside their house polygons', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const planets = Array.from({ length: 12 }, (_, i) => ({
@@ -53,6 +51,7 @@ test('all text elements render inside their house polygons', () => {
 
   global.document = doc;
   const svg = new Element('svg');
+  const { renderNorthIndian, HOUSE_POLYGONS } = await astro;
   renderNorthIndian(svg, data);
   delete global.document;
 

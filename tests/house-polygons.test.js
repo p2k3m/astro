@@ -1,12 +1,10 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const {
-  HOUSE_POLYGONS,
-  HOUSE_CENTROIDS,
-  polygonCentroid,
-} = require('../src/lib/astro.js');
+import test from 'node:test';
+import assert from 'node:assert';
 
-test('HOUSE_POLYGONS exposes 12 regions with expected centroids', () => {
+const astro = import('../src/lib/astro.js');
+
+test('HOUSE_POLYGONS exposes 12 regions with expected centroids', async () => {
+  const { HOUSE_POLYGONS, HOUSE_CENTROIDS, polygonCentroid } = await astro;
   assert.strictEqual(HOUSE_POLYGONS.length, 12);
   HOUSE_POLYGONS.forEach((poly, i) => {
     assert.ok(poly.length >= 3);

@@ -1,8 +1,10 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
+  const { computePositions } = await astro;
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   assert.strictEqual(am.ascSign, 7);
   assert.strictEqual(am.signInHouse[1], am.ascSign);
@@ -32,6 +34,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
 });
 
 test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
+  const { computePositions } = await astro;
   const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
   assert.strictEqual(pm.ascSign, 1);
   assert.strictEqual(pm.signInHouse[1], pm.ascSign);
@@ -61,6 +64,7 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
 });
 
 test('Darbhanga 1982-12-01 03:50 sign sequence matches AstroSage', async () => {
+  const { computePositions } = await astro;
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   const expected = [null, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
   assert.deepStrictEqual(am.signInHouse, expected);

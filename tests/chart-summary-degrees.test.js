@@ -1,6 +1,7 @@
-const assert = require('node:assert');
-const test = require('node:test');
-const { computePositions, SIGN_NAMES } = require('../src/lib/astro.js');
+import assert from 'node:assert';
+import test from 'node:test';
+
+const astro = import('../src/lib/astro.js');
 
 const PLANET_ABBR = {
   sun: 'Su',
@@ -31,6 +32,7 @@ function formatDMS(p) {
 }
 
 test('Darbhanga chart summary lists degrees and signs', async () => {
+  const { computePositions, SIGN_NAMES } = await astro;
   const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   const rows = data.planets.map((p) => {
     let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);

@@ -1,5 +1,5 @@
-const assert = require('node:assert');
-const test = require('node:test');
+import assert from 'node:assert';
+import test from 'node:test';
 
 async function getFn() {
   return (await import('../src/calculateChart.js')).longitudeToSign;
