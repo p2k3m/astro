@@ -16,9 +16,11 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     moon: 8,
     mercury: 8,
     venus: 7,
+    // Mars lies close to the 6/7 cusp; ensure we map it to house 6 like AstroSage
     mars: 6,
     jupiter: 2,
     saturn: 1,
+    // Rahu placement also mirrors AstroSage's house 9 assignment
     rahu: 9,
     ketu: 3,
   };
