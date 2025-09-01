@@ -216,8 +216,12 @@ async function computePositions(dtISOWithZone, lat, lon) {
 
   const planets = [];
   const sun = base.planets.find((p) => p.name === 'sun');
-  // Sun longitude in degrees (0..360)
-  const sunLon = sun.lon;
+  // Sun longitude in degrees (0..360). Prefer corrected longitude if present.
+  const sunLon =
+    sun?.clon ??
+    (typeof sun?.lon === 'number'
+      ? sun.lon
+      : sun.sign * 30 + sun.deg + sun.min / 60 + sun.sec / 3600);
 
   for (const p of base.planets) {
     const sign = p.sign - 1;
@@ -239,14 +243,13 @@ async function computePositions(dtISOWithZone, lat, lon) {
       m = mVal;
       s = sVal;
     }
-    const lon = p.lon ?? sign * 30 + degFloat;
+    const lon = p.clon ?? p.lon ?? sign * 30 + degFloat;
     const retro = p.retro;
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
-      const diff = (sunLon - lon + 360) % 360;
-      const separation = diff > 180 ? 360 - diff : diff;
-      combust = separation < cDeg;
+      const separation = Math.abs((sunLon - lon + 180) % 360 - 180);
+      if (separation < cDeg) combust = true;
     }
     const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
