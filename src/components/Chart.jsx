@@ -49,10 +49,12 @@ export default function Chart({
     if (p.retro) flags.push('(R)');
     if (p.combust) flags.push('(C)');
     if (p.exalted) flags.push('(Ex)');
-    const abbr = baseAbbr + flags.join('');
+    // Store only the abbreviation and any flags; degree information is
+    // intentionally omitted to keep the chart labels concise.
+    const label = baseAbbr + flags.join('');
 
     planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
-    planetByHouse[houseIdx].push(abbr);
+    planetByHouse[houseIdx].push(label);
   });
 
   const SIGN_PAD_X = 0.04;
