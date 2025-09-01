@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import swe from 'swisseph-v2';
+import * as swe from '../../swisseph/index.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
