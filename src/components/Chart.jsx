@@ -48,7 +48,7 @@ export default function Chart({
     if (p.combust) abbr += '(C)';
     if (p.exalted) abbr += '(Ex)';
     planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
-    planetByHouse[houseIdx].push({ abbr });
+    planetByHouse[houseIdx].push(abbr);
   });
 
   const SIGN_PAD_X = 0.04;
@@ -162,18 +162,18 @@ export default function Chart({
         {/** Planet labels */}
         <div className="absolute inset-0 z-0">
           {houses.map(({ houseNum, planets, cx, pyStart, step }) =>
-            planets.map((pl, i) => (
+            planets.map((abbr, i) => (
               <div
                 key={`p-${houseNum}-${i}`}
                 className="absolute text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]"
-              style={{
+                style={{
                   top: (pyStart + step * i) * size,
                   left: cx * size,
                   transform: 'translate(-50%, -50%)',
                   whiteSpace: 'nowrap',
                 }}
               >
-                {pl.abbr}
+                {abbr}
               </div>
             ))
           )}
