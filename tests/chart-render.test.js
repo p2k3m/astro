@@ -46,3 +46,20 @@ test('North Indian chart uses one outer square and internal grid', () => {
   assert.ok(svg.children.every((el) => el.tagName !== 'line'));
   delete global.document;
 });
+
+test('planet labels show abbreviations without degrees', () => {
+  const svg = new Element('svg');
+  global.document = doc;
+  const signInHouse = [null];
+  for (let h = 1; h <= 12; h++) signInHouse[h] = h;
+  const planets = [
+    { name: 'sun', house: 1, deg: 15 },
+    { name: 'mercury', house: 1, deg: 20, retro: true },
+  ];
+  renderNorthIndian(svg, { ascSign: 1, signInHouse, planets });
+  delete global.document;
+  const labels = svg.children.filter((c) => c.tagName === 'text').map((t) => t.textContent);
+  assert.ok(labels.includes('Su'));
+  assert.ok(labels.includes('Me(R)'));
+  assert.ok(labels.every((t) => !t.includes('°')));
+});

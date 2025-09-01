@@ -50,6 +50,18 @@ const SIGN_NAMES = [
   'Pisces',
 ];
 
+const PLANET_ABBR = {
+  sun: 'Su',
+  moon: 'Mo',
+  mars: 'Ma',
+  mercury: 'Me',
+  jupiter: 'Ju',
+  venus: 'Ve',
+  saturn: 'Sa',
+  rahu: 'Ra',
+  ketu: 'Ke',
+};
+
 function getSignLabel(index, { useAbbreviations = false } = {}) {
   const labels = useAbbreviations ? SIGN_ABBREVIATIONS : SIGN_NUMBERS;
   return labels[index] ?? String(index + 1);
@@ -368,26 +380,11 @@ function renderNorthIndian(svgEl, data, options = {}) {
       t.setAttribute('y', py);
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-size', '0.03');
-      let d = p.deg;
-      let m = p.min;
-      let s = p.sec;
-      if (typeof m !== 'number' || typeof s !== 'number') {
-        const dVal = Math.floor(p.deg);
-        const mFloat = (p.deg - dVal) * 60;
-        const mVal = Math.floor(mFloat);
-        const sVal = Math.round((mFloat - mVal) * 60);
-        d = dVal;
-        m = mVal;
-        s = sVal;
-      }
-      const degStr = `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}′${String(
-        s
-      ).padStart(2, '0')}″`;
-      let name = p.name;
-      if (p.retro) name += '(R)';
-      if (p.combust) name += '(C)';
-      if (p.exalted) name += '(Ex)';
-      t.textContent = `${name} ${degStr}`;
+      let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
+      if (p.retro) abbr += '(R)';
+      if (p.combust) abbr += '(C)';
+      if (p.exalted) abbr += '(Ex)';
+      t.textContent = abbr;
       svgEl.appendChild(t);
       py += step;
     });
