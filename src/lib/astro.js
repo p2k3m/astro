@@ -1,10 +1,10 @@
-import { DateTime } from 'luxon';
-import { compute_positions } from './ephemeris.js';
+const { DateTime } = require('luxon');
+const { compute_positions } = require('./ephemeris.js');
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
-export const BOX_SIZE = 0.125;
-export const SIGN_BOX_CENTERS = [
+const BOX_SIZE = 0.125;
+const SIGN_BOX_CENTERS = [
   { cx: 0.5, cy: 0.125 }, // Aries
   { cx: 0.75, cy: 0.125 }, // Taurus
   { cx: 0.875, cy: 0.25 }, // Gemini
@@ -20,8 +20,8 @@ export const SIGN_BOX_CENTERS = [
 ];
 
 // Sign label helpers. By default signs are labelled 1-12.
-export const SIGN_NUMBERS = Array.from({ length: 12 }, (_, i) => String(i + 1));
-export const SIGN_ABBREVIATIONS = [
+const SIGN_NUMBERS = Array.from({ length: 12 }, (_, i) => String(i + 1));
+const SIGN_ABBREVIATIONS = [
   'Ar',
   'Ta',
   'Ge',
@@ -35,7 +35,7 @@ export const SIGN_ABBREVIATIONS = [
   'Aq',
   'Pi',
 ];
-export const SIGN_NAMES = [
+const SIGN_NAMES = [
   'Aries',
   'Taurus',
   'Gemini',
@@ -50,7 +50,7 @@ export const SIGN_NAMES = [
   'Pisces',
 ];
 
-export function getSignLabel(index, { useAbbreviations = false } = {}) {
+function getSignLabel(index, { useAbbreviations = false } = {}) {
   const labels = useAbbreviations ? SIGN_ABBREVIATIONS : SIGN_NUMBERS;
   return labels[index] ?? String(index + 1);
 }
@@ -113,13 +113,13 @@ function buildChartPaths(scale = 1) {
   return { outer, inner, diagonals, housePolygons };
 }
 
-export const CHART_PATHS = buildChartPaths();
+const CHART_PATHS = buildChartPaths();
 
-export const HOUSE_POLYGONS = CHART_PATHS.housePolygons;
-export const HOUSE_CENTROIDS = HOUSE_POLYGONS.map(polygonCentroid);
+const HOUSE_POLYGONS = CHART_PATHS.housePolygons;
+const HOUSE_CENTROIDS = HOUSE_POLYGONS.map(polygonCentroid);
 // Bounding boxes for each house polygon. Useful for positioning labels
 // at specific corners without overlap.
-export const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
+const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
   const xs = poly.map(([x]) => x);
   const ys = poly.map(([, y]) => y);
   return {
@@ -130,7 +130,7 @@ export const HOUSE_BBOXES = HOUSE_POLYGONS.map((poly) => {
   };
 });
 
-export function polygonCentroid(pts) {
+function polygonCentroid(pts) {
   // Compute the centroid using the area-weighted formula (shoelace theorem).
   // This provides the true geometric centre even for irregular polygons.
   let doubleArea = 0;
@@ -154,11 +154,11 @@ export function polygonCentroid(pts) {
   return { cx: cx / (6 * area), cy: cy / (6 * area) };
 }
 
-export function diamondPath(cx, cy, size = BOX_SIZE) {
+function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
 }
 
-export async function computePositions(dtISOWithZone, lat, lon) {
+async function computePositions(dtISOWithZone, lat, lon) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
 
@@ -256,7 +256,7 @@ export async function computePositions(dtISOWithZone, lat, lon) {
   return { ascSign, signInHouse, planets };
 }
 
-export function renderNorthIndian(svgEl, data, options = {}) {
+function renderNorthIndian(svgEl, data, options = {}) {
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
   svgEl.setAttribute('viewBox', '0 0 1 1');
   svgEl.setAttribute('fill', 'none');
@@ -390,4 +390,21 @@ export function renderNorthIndian(svgEl, data, options = {}) {
     });
   }
 }
+
+module.exports = {
+  BOX_SIZE,
+  SIGN_BOX_CENTERS,
+  SIGN_NUMBERS,
+  SIGN_ABBREVIATIONS,
+  SIGN_NAMES,
+  getSignLabel,
+  CHART_PATHS,
+  HOUSE_POLYGONS,
+  HOUSE_CENTROIDS,
+  HOUSE_BBOXES,
+  polygonCentroid,
+  diamondPath,
+  computePositions,
+  renderNorthIndian,
+};
 
