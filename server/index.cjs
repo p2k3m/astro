@@ -1,5 +1,5 @@
 const fs = require('fs');
-const express = require('../express');
+const express = require('../express/index.cjs');
 const path = require('path');
 
 // Import the Swiss Ephemeris library
