@@ -1,2 +1,8 @@
-dist/
-node_modules/
+node_modules/*
+!node_modules/luxon
+!node_modules/luxon/index.js
+!node_modules/timezonefinder
+!node_modules/timezonefinder/index.js
+.DS_Store
+dist
+.env
