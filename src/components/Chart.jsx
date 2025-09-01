@@ -43,10 +43,14 @@ export default function Chart({
   data.planets.forEach((p) => {
     const houseIdx = p.house;
     if (houseIdx === undefined) return;
-    let abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
-    if (p.retro) abbr += '(R)';
-    if (p.combust) abbr += '(C)';
-    if (p.exalted) abbr += '(Ex)';
+
+    const baseAbbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
+    const flags = [];
+    if (p.retro) flags.push('(R)');
+    if (p.combust) flags.push('(C)');
+    if (p.exalted) flags.push('(Ex)');
+    const abbr = baseAbbr + flags.join('');
+
     planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
     planetByHouse[houseIdx].push(abbr);
   });
