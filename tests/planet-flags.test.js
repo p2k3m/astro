@@ -89,6 +89,14 @@ test('Venus near the Sun shows combust flag', async () => {
   assert.ok(label.includes('(C)'), 'label should include (C)');
 });
 
+test('Venus combust for Darbhanga chart', async () => {
+  const { computePositions } = await astro;
+  const res = await computePositions('1982-12-01T03:50+05:30', 26.15216, 85.89707);
+  const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
+  const venus = planets.venus;
+  assert.ok(venus.combust, 'Venus should be combust for Darbhanga chart');
+});
+
 test('combust planets show (C) in chart summary', async () => {
   const { computePositions, SIGN_NAMES } = await astro;
   const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
