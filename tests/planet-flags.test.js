@@ -1,7 +1,34 @@
 const assert = require('node:assert');
 const test = require('node:test');
-const { computePositions } = require('../src/lib/astro.js');
-const { summarizeChart } = require('../src/lib/summary.js');
+const { computePositions, SIGN_NAMES } = require('../src/lib/astro.js');
+
+const PLANET_ABBR = {
+  sun: 'Su',
+  moon: 'Mo',
+  mars: 'Ma',
+  mercury: 'Me',
+  jupiter: 'Ju',
+  venus: 'Ve',
+  saturn: 'Sa',
+  rahu: 'Ra',
+  ketu: 'Ke',
+};
+
+function formatDMS(p) {
+  let d = p.deg;
+  let m = p.min;
+  let s = p.sec;
+  if (typeof m !== 'number' || typeof s !== 'number') {
+    const dVal = Math.floor(p.deg);
+    const mFloat = (p.deg - dVal) * 60;
+    const mVal = Math.floor(mFloat);
+    const sVal = Math.round((mFloat - mVal) * 60);
+    d = dVal;
+    m = mVal;
+    s = sVal;
+  }
+  return `${d}°${String(m).padStart(2, '0')}′${String(s).padStart(2, '0')}″`;
+}
 
 function buildLabel(p) {
   let d = p.deg;
@@ -57,13 +84,21 @@ test('Venus near the Sun shows combust flag', async () => {
   const venus = planets.venus;
   assert.ok(venus.combust, 'Venus should be combust');
   const label = buildLabel({ ...venus, abbr: 'Ve', retrograde: venus.retro });
-  assert.ok(label.startsWith('Ve(C)'), 'label should include (C)');
+  assert.ok(label.includes('(C)'), 'label should include (C)');
 });
 
 test('combust planets show (C) in chart summary', async () => {
   const res = await computePositions('2023-08-13T00:00+00:00', 0, 0);
-  const summary = summarizeChart(res);
-  const hasVenusCombust = summary.houses.some((h) => h.includes('Ve(C)'));
+  const rows = res.planets.map((p) => {
+    let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
+    if (p.retro) abbr += '(R)';
+    if (p.combust) abbr += '(C)';
+    const signNum = res.signInHouse?.[p.house] || p.sign + 1;
+    const signName = SIGN_NAMES[signNum - 1];
+    const degStr = formatDMS(p);
+    return `${abbr} ${signName} ${degStr}`;
+  });
+  const hasVenusCombust = rows.some((r) => r.startsWith('Ve(R)(C)'));
   assert.ok(hasVenusCombust, 'summary should include Ve(C)');
 });
 

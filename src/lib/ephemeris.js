@@ -55,10 +55,17 @@ function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
   const raw = sweInst.swe_houses_ex(jd, flag, Number(lat), Number(lon), 'W');
-  if (!raw || typeof raw.ascendant === 'undefined' || !Array.isArray(raw.house)) {
+  let houses;
+  if (Array.isArray(raw?.house)) {
+    houses = [null, ...raw.house];
+  } else if (Array.isArray(raw?.houses)) {
+    houses = raw.houses;
+  } else {
     throw new Error('Could not compute houses from swisseph.');
   }
-  const houses = [null, ...raw.house];
+  if (typeof raw.ascendant === 'undefined') {
+    throw new Error('Could not compute houses from swisseph.');
+  }
   const ascendant = raw.ascendant;
   const ascSign = lonToSignDeg(ascendant).sign;
   const start = houses[1];

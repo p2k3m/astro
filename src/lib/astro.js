@@ -234,9 +234,12 @@ async function computePositions(dtISOWithZone, lat, lon) {
     const lon = sign * 30 + degFloat;
     const retro = p.retro;
     const cDeg = combustDeg[p.name];
-    const combust =
-      cDeg !== undefined &&
-      Math.abs((sunLon - lon + 180) % 360 - 180) < cDeg;
+    let combust = false;
+    if (cDeg !== undefined) {
+      const diff = (sunLon - lon + 360) % 360;
+      const separation = diff > 180 ? 360 - diff : diff;
+      combust = separation < cDeg;
+    }
     const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
     planets.push({
