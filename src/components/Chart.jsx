@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import astro from '../lib/astro.js';
+import * as astro from '../lib/astro.js';
 const {
   CHART_PATHS,
   HOUSE_POLYGONS,
