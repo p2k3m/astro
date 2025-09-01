@@ -1,6 +1,12 @@
 const DEG2RAD = Math.PI / 180;
 const RAD2DEG = 180 / Math.PI;
 
+// The WASM build expects a browser-like global `self`. Provide a shim when
+// running under Node.js so the module can initialise correctly.
+if (typeof globalThis.self === 'undefined') {
+  globalThis.self = globalThis;
+}
+
 // Constants mimicking a subset of Swiss Ephemeris
 export const SE_SUN = 0;
 export const SE_MOON = 1;
@@ -191,8 +197,12 @@ function planetLongitudeTropical(jd, planetId) {
   const name = idToName[planetId];
   if (!name) return 0;
   const planet = heliocentricXYZ(elementsFor(name, d));
-  const xg = planet.x - earth.x;
-  const yg = planet.y - earth.y;
+  // Geocentric position is planet minus earth for outer planets but
+  // earth minus planet for inner planets. Flipping the vector ensures
+  // inner planets appear near the Sun as expected.
+  const inner = name === 'mercury' || name === 'venus';
+  const xg = inner ? earth.x - planet.x : planet.x - earth.x;
+  const yg = inner ? earth.y - planet.y : planet.y - earth.y;
   const lon = Math.atan2(yg, xg) * RAD2DEG;
   return normalizeAngle(lon);
 }
