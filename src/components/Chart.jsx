@@ -43,30 +43,12 @@ export default function Chart({
   data.planets.forEach((p) => {
     const houseIdx = p.house;
     if (houseIdx === undefined) return;
-    let degree = 'No data';
-    if (typeof p.deg === 'number') {
-      let d = p.deg;
-      let m = p.min;
-      let s = p.sec;
-      if (typeof m !== 'number' || typeof s !== 'number') {
-        const dVal = Math.floor(p.deg);
-        const mFloat = (p.deg - dVal) * 60;
-        const mVal = Math.floor(mFloat);
-        const sVal = Math.round((mFloat - mVal) * 60);
-        d = dVal;
-        m = mVal;
-        s = sVal;
-      }
-      degree = `${d}°${String(m).padStart(2, '0')}′${String(s).padStart(2, '0')}″`;
-    }
     let abbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
-    const isRetro = p.retro;
-    if (isRetro) abbr += '(R)';
+    if (p.retro) abbr += '(R)';
     if (p.combust) abbr += '(C)';
     if (p.exalted) abbr += '(Ex)';
-    const deg = degree;
     planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
-    planetByHouse[houseIdx].push({ abbr, deg });
+    planetByHouse[houseIdx].push({ abbr });
   });
 
   const SIGN_PAD_X = 0.04;
@@ -184,14 +166,14 @@ export default function Chart({
               <div
                 key={`p-${houseNum}-${i}`}
                 className="absolute text-amber-900 font-medium text-[clamp(0.55rem,0.75vw,0.85rem)]"
-                style={{
+              style={{
                   top: (pyStart + step * i) * size,
                   left: cx * size,
                   transform: 'translate(-50%, -50%)',
                   whiteSpace: 'nowrap',
                 }}
               >
-                {pl.abbr} {pl.deg}
+                {pl.abbr}
               </div>
             ))
           )}
