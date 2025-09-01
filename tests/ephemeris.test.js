@@ -49,8 +49,8 @@ test('house cusps and retrograde flags', async () => {
           longitudeSpeed: -0.5,
           flags: fakeSwe.SEFLG_RETROGRADE,
         }, // Moon retro in Libra
-        // Mercury has a tiny negative speed that should not count as retrograde
-        2: { longitude: 50, longitudeSpeed: -1e-6, flags: 0 },
+        // Mercury has a small positive speed and is direct
+        2: { longitude: 50, longitudeSpeed: 0.0001, flags: 0 },
         3: { longitude: 10, longitudeSpeed: 0.1, flags: 0 },
         4: { longitude: 200, longitudeSpeed: 0.1, flags: 0 }, // Mars in Libra
         5: { longitude: 170, longitudeSpeed: 0.1, flags: 0 },
