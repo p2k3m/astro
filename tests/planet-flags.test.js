@@ -95,6 +95,8 @@ test('Venus combust for Darbhanga chart', async () => {
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
   const venus = planets.venus;
   assert.ok(venus.combust, 'Venus should be combust for Darbhanga chart');
+  const label = buildLabel({ ...venus, abbr: 'Ve', retrograde: venus.retro });
+  assert.ok(label.includes('(C)'), 'label should include (C)');
 });
 
 test('combust planets show (C) in chart summary', async () => {
