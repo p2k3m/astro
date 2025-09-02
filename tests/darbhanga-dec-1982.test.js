@@ -60,4 +60,14 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     assert.strictEqual(p.min, exp.min, `${name} min`);
     assert.strictEqual(p.sec, exp.sec, `${name} sec`);
   }
+
+  const secondHouse = ['sun', 'mercury', 'venus', 'jupiter'];
+  for (const name of secondHouse) {
+    const p = planets[name];
+    const exp = expectedDMS[name];
+    assert.strictEqual(p.house, 2, `${name} 2nd house`);
+    assert.strictEqual(p.deg, exp.deg, `${name} deg`);
+    assert.strictEqual(p.min, exp.min, `${name} min`);
+    assert.strictEqual(p.sec, exp.sec, `${name} sec`);
+  }
 });

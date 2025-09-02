@@ -37,6 +37,19 @@ function lonToSignDeg(longitude) {
   return { sign, deg, min, sec };
 }
 
+function houseOfLongitude(lon, cusps) {
+  if (!Array.isArray(cusps) || cusps.length < 13) return 1;
+  for (let i = 1; i <= 12; i++) {
+    const start = cusps[i];
+    let end = i === 12 ? cusps[1] + 360 : cusps[i + 1];
+    if (end < start) end += 360;
+    let l = lon;
+    if (l < start) l += 360;
+    if (l >= start && l < end) return i;
+  }
+  return 1;
+}
+
 function toUTC({ datetime, zone }) {
   const dt = DateTime.fromISO(datetime, { zone }).toUTC();
   return dt.toJSDate();
@@ -108,8 +121,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       lon,
       speed: data.longitudeSpeed,
       retro,
-      house:
-        Math.floor(((lon - raw.ascendant + 360) % 360) / 30) + 1,
+      house: houseOfLongitude(lon, houses),
     });
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -123,7 +135,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     lon: ketuLon,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
-    house: Math.floor(((ketuLon - raw.ascendant + 360) % 360) / 30) + 1,
+    house: houseOfLongitude(ketuLon, houses),
   });
 
   return {
