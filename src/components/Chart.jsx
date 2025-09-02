@@ -45,13 +45,16 @@ export default function Chart({
     if (houseIdx === undefined) return;
 
     const baseAbbr = PLANET_ABBR[p.name.toLowerCase()] || p.name.slice(0, 2);
-    const flags = [];
-    if (p.retro) flags.push('(R)');
-    if (p.combust) flags.push('(C)');
-    if (p.exalted) flags.push('(Ex)');
+    const flags = [
+      p.retro && '(R)',
+      p.combust && '(C)',
+      p.exalted && '(Ex)',
+    ]
+      .filter(Boolean)
+      .join('');
     // Store only the abbreviation and any flags; degree information is
     // intentionally omitted to keep the chart labels concise.
-    const label = baseAbbr + flags.join('');
+    const label = baseAbbr + flags;
 
     planetByHouse[houseIdx] = planetByHouse[houseIdx] || [];
     planetByHouse[houseIdx].push(label);

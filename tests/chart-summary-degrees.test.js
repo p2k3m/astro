@@ -37,6 +37,8 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
   const rows = data.planets.map((p) => {
     let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
     if (p.retro) abbr += '(R)';
+    if (p.combust) abbr += '(C)';
+    if (p.exalted) abbr += '(Ex)';
     const signNum = data.signInHouse?.[p.house] || p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
@@ -44,7 +46,7 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
   });
   assert.deepStrictEqual(rows, [
     'Su Scorpio 14°46′28″',
-    'Mo Taurus 13°16′59″',
+    'Mo(Ex) Taurus 13°16′59″',
     'Me(R) Aries 29°13′15″',
     'Ve Aries 10°02′30″',
     'Ma Pisces 8°19′13″',
