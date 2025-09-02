@@ -215,21 +215,42 @@ async function computePositions(dtISOWithZone, lat, lon) {
   };
 
   const planets = [];
+
+  // Helper to get a normalised longitude using corrected values when available.
+  const getCorrectedLon = (obj) => {
+    if (typeof obj?.clon === 'number') return ((obj.clon % 360) + 360) % 360;
+    if (typeof obj?.csign === 'number') {
+      const deg =
+        (obj.csign - 1) * 30 +
+        (obj.cdeg ?? 0) +
+        (obj.cmin ?? 0) / 60 +
+        (obj.csec ?? 0) / 3600;
+      return ((deg % 360) + 360) % 360;
+    }
+    if (typeof obj?.lon === 'number') return ((obj.lon % 360) + 360) % 360;
+    const deg =
+      (obj.sign - 1) * 30 +
+      obj.deg +
+      (obj.min ?? 0) / 60 +
+      (obj.sec ?? 0) / 3600;
+    return ((deg % 360) + 360) % 360;
+  };
+
   const sun = base.planets.find((p) => p.name === 'sun');
-  // Sun longitude in degrees (0..360). Prefer corrected longitude if present.
-  const sunLon = ((
-    sun?.clon ??
-    (typeof sun?.lon === 'number'
-      ? sun.lon
-      : (sun.sign - 1) * 30 + sun.deg + sun.min / 60 + sun.sec / 3600)
-  ) + 360) % 360;
+  const sunLon = getCorrectedLon(sun);
 
   for (const p of base.planets) {
-    const sign = p.sign - 1;
-    const house = p.house;
+    let sign = p.sign - 1;
     let d = p.deg;
     let m = p.min;
     let s = p.sec;
+    if (typeof p.csign === 'number') {
+      sign = p.csign - 1;
+      d = p.cdeg;
+      m = p.cmin;
+      s = p.csec;
+    }
+
     let degFloat;
     if (typeof m === 'number' && typeof s === 'number') {
       degFloat = d + m / 60 + s / 3600;
@@ -244,23 +265,20 @@ async function computePositions(dtISOWithZone, lat, lon) {
       m = mVal;
       s = sVal;
     }
-    const lon = ((
-      p.clon ??
-      (typeof p.lon === 'number' ? p.lon : (p.sign - 1) * 30 + degFloat)
-    ) + 360) % 360;
+    const lon = getCorrectedLon(p);
     const retro = p.retro;
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
       const separation = Math.abs((sunLon - lon + 180) % 360 - 180);
-      if (separation < cDeg) combust = true;
+      combust = separation < cDeg;
     }
     const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
     planets.push({
       name: p.name,
       sign,
-      house,
+      house: p.house,
       deg: d,
       min: m,
       sec: s,

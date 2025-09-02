@@ -39,9 +39,8 @@ export default function ChartSummary({ data }) {
     if (p.retro) flags.push('(R)');
     if (p.combust) flags.push('(C)');
     if (p.exalted) flags.push('(Ex)');
-    if (flags.length > 0) {
-      abbr += flags.join('');
-    }
+    // Ensure combust planets render with a (C) marker alongside other flags.
+    abbr += flags.join('');
     const signNum = data.signInHouse?.[p.house] || p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
