@@ -48,7 +48,7 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     'Su Scorpio 14°46′28″',
     'Mo(Ex) Taurus 13°16′59″',
     'Me(R) Aries 29°13′15″',
-    'Ve Aries 10°02′30″',
+    'Ve(C) Aries 10°02′30″',
     'Ma Pisces 8°19′13″',
     'Ju(R) Libra 25°03′25″',
     'Sa(R) Virgo 29°14′20″',

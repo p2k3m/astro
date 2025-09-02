@@ -56,33 +56,33 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
   }
 
   // Retrograde flags
-  const expectedRetro = {
-    sun: false,
-    moon: false,
-    mars: false,
-    mercury: true,
-    jupiter: true,
-    venus: false,
-    saturn: true,
-    rahu: true,
-    ketu: true,
-  };
+    const expectedRetro = {
+      sun: false,
+      moon: false,
+      mars: false,
+      mercury: true,
+      jupiter: true,
+      venus: false,
+      saturn: true,
+      rahu: true,
+      ketu: true,
+    };
   for (const [name, retro] of Object.entries(expectedRetro)) {
     assert.strictEqual(planets[name].retro, retro, `${name} retrograde`);
   }
 
   // Combustion states
-  const expectedCombust = {
-    sun: false,
-    moon: false,
-    mars: false,
-    mercury: false,
-    jupiter: false,
-    venus: false,
-    saturn: false,
-    rahu: false,
-    ketu: false,
-  };
+      const expectedCombust = {
+        sun: false,
+        moon: false,
+        mars: false,
+        mercury: false,
+        jupiter: false,
+        venus: true,
+        saturn: false,
+        rahu: false,
+        ketu: false,
+      };
   for (const [name, combust] of Object.entries(expectedCombust)) {
     assert.strictEqual(planets[name].combust, combust, `${name} combust`);
   }
@@ -118,7 +118,7 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     { tag: 'text', attrs: { x: '0.5', y: '0.32', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ke(R)' },
     { tag: 'text', attrs: { x: '0.25', y: '0.5700000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ma' },
     { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Me(R)' },
-    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.8600000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ve' },
+    { tag: 'text', attrs: { x: '0.08333333333333333', y: '0.8600000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ve(C)' },
     { tag: 'text', attrs: { x: '0.19', y: '0.98', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Mo(Ex)' },
     { tag: 'text', attrs: { x: '0.5', y: '0.8200000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Ra(R)' },
     { tag: 'text', attrs: { x: '0.75', y: '0.5700000000000001', 'text-anchor': 'middle', 'font-size': '0.03' }, text: 'Sa(R)' },
