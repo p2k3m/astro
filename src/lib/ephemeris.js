@@ -1,18 +1,13 @@
 import { DateTime } from 'luxon';
-import { fileURLToPath } from 'node:url';
 import * as swe from '../../swisseph/index.js';
 
 const epheUrl = new URL('../../swisseph/ephe/', import.meta.url);
-await swe.ready;
-if (epheUrl.protocol === 'file:') {
+swe.ready.then(() => {
+  if (epheUrl.protocol === 'file:') swe.swe_set_ephe_path(epheUrl.pathname);
   try {
-    const ephePath = fileURLToPath(epheUrl);
-    swe.swe_set_ephe_path(ephePath);
+    swe.swe_set_sid_mode(swe.SE_SIDM_LAHIRI, 0, 0);
   } catch {}
-}
-try {
-  swe.swe_set_sid_mode(swe.SE_SIDM_LAHIRI, 0, 0);
-} catch {}
+});
 
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
