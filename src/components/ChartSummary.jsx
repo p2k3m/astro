@@ -38,6 +38,7 @@ export default function ChartSummary({ data }) {
     const flags = [];
     if (p.retro) flags.push('(R)');
     if (p.combust) flags.push('(C)');
+    if (p.exalted) flags.push('(Ex)');
     if (flags.length > 0) {
       abbr += flags.join('');
     }
@@ -78,6 +79,9 @@ ChartSummary.propTypes = {
         deg: PropTypes.number,
         min: PropTypes.number,
         sec: PropTypes.number,
+        retro: PropTypes.bool,
+        combust: PropTypes.bool,
+        exalted: PropTypes.bool,
       })
     ).isRequired,
   }).isRequired,
