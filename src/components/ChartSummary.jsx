@@ -38,7 +38,9 @@ export default function ChartSummary({ data }) {
     const flags = [];
     if (p.retro) flags.push('(R)');
     if (p.combust) flags.push('(C)');
-    if (flags.length) abbr += flags.join('');
+    if (flags.length > 0) {
+      abbr += flags.join('');
+    }
     const signNum = data.signInHouse?.[p.house] || p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
