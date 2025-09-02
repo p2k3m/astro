@@ -5,6 +5,54 @@ async function getCompute() {
   return (await import('../src/lib/ephemeris.js')).compute_positions;
 }
 
+test('applies sidereal mode and converts to UTC', async () => {
+  const compute_positions = await getCompute();
+  let sidArgs = null;
+  let jdArgs = null;
+  const fakeSwe = {
+    ready: Promise.resolve(),
+    SE_SIDM_LAHIRI: 42,
+    SE_GREG_CAL: 0,
+    SEFLG_SWIEPH: 1,
+    SEFLG_SPEED: 2,
+    SEFLG_SIDEREAL: 4,
+    SE_SUN: 0,
+    SE_MOON: 1,
+    SE_MERCURY: 2,
+    SE_VENUS: 3,
+    SE_MARS: 4,
+    SE_JUPITER: 5,
+    SE_SATURN: 6,
+    SE_TRUE_NODE: 7,
+    swe_set_sid_mode: (...args) => {
+      sidArgs = args;
+    },
+    swe_julday: (y, m, d, ut, cal) => {
+      jdArgs = { y, m, d, ut, cal };
+      return 0;
+    },
+    swe_houses_ex: () => ({
+      ascendant: 0,
+      houses: Array.from({ length: 13 }, (_, i) => i * 30),
+    }),
+    swe_calc_ut: () => ({ longitude: 0, longitudeSpeed: 0 }),
+  };
+
+  await compute_positions(
+    { datetime: '2020-01-01T05:30', tz: 'UTC+5:30', lat: 0, lon: 0 },
+    fakeSwe
+  );
+
+  assert.deepStrictEqual(sidArgs, [fakeSwe.SE_SIDM_LAHIRI, 0, 0]);
+  assert.deepStrictEqual(jdArgs, {
+    y: 2020,
+    m: 1,
+    d: 1,
+    ut: 0,
+    cal: fakeSwe.SE_GREG_CAL,
+  });
+});
+
 test('house cusps and retrograde flags', async () => {
   const compute_positions = await getCompute();
 

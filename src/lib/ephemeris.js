@@ -57,6 +57,11 @@ function toUTC({ datetime, zone }) {
 
 async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   await sweInst.ready;
+  try {
+    if (typeof sweInst.swe_set_sid_mode === 'function') {
+      sweInst.swe_set_sid_mode(sweInst.SE_SIDM_LAHIRI, 0, 0);
+    }
+  } catch {}
 
   const date = toUTC({ datetime, zone: tz });
   const ut =
