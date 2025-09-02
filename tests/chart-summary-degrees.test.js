@@ -39,7 +39,7 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     if (p.retro) abbr += '(R)';
     if (p.combust) abbr += '(C)';
     if (p.exalted) abbr += '(Ex)';
-    const signNum = data.signInHouse?.[p.house] || p.sign + 1;
+    const signNum = p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
     return `${abbr} ${signName} ${degStr}`;

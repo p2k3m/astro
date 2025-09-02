@@ -41,7 +41,7 @@ export default function ChartSummary({ data }) {
     if (p.exalted) flags.push('(Ex)');
     // Ensure combust planets render with a (C) marker alongside other flags.
     abbr += flags.join('');
-    const signNum = data.signInHouse?.[p.house] || p.sign + 1;
+    const signNum = p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
     return { abbr, signName, degStr };
@@ -69,7 +69,6 @@ export default function ChartSummary({ data }) {
 ChartSummary.propTypes = {
   data: PropTypes.shape({
     ascSign: PropTypes.number.isRequired,
-    signInHouse: PropTypes.arrayOf(PropTypes.number).isRequired,
     planets: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
