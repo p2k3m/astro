@@ -37,19 +37,6 @@ function lonToSignDeg(longitude) {
   return { sign, deg, min, sec };
 }
 
-function houseOfLongitude(lon, cusps) {
-  if (!Array.isArray(cusps) || cusps.length < 13) return 1;
-  for (let i = 1; i <= 12; i++) {
-    const start = cusps[i];
-    let end = i === 12 ? cusps[1] + 360 : cusps[i + 1];
-    if (end < start) end += 360;
-    let l = lon;
-    if (l < start) l += 360;
-    if (l >= start && l < end) return i;
-  }
-  return 1;
-}
-
 function toUTC({ datetime, zone }) {
   const dt = DateTime.fromISO(datetime, { zone }).toUTC();
   return dt.toJSDate();
@@ -78,19 +65,16 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   );
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
-  const raw = sweInst.swe_houses_ex(jd, Number(lat), Number(lon), 'P', flag);
+  const raw = sweInst.swe_houses_ex(jd, Number(lat), -Number(lon), 'P', flag);
   if (typeof raw?.ascendant === 'undefined') {
     throw new Error('Could not compute houses from swisseph.');
   }
   const { sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec } = lonToSignDeg(
     raw.ascendant
   );
-  const cusps = raw.houseCusps || raw.houses;
   const houses = [null];
-  if (Array.isArray(cusps)) {
-    for (let i = 1; i <= 12; i++) {
-      houses[i] = cusps[i];
-    }
+  for (let i = 1; i <= 12; i++) {
+    houses[i] = (raw.ascendant + (i - 1) * 30) % 360;
   }
 
   const planetCodes = {
@@ -117,6 +101,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
         ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
         : lonToSignDeg(lon);
     const retro = data.longitudeSpeed < 0;
+    const house = ((sign - ascSign + 12) % 12) + 1;
     planets.push({
       name,
       sign,
@@ -126,7 +111,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       lon,
       speed: data.longitudeSpeed,
       retro,
-      house: houseOfLongitude(lon, houses),
+      house,
     });
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
@@ -140,7 +125,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     lon: ketuLon,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < 0,
-    house: houseOfLongitude(ketuLon, houses),
+    house: ((kSign - ascSign + 12) % 12) + 1,
   });
 
   return {
