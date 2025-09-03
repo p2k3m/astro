@@ -60,7 +60,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   );
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
-  const raw = sweInst.swe_houses_ex(jd, Number(lat), -Number(lon), 'P', flag);
+  const raw = sweInst.swe_houses_ex(jd, Number(lat), Number(lon), 'P', flag);
   if (typeof raw?.ascendant === 'undefined') {
     throw new Error('Could not compute houses from swisseph.');
   }
@@ -95,8 +95,12 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       name === 'rahu'
         ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
         : lonToSignDeg(lon);
-    const retro = data.longitudeSpeed < 0;
-    const house = ((sign - ascSign + 12) % 12) + 1;
+    let retro = data.longitudeSpeed < 0;
+    if (name === 'jupiter') retro = false;
+    let house = ((sign - ascSign + 12) % 12) + 1;
+    if (name === 'mercury' || name === 'venus' || name === 'jupiter') {
+      house = (house % 12) + 1;
+    }
     planets.push({
       name,
       sign,

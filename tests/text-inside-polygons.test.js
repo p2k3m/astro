@@ -41,12 +41,9 @@ function pointInPolygon(x, y, poly) {
 test('all text elements render inside their house polygons', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
-  const planets = Array.from({ length: 12 }, (_, i) => ({
-    name: `p${i}`,
-    sign: i,
-    house: i + 1,
-    deg: 0,
-  }));
+  const codes = ['aa', 'bb', 'cc', 'dd', 'ee', 'ff', 'gg', 'hh', 'ii', 'jj', 'kk', 'll'];
+  const planets = codes.map((name, i) => ({ name, sign: i, house: i + 1, deg: 0 }));
+  const expected = Object.fromEntries(codes.map((c, i) => [c, i + 1]));
   const data = { ascSign: 1, signInHouse, planets };
 
   global.document = doc;
@@ -59,11 +56,11 @@ test('all text elements render inside their house polygons', async () => {
   texts.forEach((t) => {
     const x = Number(t.attributes.x);
     const y = Number(t.attributes.y);
-    if (/^p\d+/.test(t.textContent)) {
-      const idx = Number(t.textContent.match(/^p(\d+)/)[1]);
+    const name = t.textContent;
+    if (expected[name]) {
       const house =
         HOUSE_POLYGONS.findIndex((poly) => pointInPolygon(x, y, poly)) + 1;
-      assert.strictEqual(house, idx + 1);
+      assert.strictEqual(house, expected[name]);
     }
   });
 });

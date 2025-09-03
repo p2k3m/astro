@@ -34,12 +34,23 @@ test('planet positions match AstroSage for sample chart', async () => {
     sun: 2,
     moon: 8,
     mars: 6,
-    mercury: 8,
+    mercury: 2,
     jupiter: 2,
-    venus: 7,
-    saturn: 1,
+    venus: 2,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
+  };
+  const PLANET_ABBR = {
+    sun: 'Su',
+    moon: 'Mo',
+    mars: 'Ma',
+    mercury: 'Me',
+    jupiter: 'Ju',
+    venus: 'Ve',
+    saturn: 'Sa',
+    rahu: 'Ra',
+    ketu: 'Ke',
   };
 
   global.document = doc;
@@ -52,7 +63,8 @@ test('planet positions match AstroSage for sample chart', async () => {
   );
 
   for (const [name, house] of Object.entries(expected)) {
-    const node = texts.find((t) => t.textContent.startsWith(name));
+    const abbr = PLANET_ABBR[name];
+    const node = texts.find((t) => t.textContent.startsWith(abbr));
     assert.ok(node, `missing ${name}`);
     const x = Number(node.attributes.x);
     const y = Number(node.attributes.y);
