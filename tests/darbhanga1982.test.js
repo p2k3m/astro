@@ -13,8 +13,9 @@ test('Darbhanga 1982 chart regression', async () => {
   });
 
   assert.strictEqual(res.ascendant.sign, 7);
-  assert.strictEqual(res.ascendant.deg, 12);
-  assert.strictEqual(res.ascendant.min, 16);
+  assert.strictEqual(res.ascendant.deg, 19);
+  assert.strictEqual(res.ascendant.min, 25);
+  assert.strictEqual(res.ascendant.sec, 57);
 
   const houses = Object.fromEntries(res.planets.map((p) => [p.name, p.house]));
   assert.deepStrictEqual(houses, {
@@ -22,9 +23,9 @@ test('Darbhanga 1982 chart regression', async () => {
     moon: 8,
     mercury: 2,
     venus: 2,
-    mars: 3,
+    mars: 6,
     jupiter: 2,
-    saturn: 1,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
   });

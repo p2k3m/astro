@@ -47,10 +47,10 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
   assert.deepStrictEqual(rows, [
     'Su Scorpio 14°46′28″',
     'Mo(Ex) Taurus 13°16′59″',
-    'Me(R) Aries 29°13′15″',
-    'Ve(C) Aries 10°02′30″',
+    'Me(R) Libra 29°13′15″',
+    'Ve Libra 10°02′30″',
     'Ma Pisces 8°19′13″',
-    'Ju(R) Libra 25°03′25″',
+    'Ju Libra 25°03′25″',
     'Sa(R) Virgo 29°14′20″',
     'Ra(R) Gemini 11°53′18″',
     'Ke(R) Sagittarius 11°53′18″',
