@@ -3,13 +3,23 @@ import test from 'node:test';
 import { longitudeToNakshatra } from '../src/lib/nakshatra.js';
 
 test('Pushkar Mishra chart positions', async () => {
-  const { compute_positions } = await import('../src/lib/ephemeris.js');
+  const { compute_positions, lonToSignDeg } = await import('../src/lib/ephemeris.js');
   const res = await compute_positions({
     datetime: '1982-12-01T03:50',
     tz: 'Asia/Kolkata',
     lat: 26.152,
     lon: 85.897,
   });
+
+  const ascLon = res.ascendant.lon;
+  const { sign, deg, min, sec } = lonToSignDeg(ascLon);
+  const { nakshatra, pada } = longitudeToNakshatra(ascLon);
+  assert.strictEqual(sign, 7); // Libra
+  assert.strictEqual(deg, 19);
+  assert.strictEqual(min, 25);
+  assert.ok(Math.abs(sec - 57) <= 1);
+  assert.strictEqual(nakshatra, 'Swati');
+  assert.strictEqual(pada, 4);
   const actual = Object.fromEntries(
     res.planets.map((p) => {
       const { nakshatra, pada } = longitudeToNakshatra(p.lon);
