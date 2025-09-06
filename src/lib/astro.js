@@ -174,7 +174,7 @@ function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
 }
 
-async function computePositions(dtISOWithZone, lat, lon) {
+async function computePositions(dtISOWithZone, lat, lon, { sidMode, nodeType } = {}) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
 
@@ -183,6 +183,8 @@ async function computePositions(dtISOWithZone, lat, lon) {
     tz: dt.zoneName,
     lat,
     lon,
+    sidMode,
+    nodeType,
   });
 
   const ascSign = base.ascSign;
