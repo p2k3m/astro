@@ -84,7 +84,7 @@ compare it against the AstroSage online chart using known reference data:
 
 1. Open the AstroSage birth chart calculator and set the location to
    **Darbhanga, India** (26.152° N, 85.897° E).
-2. Generate charts for these reference times in the India/Calcutta time zone:
+2. Generate charts for these reference times in the Asia/Kolkata time zone:
    - **1 December 1982, 03:50**
    - **1 December 1982, 15:50**
 3. Run this project and enter the same details. The ascendant sign and the
