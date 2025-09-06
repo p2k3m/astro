@@ -67,9 +67,10 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   const { sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec } = lonToSignDeg(
     raw.ascendant
   );
+  const ascStart = Math.floor(raw.ascendant / 30) * 30;
   const houses = [null];
   for (let i = 1; i <= 12; i++) {
-    houses[i] = (raw.ascendant + (i - 1) * 30) % 360;
+    houses[i] = (ascStart + (i - 1) * 30) % 360;
   }
 
   const planetCodes = {
@@ -88,6 +89,7 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
   const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
     rahuData.longitude
   );
+  const speedThreshold = 0.0001;
   for (const [name, code] of Object.entries(planetCodes)) {
     const data = name === 'rahu' ? rahuData : sweInst.swe_calc_ut(jd, code, flag);
     const lon = data.longitude;
@@ -95,12 +97,8 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
       name === 'rahu'
         ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
         : lonToSignDeg(lon);
-    let retro = data.longitudeSpeed < 0;
-    if (name === 'jupiter') retro = false;
-    let house = ((sign - ascSign + 12) % 12) + 1;
-    if (name === 'mercury' || name === 'venus' || name === 'jupiter') {
-      house = (house % 12) + 1;
-    }
+    const retro = data.longitudeSpeed < -speedThreshold;
+    const house = Math.floor(((lon - ascStart + 360) % 360) / 30) + 1;
     planets.push({
       name,
       sign,
@@ -123,8 +121,8 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     sec: kSec,
     lon: ketuLon,
     speed: rahuData.longitudeSpeed,
-    retro: rahuData.longitudeSpeed < 0,
-    house: ((kSign - ascSign + 12) % 12) + 1,
+    retro: rahuData.longitudeSpeed < -speedThreshold,
+    house: Math.floor(((ketuLon - ascStart + 360) % 360) / 30) + 1,
   });
 
   return {
