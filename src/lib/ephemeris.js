@@ -81,6 +81,9 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     mars: sweInst.SE_MARS,
     jupiter: sweInst.SE_JUPITER,
     saturn: sweInst.SE_SATURN,
+    uranus: sweInst.SE_URANUS,
+    neptune: sweInst.SE_NEPTUNE,
+    pluto: sweInst.SE_PLUTO,
     rahu: sweInst.SE_TRUE_NODE,
   };
 

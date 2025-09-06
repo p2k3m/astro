@@ -45,11 +45,11 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(amPlanets.rahu.house, 9);
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 1).map((p) => p.name).sort(),
-    ['jupiter', 'mercury', 'venus']
+    ['jupiter', 'mercury', 'pluto', 'venus']
   );
   assert.deepStrictEqual(
-    am.planets.filter((p) => p.house === 2).map((p) => p.name),
-    ['sun']
+    am.planets.filter((p) => p.house === 2).map((p) => p.name).sort(),
+    ['sun', 'uranus']
   );
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 6).map((p) => p.name),

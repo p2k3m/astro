@@ -8,6 +8,9 @@ const PLANET_ABBR = {
   jupiter: 'Ju',
   venus: 'Ve',
   saturn: 'Sa',
+  uranus: 'Ur',
+  neptune: 'Ne',
+  pluto: 'Pl',
   rahu: 'Ra',
   ketu: 'Ke',
 };

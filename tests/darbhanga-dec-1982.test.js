@@ -22,6 +22,9 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     mars: 6,
     jupiter: 1,
     saturn: 12,
+    uranus: 2,
+    neptune: 3,
+    pluto: 1,
     rahu: 9,
     ketu: 3,
   };
@@ -37,6 +40,9 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     mercury: true,
     jupiter: true,
     saturn: true,
+    uranus: true,
+    neptune: true,
+    pluto: true,
     rahu: true,
     ketu: true,
   };
@@ -52,6 +58,9 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     mars: { deg: 8, min: 19, sec: 13 },
     jupiter: { deg: 25, min: 3, sec: 25 },
     saturn: { deg: 29, min: 14, sec: 20 },
+    uranus: { deg: 11, min: 14, sec: 52 },
+    neptune: { deg: 3, min: 41, sec: 38 },
+    pluto: { deg: 2, min: 17, sec: 25 },
     rahu: { deg: 11, min: 53, sec: 18 },
     ketu: { deg: 11, min: 53, sec: 18 },
   };
