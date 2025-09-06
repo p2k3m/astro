@@ -37,11 +37,18 @@ function toUTC({ datetime, zone }) {
   return dt.toJSDate();
 }
 
-async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
+async function compute_positions(
+  { datetime, tz, lat, lon, sidMode, nodeType },
+  sweInst = swe
+) {
   await sweInst.ready;
   try {
     if (typeof sweInst.swe_set_sid_mode === 'function') {
-      sweInst.swe_set_sid_mode(sweInst.SE_SIDM_LAHIRI, 0, 0);
+      sweInst.swe_set_sid_mode(
+        sidMode ?? sweInst.SE_SIDM_LAHIRI,
+        0,
+        0
+      );
     }
   } catch {}
 
@@ -73,6 +80,9 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     houses[i] = (ascStart + (i - 1) * 30) % 360;
   }
 
+  const nodeCode =
+    nodeType === 'mean' ? sweInst.SE_MEAN_NODE : sweInst.SE_TRUE_NODE;
+
   const planetCodes = {
     sun: sweInst.SE_SUN,
     moon: sweInst.SE_MOON,
@@ -84,11 +94,11 @@ async function compute_positions({ datetime, tz, lat, lon }, sweInst = swe) {
     uranus: sweInst.SE_URANUS,
     neptune: sweInst.SE_NEPTUNE,
     pluto: sweInst.SE_PLUTO,
-    rahu: sweInst.SE_TRUE_NODE,
+    rahu: nodeCode,
   };
 
   const planets = [];
-  const rahuData = sweInst.swe_calc_ut(jd, sweInst.SE_TRUE_NODE, flag);
+  const rahuData = sweInst.swe_calc_ut(jd, nodeCode, flag);
   const { sign: rSign, deg: rDeg, min: rMin, sec: rSec } = lonToSignDeg(
     rahuData.longitude
   );

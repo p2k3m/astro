@@ -54,6 +54,19 @@ node -e "const fs=require('fs');fs.writeFileSync('public/cities.json',JSON.strin
 
 Alternatively, point `src/lib/offlineGeocoder.js` to a locally hosted [Nominatim](https://nominatim.org/) or [Pelias](https://pelias.io/) server and query it instead of the JSON file.
 
+## Calculation Options
+
+Chart computation helpers such as `calculateChart` and the `/api/positions` endpoint
+accept two optional settings:
+
+- `sidMode` – numeric code passed to Swiss Ephemeris' `swe_set_sid_mode`.
+  Defaults to `swe.SE_SIDM_LAHIRI` when omitted.
+- `nodeType` – `'true'` or `'mean'` to select whether lunar nodes are computed
+  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. The default is `'true'`.
+
+If these options are not provided, the traditional Lahiri ayanamsa and true node
+are used.
+
 ## Deployment
 
 Build the project and deploy the generated `dist/` folder to any static hosting provider (Netlify, Vercel, etc.).

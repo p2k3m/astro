@@ -29,6 +29,8 @@ export default async function calculateChart({
   lat,
   lon,
   timezone,
+  sidMode,
+  nodeType,
 }) {
   let tz = timezone;
   if (!tz) {
@@ -42,5 +44,5 @@ export default async function calculateChart({
   const dt = DateTime.fromISO(`${date}T${time}`, { zone: tz });
   const dtISO = dt.toISO({ suppressMilliseconds: true });
 
-  return await computePositions(dtISO, lat, lon);
+  return await computePositions(dtISO, lat, lon, { sidMode, nodeType });
 }

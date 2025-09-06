@@ -56,7 +56,7 @@ async function getEphemeris() {
 }
 
 app.get('/api/positions', async (req, res) => {
-  const { datetime, tz, lat, lon } = req.query;
+  const { datetime, tz, lat, lon, sidMode, nodeType } = req.query;
   if (!datetime || !tz || !lat || !lon) {
     return res
       .status(400)
@@ -72,11 +72,14 @@ app.get('/api/positions', async (req, res) => {
       return res.status(400).json({ error: 'Invalid longitude parameter' });
     }
     const { compute_positions } = await getEphemeris();
+    const sidModeNum = sidMode ? parseInt(sidMode, 10) : undefined;
     const result = await compute_positions({
       datetime,
       tz,
       lat: latNum,
       lon: lonNum,
+      sidMode: sidModeNum,
+      nodeType,
     });
     res.json(result);
   } catch (err) {
