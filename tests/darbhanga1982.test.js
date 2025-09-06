@@ -21,10 +21,10 @@ test('Darbhanga 1982 chart regression', async () => {
   assert.deepStrictEqual(houses, {
     sun: 2,
     moon: 8,
-    mercury: 2,
-    venus: 2,
+    mercury: 1,
+    venus: 1,
     mars: 6,
-    jupiter: 2,
+    jupiter: 1,
     saturn: 12,
     rahu: 9,
     ketu: 3,

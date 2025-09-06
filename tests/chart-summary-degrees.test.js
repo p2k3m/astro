@@ -50,7 +50,7 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     'Me(R) Libra 29°13′15″',
     'Ve Libra 10°02′30″',
     'Ma Pisces 8°19′13″',
-    'Ju Libra 25°03′25″',
+    'Ju(R) Libra 25°03′25″',
     'Sa(R) Virgo 29°14′20″',
     'Ra(R) Gemini 11°53′18″',
     'Ke(R) Sagittarius 11°53′18″',

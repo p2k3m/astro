@@ -10,7 +10,8 @@ test('summary lists planets in expected houses for reference chart', async () =>
   const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   const summaryData = summarizeChart(data);
   const expected = {
-    2: ['Su', 'Me(R)', 'Ve', 'Ju'],
+    1: ['Me(R)', 'Ve', 'Ju(R)'],
+    2: ['Su'],
     3: ['Ke(R)'],
     6: ['Ma'],
     8: ['Mo'],

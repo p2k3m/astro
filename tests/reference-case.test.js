@@ -37,15 +37,19 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(amPlanets.moon.sign, 1);
   assert.strictEqual(amPlanets.moon.house, 8);
   assert.strictEqual(amPlanets.jupiter.sign, 6);
-  assert.strictEqual(amPlanets.jupiter.house, 2);
+  assert.strictEqual(amPlanets.jupiter.house, 1);
   assert.strictEqual(amPlanets.saturn.sign, 5);
   assert.strictEqual(amPlanets.saturn.house, 12);
   // Ensure Mars and Rahu mirror AstroSage placements
   assert.strictEqual(amPlanets.mars.house, 6);
   assert.strictEqual(amPlanets.rahu.house, 9);
   assert.deepStrictEqual(
-    am.planets.filter((p) => p.house === 2).map((p) => p.name).sort(),
-    ['jupiter', 'mercury', 'sun', 'venus']
+    am.planets.filter((p) => p.house === 1).map((p) => p.name).sort(),
+    ['jupiter', 'mercury', 'venus']
+  );
+  assert.deepStrictEqual(
+    am.planets.filter((p) => p.house === 2).map((p) => p.name),
+    ['sun']
   );
   assert.deepStrictEqual(
     am.planets.filter((p) => p.house === 6).map((p) => p.name),
@@ -71,7 +75,7 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   assert.strictEqual(pmPlanets.sun.house, 7);
   assert.strictEqual(pmPlanets.moon.sign, 1);
   assert.strictEqual(pmPlanets.moon.house, 1);
-  assert.strictEqual(pmPlanets.jupiter.house, 7);
+  assert.strictEqual(pmPlanets.jupiter.house, 6);
   assert.strictEqual(pmPlanets.saturn.house, 5);
   assert.strictEqual(pmPlanets.rahu.house, 2);
 

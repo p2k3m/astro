@@ -121,7 +121,8 @@ test('house cusps and retrograde flags', async () => {
   assert.strictEqual(result.ascSign, 5); // Leo ascendant
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
 
-  assert.strictEqual(result.houses[1], 123);
+  assert.strictEqual(result.ascendant.lon, 123);
+  assert.strictEqual(result.houses[1], 120);
   assert.strictEqual(planets.moon.sign, 8);
   assert.strictEqual(planets.moon.house, 4);
   assert.strictEqual(planets.moon.retro, true);
