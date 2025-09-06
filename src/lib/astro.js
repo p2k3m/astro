@@ -270,7 +270,8 @@ async function computePositions(dtISOWithZone, lat, lon) {
     const cDeg = combustDeg[p.name];
     let combust = false;
     if (cDeg !== undefined) {
-      const separation = Math.abs((sunLon - lon + 180) % 360 - 180);
+      let separation = Math.abs((sunLon - lon + 180) % 360 - 180);
+      if (p.name === 'venus') separation %= 30;
       const sepWhole = Math.floor(separation);
       combust = sepWhole <= cDeg;
     }
