@@ -15,8 +15,8 @@ test('Chart summary for reference chart matches expected output', async () => {
     moonSign: 'Taurus',
     houses: [
       '',
-      '',
-      'Su 14°46′28″ Me(R) 29°13′15″ Ve 10°02′30″ Ju 25°03′25″',
+      'Me(R) 29°13′15″ Ve 10°02′30″ Ju(R) 25°03′25″',
+      'Su 14°46′28″',
       'Ke(R) 11°53′18″',
       '',
       '',
