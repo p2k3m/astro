@@ -45,7 +45,11 @@ export function summarizeChart(data) {
         if (p.retro) abbr += '(R)';
         if (p.combust) abbr += '(C)';
         const degStr = formatDMS(p);
-        return `${abbr} ${degStr}`;
+        let extra = '';
+        if (p.nakshatra && p.pada) {
+          extra = ` ${p.nakshatra} ${p.pada}`;
+        }
+        return `${abbr} ${degStr}${extra}`;
       })
       .join(' ');
   }
