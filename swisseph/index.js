@@ -305,11 +305,63 @@ let wasmModule;
 async function init(options) {
   if (wasmModule) return wasmModule;
   try {
-    const mod = await import('./wasm/swe.js');
-    const initFn = mod.default || mod.init || mod;
-    wasmModule = await initFn(options);
-  } catch {
-    // WASM module unavailable; JS fallback will be used.
+    if (typeof process === 'object') {
+      const [{ readFile }, { WASI }] = await Promise.all([
+        import('fs/promises'),
+        import('wasi'),
+      ]);
+      const wasmPath = new URL('./wasm/swe.wasm', import.meta.url);
+      const buffer = await readFile(wasmPath);
+      const memory = new WebAssembly.Memory({ initial: 256, maximum: 256 });
+      const env = {
+        memory,
+        emscripten_memcpy_big(d, s, n) {
+          new Uint8Array(memory.buffer).copyWithin(d, s, s + n);
+          return d;
+        },
+        emscripten_resize_heap: () => 0,
+        __syscall_openat: () => -1,
+        __syscall_close: () => 0,
+        __syscall_fcntl64: () => 0,
+        __syscall_ioctl: () => 0,
+        __syscall_newfstatat: () => 0,
+        __syscall_getdents64: () => 0,
+        __syscall_lstat64: () => 0,
+        __syscall_stat64: () => 0,
+        __syscall_unlinkat: () => 0,
+        __syscall_mkdirat: () => 0,
+        __syscall_renameat: () => 0,
+        __syscall_symlinkat: () => 0,
+        __syscall_rmdir: () => 0,
+        __syscall_dup3: () => 0,
+        __syscall_gettimeofday: () => 0,
+        __syscall_prlimit64: () => 0,
+        __syscall_rt_sigaction: () => 0,
+        __syscall_uname: () => 0,
+        __syscall_readlinkat: () => 0,
+      };
+      const wasi = new WASI({ version: 'preview1' });
+      const { instance } = await WebAssembly.instantiate(buffer, {
+        env,
+        wasi_snapshot_preview1: wasi.wasiImport,
+      });
+      wasmModule = instance.exports;
+    } else {
+      if (
+        typeof fetch === 'function' &&
+        typeof WebAssembly.instantiateStreaming === 'function'
+      ) {
+        const response = await fetch(new URL('./wasm/swe.wasm', import.meta.url));
+        const { instance } = await WebAssembly.instantiateStreaming(response, {});
+        wasmModule = instance.exports;
+      } else {
+        const mod = await import('./wasm/swe.js');
+        const initFn = mod.default || mod.init || mod;
+        wasmModule = await initFn(options);
+      }
+    }
+  } catch (err) {
+    throw err;
   }
   return wasmModule;
 }
