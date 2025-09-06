@@ -5,10 +5,11 @@ async function getCompute() {
   return (await import('../src/lib/ephemeris.js')).compute_positions;
 }
 
-test('applies sidereal mode and converts to UTC', async () => {
+test('applies sidereal mode, converts to UTC, and uses provided coordinates', async () => {
   const compute_positions = await getCompute();
   let sidArgs = null;
   let jdArgs = null;
+  let houseArgs = null;
   const fakeSwe = {
     ready: Promise.resolve(),
     SE_SIDM_LAHIRI: 42,
@@ -31,15 +32,18 @@ test('applies sidereal mode and converts to UTC', async () => {
       jdArgs = { y, m, d, ut, cal };
       return 0;
     },
-    swe_houses_ex: () => ({
-      ascendant: 0,
-      houses: Array.from({ length: 13 }, (_, i) => i * 30),
-    }),
+    swe_houses_ex: (jd, lat, lon, hsys, flag) => {
+      houseArgs = { jd, lat, lon, hsys, flag };
+      return {
+        ascendant: 0,
+        houses: Array.from({ length: 13 }, (_, i) => i * 30),
+      };
+    },
     swe_calc_ut: () => ({ longitude: 0, longitudeSpeed: 0 }),
   };
 
   await compute_positions(
-    { datetime: '2020-01-01T05:30', tz: 'UTC+5:30', lat: 0, lon: 0 },
+    { datetime: '2020-01-01T05:30', tz: 'UTC+5:30', lat: 26.152, lon: 85.897 },
     fakeSwe
   );
 
@@ -50,6 +54,13 @@ test('applies sidereal mode and converts to UTC', async () => {
     d: 1,
     ut: 0,
     cal: fakeSwe.SE_GREG_CAL,
+  });
+  assert.deepStrictEqual(houseArgs, {
+    jd: 0,
+    lat: 26.152,
+    lon: 85.897,
+    hsys: 'P',
+    flag: fakeSwe.SEFLG_SWIEPH | fakeSwe.SEFLG_SPEED | fakeSwe.SEFLG_SIDEREAL,
   });
 });
 
