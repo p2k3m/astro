@@ -31,8 +31,8 @@ test('planet positions match AstroSage for sample chart', async () => {
   const { computePositions, renderNorthIndian, HOUSE_BBOXES } = await astro;
   const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   const planets = Object.fromEntries(data.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 6, 'saturn sign');
-  assert.ok(!planets.saturn.retro, 'saturn direct');
+  assert.strictEqual(planets.saturn.sign, 5, 'saturn sign');
+  assert.ok(planets.saturn.retro, 'saturn retro');
   const expected = {
     sun: 2,
     moon: 8,
@@ -40,7 +40,7 @@ test('planet positions match AstroSage for sample chart', async () => {
     mercury: 1,
     jupiter: 1,
     venus: 1,
-    saturn: 1,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
   };

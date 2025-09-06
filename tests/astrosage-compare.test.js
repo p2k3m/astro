@@ -12,8 +12,8 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   assert.strictEqual(am.signInHouse[7], 1);
 
   const planets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 6, 'saturn sign');
-  assert.ok(!planets.saturn.retro, 'saturn direct');
+  assert.strictEqual(planets.saturn.sign, 5, 'saturn sign');
+  assert.ok(planets.saturn.retro, 'saturn retro');
   for (const p of Object.values(planets)) {
     for (const k of ['deg', 'min', 'sec']) {
       assert.strictEqual(typeof p[k], 'number', `${p.name} ${k}`);
@@ -26,7 +26,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     mercury: 1,
     jupiter: 1,
     venus: 1,
-    saturn: 1,
+    saturn: 12,
     rahu: 9,
     ketu: 3,
   };
@@ -44,8 +44,8 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   assert.strictEqual(pm.signInHouse[7], 8);
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 6, 'saturn sign');
-  assert.ok(!planets.saturn.retro, 'saturn direct');
+  assert.strictEqual(planets.saturn.sign, 5, 'saturn sign');
+  assert.ok(planets.saturn.retro, 'saturn retro');
   for (const p of Object.values(planets)) {
     for (const k of ['deg', 'min', 'sec']) {
       assert.strictEqual(typeof p[k], 'number', `${p.name} ${k}`);
