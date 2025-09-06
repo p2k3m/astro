@@ -15,8 +15,11 @@ export const SE_VENUS = 3;
 export const SE_MARS = 4;
 export const SE_JUPITER = 5;
 export const SE_SATURN = 6;
-export const SE_TRUE_NODE = 7; // Rahu
-export const SE_MEAN_NODE = 8; // Ketu approximated
+export const SE_URANUS = 7;
+export const SE_NEPTUNE = 8;
+export const SE_PLUTO = 9;
+export const SE_MEAN_NODE = 10; // Ketu approximated
+export const SE_TRUE_NODE = 11; // Rahu
 
 export const SEFLG_SPEED = 1 << 0;
 export const SEFLG_SWIEPH = 1 << 1;
@@ -137,6 +140,30 @@ const ORBITAL_ELEMENTS = {
     e: [0.055546, -9.499e-9],
     M: [316.967, 0.0334442282],
   },
+  uranus: {
+    N: [74.0005, 1.3978e-5],
+    i: [0.7733, 1.9e-8],
+    w: [96.6612, 3.0565e-5],
+    a: [19.18171, -1.55e-8],
+    e: [0.047318, 7.45e-9],
+    M: [142.5905, 0.011725806],
+  },
+  neptune: {
+    N: [131.7806, 3.0173e-5],
+    i: [1.77, -2.55e-7],
+    w: [272.8461, -6.027e-6],
+    a: [30.05826, 3.313e-8],
+    e: [0.008606, 2.15e-9],
+    M: [260.2471, 0.005995147],
+  },
+  pluto: {
+    N: [110.30347, 2.281e-5],
+    i: [17.14175, 1.8e-7],
+    w: [113.76329, 9.1e-6],
+    a: [39.48168677],
+    e: [0.24880766, 1.1e-8],
+    M: [14.86205, 0.003975709],
+  },
 };
 
 function elementsFor(name, d) {
@@ -193,6 +220,9 @@ function planetLongitudeTropical(jd, planetId) {
     [SE_MARS]: 'mars',
     [SE_JUPITER]: 'jupiter',
     [SE_SATURN]: 'saturn',
+    [SE_URANUS]: 'uranus',
+    [SE_NEPTUNE]: 'neptune',
+    [SE_PLUTO]: 'pluto',
   };
   const name = idToName[planetId];
   if (!name) return 0;
@@ -209,7 +239,7 @@ function planetLongitudeTropical(jd, planetId) {
 
 function siderealLongitude(jd, planetId) {
   let tropical;
-  if (planetId === SE_TRUE_NODE) {
+  if (planetId === SE_TRUE_NODE || planetId === SE_MEAN_NODE) {
     const days = jd - 2451545.0;
     tropical = normalizeAngle(125.04452 - 0.0529538083 * days);
   } else {

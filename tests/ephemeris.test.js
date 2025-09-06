@@ -24,7 +24,10 @@ test('applies sidereal mode, converts to UTC, and uses provided coordinates', as
     SE_MARS: 4,
     SE_JUPITER: 5,
     SE_SATURN: 6,
-    SE_TRUE_NODE: 7,
+    SE_URANUS: 7,
+    SE_NEPTUNE: 8,
+    SE_PLUTO: 9,
+    SE_TRUE_NODE: 10,
     swe_set_sid_mode: (...args) => {
       sidArgs = args;
     },
@@ -80,6 +83,9 @@ test('house cusps and retrograde flags', async () => {
     SE_MARS: 4,
     SE_JUPITER: 5,
     SE_SATURN: 6,
+    SE_URANUS: 8,
+    SE_NEPTUNE: 9,
+    SE_PLUTO: 10,
     SE_TRUE_NODE: 7,
     swe_julday: () => 0,
     swe_houses_ex: () => ({
@@ -120,7 +126,7 @@ test('house cusps and retrograde flags', async () => {
           flags: fakeSwe.SEFLG_RETROGRADE,
         }, // Rahu retro in Taurus
       };
-      return data[id];
+      return data[id] || { longitude: 0, longitudeSpeed: 0, flags: 0 };
     },
   };
 

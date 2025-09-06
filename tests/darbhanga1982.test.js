@@ -26,6 +26,9 @@ test('Darbhanga 1982 chart regression', async () => {
     mars: 6,
     jupiter: 1,
     saturn: 12,
+    uranus: 2,
+    neptune: 3,
+    pluto: 1,
     rahu: 9,
     ketu: 3,
   });

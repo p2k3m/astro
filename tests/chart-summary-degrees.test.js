@@ -11,6 +11,9 @@ const PLANET_ABBR = {
   jupiter: 'Ju',
   venus: 'Ve',
   saturn: 'Sa',
+  uranus: 'Ur',
+  neptune: 'Ne',
+  pluto: 'Pl',
   rahu: 'Ra',
   ketu: 'Ke',
 };
@@ -52,6 +55,9 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     'Ma Pisces 8°19′13″',
     'Ju(R) Libra 25°03′25″',
     'Sa(R) Virgo 29°14′20″',
+    'Ur(R) Scorpio 11°14′52″',
+    'Ne(R) Sagittarius 3°41′38″',
+    'Pl(R) Libra 2°17′25″',
     'Ra(R) Gemini 11°53′18″',
     'Ke(R) Sagittarius 11°53′18″',
   ]);
