@@ -37,7 +37,7 @@ export default async function calculateChart({
     try {
       tz = getTimezoneName(lat, lon);
     } catch {
-      tz = 'Asia/Calcutta';
+      tz = 'Asia/Kolkata';
     }
   }
 
