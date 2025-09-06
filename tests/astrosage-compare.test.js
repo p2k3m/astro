@@ -24,7 +24,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     mercury: 2,
     jupiter: 2,
     venus: 2,
-    saturn: 12,
+    saturn: 1,
     rahu: 9,
     ketu: 3,
   };

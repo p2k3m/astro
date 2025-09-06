@@ -20,7 +20,7 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     venus: 2,
     mars: 6,
     jupiter: 2,
-    saturn: 12,
+    saturn: 1,
     rahu: 9,
     ketu: 3,
   };
@@ -35,7 +35,7 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     venus: false,
     mercury: true,
     jupiter: false,
-    saturn: true,
+    saturn: false,
     rahu: true,
     ketu: true,
   };

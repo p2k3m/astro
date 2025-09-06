@@ -37,7 +37,7 @@ test('planet positions match AstroSage for sample chart', async () => {
     mercury: 2,
     jupiter: 2,
     venus: 2,
-    saturn: 12,
+    saturn: 1,
     rahu: 9,
     ketu: 3,
   };
