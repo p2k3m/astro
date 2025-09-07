@@ -5,11 +5,11 @@ const astro = import('../src/lib/astro.js');
 
 test('Darbhanga 1982-12-01 03:50 positions', async () => {
   const { computePositions } = await astro;
-  const res = await computePositions('1982-12-01T03:50+05:30', 26.15216, 85.89707);
+  const res = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   assert.strictEqual(res.ascSign, 7);
   assert.strictEqual(res.ascendant.deg, 12);
   assert.strictEqual(res.ascendant.min, 17);
-  assert.ok(Math.abs(res.ascendant.sec - 6) <= 1);
+  assert.strictEqual(res.ascendant.sec, 6);
   assert.strictEqual(res.ascendant.nakshatra, 'Swati');
   assert.strictEqual(res.ascendant.pada, 2);
   assert.deepStrictEqual(
