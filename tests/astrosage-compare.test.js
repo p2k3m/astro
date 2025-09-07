@@ -104,6 +104,105 @@ const ASTROSAGE_AM_POSITIONS = {
   },
 };
 
+const ASTROSAGE_PM_POSITIONS = {
+  sun: {
+    sign: 8,
+    deg: 15,
+    min: 16,
+    sec: 47,
+    nakshatra: 'Anuradha',
+    pada: 4,
+  },
+  moon: {
+    sign: 2,
+    deg: 21,
+    min: 2,
+    sec: 31,
+    nakshatra: 'Rohini',
+    pada: 4,
+  },
+  mars: {
+    sign: 9,
+    deg: 29,
+    min: 32,
+    sec: 27,
+    nakshatra: 'Uttara Ashadha',
+    pada: 1,
+  },
+  mercury: {
+    sign: 8,
+    deg: 21,
+    min: 46,
+    sec: 27,
+    nakshatra: 'Jyeshtha',
+    pada: 2,
+  },
+  jupiter: {
+    sign: 8,
+    deg: 1,
+    min: 11,
+    sec: 1,
+    nakshatra: 'Vishakha',
+    pada: 4,
+  },
+  venus: {
+    sign: 8,
+    deg: 22,
+    min: 2,
+    sec: 44,
+    nakshatra: 'Jyeshtha',
+    pada: 2,
+  },
+  saturn: {
+    sign: 7,
+    deg: 6,
+    min: 35,
+    sec: 42,
+    nakshatra: 'Chitra',
+    pada: 4,
+  },
+  uranus: {
+    sign: 8,
+    deg: 11,
+    min: 31,
+    sec: 6,
+    nakshatra: 'Anuradha',
+    pada: 3,
+  },
+  neptune: {
+    sign: 9,
+    deg: 2,
+    min: 29,
+    sec: 15,
+    nakshatra: 'Mula',
+    pada: 1,
+  },
+  pluto: {
+    sign: 7,
+    deg: 4,
+    min: 49,
+    sec: 31,
+    nakshatra: 'Chitra',
+    pada: 4,
+  },
+  rahu: {
+    sign: 3,
+    deg: 11,
+    min: 51,
+    sec: 40,
+    nakshatra: 'Ardra',
+    pada: 2,
+  },
+  ketu: {
+    sign: 9,
+    deg: 11,
+    min: 51,
+    sec: 40,
+    nakshatra: 'Mula',
+    pada: 4,
+  },
+};
+
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const { computePositions } = await astro;
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
@@ -126,8 +225,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     assert.strictEqual(act.sign, exp.sign, `${name} sign`);
     assert.strictEqual(act.deg, exp.deg, `${name} deg`);
     assert.strictEqual(act.min, exp.min, `${name} min`);
-    const secDiff = Math.abs(Math.round(act.sec) - exp.sec);
-    assert.ok(secDiff <= 1, `${name} sec`);
+    assert.strictEqual(Math.round(act.sec), exp.sec, `${name} sec`);
     assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
     assert.strictEqual(act.pada, exp.pada, `${name} pada`);
   }
@@ -158,19 +256,26 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     houseSystem: 'W',
     nodeType: 'mean',
   });
-    assert.strictEqual(pm.ascSign, 1);
-    assert.strictEqual(pm.signInHouse[1], pm.ascSign);
-    assert.strictEqual(pm.signInHouse[6], 6);
-    assert.strictEqual(pm.signInHouse[7], 7);
+  assert.strictEqual(pm.ascSign, 1);
+  assert.strictEqual(pm.signInHouse[1], pm.ascSign);
+  assert.strictEqual(pm.signInHouse[6], 6);
+  assert.strictEqual(pm.signInHouse[7], 7);
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
-  for (const p of Object.values(planets)) {
-    for (const k of ['deg', 'min', 'sec']) {
-      assert.strictEqual(typeof p[k], 'number', `${p.name} ${k}`);
-    }
+
+  for (const [name, exp] of Object.entries(ASTROSAGE_PM_POSITIONS)) {
+    const act = planets[name];
+    assert.ok(act, `missing ${name}`);
+    assert.strictEqual(act.sign, exp.sign, `${name} sign`);
+    assert.strictEqual(act.deg, exp.deg, `${name} deg`);
+    assert.strictEqual(act.min, exp.min, `${name} min`);
+    assert.strictEqual(Math.round(act.sec), exp.sec, `${name} sec`);
+    assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
+    assert.strictEqual(act.pada, exp.pada, `${name} pada`);
   }
+
   const expected = {
     sun: 8,
     moon: 2,
