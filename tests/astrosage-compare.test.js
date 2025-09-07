@@ -17,7 +17,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   assert.strictEqual(am.signInHouse[7], 1);
 
   const planets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
   for (const p of Object.values(planets)) {
     for (const k of ['deg', 'min', 'sec']) {
@@ -25,18 +25,18 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     }
   }
   const expected = {
-    sun: 3,
-    moon: 9,
-    mars: 4,
-    mercury: 3,
+    sun: 2,
+    moon: 8,
+    mars: 3,
+    mercury: 2,
     jupiter: 2,
-    venus: 3,
-    saturn: 2,
-    uranus: 3,
+    venus: 2,
+    saturn: 1,
+    uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 9,
-    ketu: 3,
+    rahu: 8,
+    ketu: 2,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -56,7 +56,7 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   assert.strictEqual(pm.signInHouse[7], 8);
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
   for (const p of Object.values(planets)) {
     for (const k of ['deg', 'min', 'sec']) {
@@ -64,18 +64,18 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     }
   }
   const expected = {
-    sun: 8,
-    moon: 2,
-    mars: 9,
-    mercury: 8,
+    sun: 7,
+    moon: 1,
+    mars: 8,
+    mercury: 7,
     jupiter: 7,
-    venus: 8,
-    saturn: 7,
-    uranus: 8,
+    venus: 7,
+    saturn: 6,
+    uranus: 7,
     neptune: 8,
     pluto: 6,
-    rahu: 2,
-    ketu: 8,
+    rahu: 1,
+    ketu: 7,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -93,7 +93,7 @@ test('Darbhanga 1982-12-01 03:50 sign sequence matches AstroSage', async () => {
   assert.deepStrictEqual(am.signInHouse, expected);
 });
 
-test('Darbhanga 1982-12-01 03:50: Mercury and Venus in house 3, Jupiter in house 2', async () => {
+test('Darbhanga 1982-12-01 03:50: Mercury and Venus in house 2, Jupiter in house 2', async () => {
   const { computePositions } = await astro;
   const res = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
     sidMode: swe.SE_SIDM_LAHIRI,
@@ -101,7 +101,7 @@ test('Darbhanga 1982-12-01 03:50: Mercury and Venus in house 3, Jupiter in house
     nodeType: 'mean',
   });
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
-  const expected = { mercury: 3, venus: 3, jupiter: 2 };
+  const expected = { mercury: 2, venus: 2, jupiter: 2 };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }

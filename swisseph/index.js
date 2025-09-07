@@ -53,6 +53,9 @@ export const SEFLG_RETROGRADE = 1 << 3;
 export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
 export const SE_GREG_CAL = 1;
 
+// Selected sidereal mode (default Lahiri). Updated via swe_set_sid_mode.
+let siderealMode = SE_SIDM_LAHIRI;
+
 // no-op setters for path and sidereal mode
 function js_swe_set_ephe_path() {}
 function js_swe_set_sid_mode() {}
@@ -79,6 +82,14 @@ function js_swe_julday(year, month, day, ut, calflag) {
 function lahiriAyanamsa(jd) {
   const days = jd - 2451545.0; // days since J2000
   return 23.85675 + (days * (50.29 / 3600)) / 365.25; // degrees
+}
+
+function getAyanamsa(jd) {
+  switch (siderealMode) {
+    case SE_SIDM_LAHIRI:
+    default:
+      return lahiriAyanamsa(jd);
+  }
 }
 
 function normalizeAngle(deg) {
@@ -261,39 +272,49 @@ function planetLongitudeTropical(jd, planetId) {
   return normalizeAngle(lon);
 }
 
-function siderealLongitude(jd, planetId) {
-  let tropical;
+function calcLongitude(jd, planetId, flags) {
+  let lon;
   if (planetId === SE_TRUE_NODE || planetId === SE_MEAN_NODE) {
     const days = jd - 2451545.0;
-    tropical = normalizeAngle(125.04452 - 0.0529538083 * days);
+    lon = normalizeAngle(125.04452 - 0.0529538083 * days);
   } else {
-    tropical = planetLongitudeTropical(jd, planetId);
+    lon = planetLongitudeTropical(jd, planetId);
   }
-  const ayan = lahiriAyanamsa(jd);
-  return normalizeAngle(tropical - ayan);
+  if (flags & SEFLG_SIDEREAL) {
+    lon = normalizeAngle(lon - getAyanamsa(jd));
+  } else {
+    lon = normalizeAngle(lon);
+  }
+  return lon;
 }
 
 function js_swe_calc_ut(jd, planetId, flags) {
-  const lon = siderealLongitude(jd, planetId);
+  const lon = calcLongitude(jd, planetId, flags);
   const delta = 1 / 1440; // one minute step for speed
-  const lonBefore = siderealLongitude(jd - delta, planetId);
-  const lonAfter = siderealLongitude(jd + delta, planetId);
+  const lonBefore = calcLongitude(jd - delta, planetId, flags);
+  const lonAfter = calcLongitude(jd + delta, planetId, flags);
   let diff = lonAfter - lonBefore;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   let speed = diff / (2 * delta); // degrees per day
   const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
-  return { longitude: lon, longitudeSpeed: speed, flags: ret };
+  return {
+    longitude: lon,
+    longitudeSpeed: speed,
+    flags: ret,
+    sidereal: Boolean(flags & SEFLG_SIDEREAL),
+  };
 }
 
 function swetestCalcUt(jd, planetId, flags) {
   if (!swetestPath) throw new Error('swetest not available');
   const run = (j) => {
-    const out = execFileSync(
-      swetestPath,
-      [`-j${j}`, `-p${planetId}`, '-fPl', '-g,', '-head'],
-      { encoding: 'utf8' },
-    );
+    const args = [`-j${j}`, `-p${planetId}`, '-fPl', '-g,', '-head'];
+    if (flags & SEFLG_SIDEREAL) {
+      const mode = (siderealMode ?? SE_SIDM_LAHIRI) + 1;
+      args.push(`-sid${mode}`);
+    }
+    const out = execFileSync(swetestPath, args, { encoding: 'utf8' });
     return parseFloat(out.split(',')[1]);
   };
   const lon = run(jd);
@@ -305,7 +326,12 @@ function swetestCalcUt(jd, planetId, flags) {
   if (diff < -180) diff += 360;
   const speed = diff / (2 * delta);
   const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
-  return { longitude: lon, longitudeSpeed: speed, flags: ret };
+  return {
+    longitude: lon,
+    longitudeSpeed: speed,
+    flags: ret,
+    sidereal: Boolean(flags & SEFLG_SIDEREAL),
+  };
 }
 
 function localSiderealTime(jd, lon) {
@@ -497,17 +523,32 @@ async function init(options) {
 export const ready = init();
 
 function call(name, args) {
+  let res;
   if (swetestPath && name === 'swe_calc_ut') {
     try {
-      return swetestCalcUt(...args);
+      res = swetestCalcUt(...args);
     } catch (e) {
       // fall back to wasm/js
     }
   }
-  if (wasmModule && typeof wasmModule[name] === 'function') {
-    return wasmModule[name](...args);
+  if (!res && wasmModule && typeof wasmModule[name] === 'function') {
+    res = wasmModule[name](...args);
+    if (name === 'swe_calc_ut' && (args[2] & SEFLG_SIDEREAL)) {
+      res.sidereal = true;
+    }
   }
-  return jsImpl[name](...args);
+  if (!res) {
+    res = jsImpl[name](...args);
+  }
+  if (name === 'swe_calc_ut' && (args[2] & SEFLG_SIDEREAL) && !res.sidereal) {
+    const ayan = getAyanamsa(args[0]);
+    res = {
+      ...res,
+      longitude: normalizeAngle(res.longitude - ayan),
+      sidereal: true,
+    };
+  }
+  return res;
 }
 
 export function swe_set_ephe_path(...args) {
@@ -515,6 +556,7 @@ export function swe_set_ephe_path(...args) {
 }
 
 export function swe_set_sid_mode(...args) {
+  siderealMode = args[0];
   return call('swe_set_sid_mode', args);
 }
 
