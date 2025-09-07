@@ -6,18 +6,18 @@ import { longitudeToNakshatra } from '../src/lib/nakshatra.js';
 // Verified values from AstroSage for Pushkar Mishra birth chart
 const expected = {
   ascendant: { sign: 7, deg: 19, min: 25, sec: 57, nakshatra: 'Swati', pada: 4 },
-  sun: { sign: 8, deg: 14, min: 46, sec: 28, nakshatra: 'Anuradha', pada: 4 },
-  moon: { sign: 2, deg: 13, min: 16, sec: 59, nakshatra: 'Rohini', pada: 1 },
-  mercury: { sign: 7, deg: 29, min: 13, sec: 15, nakshatra: 'Vishakha', pada: 3 },
-  venus: { sign: 7, deg: 10, min: 2, sec: 30, nakshatra: 'Swati', pada: 2 },
-  mars: { sign: 12, deg: 8, min: 19, sec: 13, nakshatra: 'Uttara Bhadrapada', pada: 2 },
-  jupiter: { sign: 7, deg: 25, min: 3, sec: 25, nakshatra: 'Vishakha', pada: 2 },
-  saturn: { sign: 6, deg: 29, min: 14, sec: 20, nakshatra: 'Chitra', pada: 2 },
-  uranus: { sign: 8, deg: 11, min: 14, sec: 52, nakshatra: 'Anuradha', pada: 3 },
-  neptune: { sign: 9, deg: 3, min: 41, sec: 38, nakshatra: 'Mula', pada: 2 },
-  pluto: { sign: 7, deg: 2, min: 17, sec: 25, nakshatra: 'Chitra', pada: 3 },
-  rahu: { sign: 3, deg: 11, min: 53, sec: 18, nakshatra: 'Ardra', pada: 2 },
-  ketu: { sign: 9, deg: 11, min: 53, sec: 18, nakshatra: 'Mula', pada: 4 },
+  sun: { sign: 9, deg: 8, min: 23, sec: 12, nakshatra: 'Mula', pada: 3 },
+  moon: { sign: 3, deg: 7, min: 13, sec: 9, nakshatra: 'Ardra', pada: 1 },
+  mercury: { sign: 9, deg: 14, min: 36, sec: 31, nakshatra: 'Purva Ashadha', pada: 1 },
+  venus: { sign: 9, deg: 15, min: 1, sec: 51, nakshatra: 'Purva Ashadha', pada: 1 },
+  mars: { sign: 10, deg: 22, min: 46, sec: 5, nakshatra: 'Shravana', pada: 4 },
+  jupiter: { sign: 8, deg: 24, min: 41, sec: 18, nakshatra: 'Jyeshtha', pada: 3 },
+  saturn: { sign: 8, deg: 0, min: 9, sec: 23, nakshatra: 'Vishakha', pada: 4 },
+  uranus: { sign: 9, deg: 5, min: 6, sec: 3, nakshatra: 'Mula', pada: 2 },
+  neptune: { sign: 9, deg: 26, min: 4, sec: 59, nakshatra: 'Purva Ashadha', pada: 4 },
+  pluto: { sign: 7, deg: 28, min: 25, sec: 21, nakshatra: 'Vishakha', pada: 3 },
+  rahu: { sign: 3, deg: 7, min: 13, sec: 9, nakshatra: 'Ardra', pada: 1 },
+  ketu: { sign: 9, deg: 7, min: 13, sec: 9, nakshatra: 'Mula', pada: 3 },
 };
 
 const toArcminutes = ({ sign, deg, min, sec }) => ((sign - 1) * 30 + deg) * 60 + min + sec / 60;

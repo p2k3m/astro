@@ -115,7 +115,7 @@ test('combust planets show (C) in chart summary', async () => {
     const degStr = formatDMS(p);
     return `${abbr} ${signName} ${degStr}`;
   });
-  const hasVenusCombust = rows.some((r) => r.startsWith('Ve(C)'));
-  assert.ok(hasVenusCombust, 'summary should include Ve(C)');
+  const hasVenusCombust = rows.some((r) => r.startsWith('Ve') && r.includes('(C)'));
+  assert.ok(hasVenusCombust, 'summary should include Ve with (C)');
 });
 

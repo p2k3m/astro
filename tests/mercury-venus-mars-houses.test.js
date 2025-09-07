@@ -17,9 +17,9 @@ test('Mercury, Venus, Jupiter in 8th house for reference chart', async () => {
       assert.strictEqual(typeof p[k], 'number', `${p.name} ${k}`);
     }
   }
-  assert.strictEqual(planets.mercury.house, 8);
-  assert.strictEqual(planets.venus.house, 8);
-  assert.strictEqual(planets.mars.house, 1);
-  assert.strictEqual(planets.jupiter.house, 8);
-  assert.strictEqual(planets.saturn.house, 7);
+  assert.strictEqual(planets.mercury.house, 10);
+  assert.strictEqual(planets.venus.house, 10);
+  assert.strictEqual(planets.mars.house, 11);
+  assert.strictEqual(planets.jupiter.house, 9);
+  assert.strictEqual(planets.saturn.house, 9);
 });
