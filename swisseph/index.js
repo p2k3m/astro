@@ -335,9 +335,9 @@ let wasmModule;
 async function init(options) {
   if (wasmModule) return wasmModule;
   try {
-    if (typeof process === 'object') {
+    if (typeof process !== 'undefined' && process.versions?.node) {
       const fsMod = 'node:fs/promises';
-      const wasiMod = 'wasi';
+      const wasiMod = 'node:wasi';
       const [{ readFile }, { WASI }] = await Promise.all([
         import(/* @vite-ignore */ fsMod),
         import(/* @vite-ignore */ wasiMod),
