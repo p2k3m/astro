@@ -51,14 +51,17 @@ export const SEFLG_SIDEREAL = 1 << 2;
 export const SEFLG_RETROGRADE = 1 << 3;
 
 export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
+export const SE_SIDM_FAGAN_BRADLEY = 1; // secondary mode for tests
 export const SE_GREG_CAL = 1;
 
 // Selected sidereal mode (default Lahiri). Updated via swe_set_sid_mode.
-let siderealMode = SE_SIDM_LAHIRI;
+let currentSidMode = SE_SIDM_LAHIRI;
 
 // no-op setters for path and sidereal mode
 function js_swe_set_ephe_path() {}
-function js_swe_set_sid_mode() {}
+function js_swe_set_sid_mode(mode) {
+  currentSidMode = mode ?? SE_SIDM_LAHIRI;
+}
 
 // Julian day computation (Gregorian calendar only)
 function js_swe_julday(year, month, day, ut, calflag) {
@@ -84,8 +87,16 @@ function lahiriAyanamsa(jd) {
   return 23.85675 + (days * (50.29 / 3600)) / 365.25; // degrees
 }
 
+// Very rough Fagan/Bradley ayanamsa using the same linear rate
+function faganBradleyAyanamsa(jd) {
+  const days = jd - 2451545.0; // days since J2000
+  return 24.042044 + (days * (50.29 / 3600)) / 365.25; // degrees
+}
+
 function getAyanamsa(jd) {
-  switch (siderealMode) {
+  switch (currentSidMode) {
+    case SE_SIDM_FAGAN_BRADLEY:
+      return faganBradleyAyanamsa(jd);
     case SE_SIDM_LAHIRI:
     default:
       return lahiriAyanamsa(jd);
@@ -94,6 +105,11 @@ function getAyanamsa(jd) {
 
 function normalizeAngle(deg) {
   return ((deg % 360) + 360) % 360;
+}
+
+function siderealLongitude(jd, tropicalLon) {
+  const ayan = getAyanamsa(jd);
+  return normalizeAngle(tropicalLon - ayan);
 }
 
 // --- Solar and Lunar longitudes ---
@@ -281,7 +297,7 @@ function calcLongitude(jd, planetId, flags) {
     lon = planetLongitudeTropical(jd, planetId);
   }
   if (flags & SEFLG_SIDEREAL) {
-    lon = normalizeAngle(lon - getAyanamsa(jd));
+    lon = siderealLongitude(jd, lon);
   } else {
     lon = normalizeAngle(lon);
   }
@@ -311,7 +327,7 @@ function swetestCalcUt(jd, planetId, flags) {
   const run = (j) => {
     const args = [`-j${j}`, `-p${planetId}`, '-fPl', '-g,', '-head'];
     if (flags & SEFLG_SIDEREAL) {
-      const mode = (siderealMode ?? SE_SIDM_LAHIRI) + 1;
+      const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
       args.push(`-sid${mode}`);
     }
     const out = execFileSync(swetestPath, args, { encoding: 'utf8' });
@@ -367,8 +383,7 @@ function ascendantTropical(jd, lat, lon) {
 
 function js_swe_houses_ex(jd, lat, lon, hsys, flags) {
   const ascTropical = ascendantTropical(jd, lat, lon);
-  const ayan = lahiriAyanamsa(jd);
-  const ascSid = normalizeAngle(ascTropical - ayan);
+  const ascSid = siderealLongitude(jd, ascTropical);
   // Derive whole-sign house cusps: each house begins at the start of its
   // corresponding zodiac sign.  House 1 starts at the beginning of the
   // ascendant's sign, with subsequent houses spaced every 30°.
@@ -556,7 +571,7 @@ export function swe_set_ephe_path(...args) {
 }
 
 export function swe_set_sid_mode(...args) {
-  siderealMode = args[0];
+  currentSidMode = args[0];
   return call('swe_set_sid_mode', args);
 }
 
