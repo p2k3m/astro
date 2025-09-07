@@ -52,17 +52,17 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
 
   const expectedDMS = {
     sun: { deg: 14, min: 46, sec: 24 },
-    moon: { deg: 13, min: 36, sec: 21 },
-    mercury: { deg: 20, min: 59, sec: 44 },
+    moon: { deg: 13, min: 36, sec: 20 },
+    mercury: { deg: 20, min: 59, sec: 43 },
     venus: { deg: 21, min: 25, sec: 3 },
     mars: { deg: 29, min: 9, sec: 17 },
-    jupiter: { deg: 1, min: 4, sec: 30 },
+    jupiter: { deg: 1, min: 4, sec: 29 },
     saturn: { deg: 6, min: 32, sec: 35 },
     uranus: { deg: 11, min: 29, sec: 15 },
-    neptune: { deg: 2, min: 28, sec: 11 },
-    pluto: { deg: 4, min: 48, sec: 33 },
-    rahu: { deg: 13, min: 36, sec: 21 },
-    ketu: { deg: 13, min: 36, sec: 21 },
+    neptune: { deg: 2, min: 28, sec: 10 },
+    pluto: { deg: 4, min: 48, sec: 32 },
+    rahu: { deg: 13, min: 36, sec: 20 },
+    ketu: { deg: 13, min: 36, sec: 20 },
   };
   for (const [name, exp] of Object.entries(expectedDMS)) {
     const p = planets[name];
