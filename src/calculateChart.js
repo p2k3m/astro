@@ -32,7 +32,7 @@ export default async function calculateChart({
   lon,
   timezone,
   sidMode,
-  nodeType,
+  nodeType = 'mean',
   nakshatraAbbr,
 }) {
   let tz = timezone;
