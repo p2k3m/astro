@@ -36,7 +36,7 @@ function formatDMS(p) {
 
 test('Darbhanga chart summary lists degrees and signs', async () => {
   const { computePositions, SIGN_NAMES } = await astro;
-  const data = await computePositions('1982-12-01T03:50+05:30', 26.15216, 85.89707);
+  const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
   const rows = data.planets.map((p) => {
     let abbr = PLANET_ABBR[p.name] || p.name.slice(0, 2);
     if (p.retro) abbr += '(R)';
