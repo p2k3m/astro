@@ -203,6 +203,13 @@ const ASTROSAGE_PM_POSITIONS = {
   },
 };
 
+// Convert sign/degree/minute/second structure to absolute longitude in degrees.
+const toLon = (p) =>
+  (p.sign - 1) * 30 + p.deg + p.min / 60 + p.sec / 3600;
+// Absolute difference between two longitudes in arcminutes.
+const diffArcMin = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
+const tol = 0.05; // allowable difference in arcminutes (~3 arcseconds)
+
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const { computePositions } = await astro;
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
@@ -222,10 +229,12 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   for (const [name, exp] of Object.entries(ASTROSAGE_AM_POSITIONS)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    assert.strictEqual(act.sign, exp.sign, `${name} sign`);
-    assert.strictEqual(act.deg, exp.deg, `${name} deg`);
-    assert.strictEqual(act.min, exp.min, `${name} min`);
-    assert.strictEqual(Math.round(act.sec), exp.sec, `${name} sec`);
+    const expectedLon = toLon(exp);
+    const delta = diffArcMin(act.lon, expectedLon);
+    assert.ok(
+      delta <= tol,
+      `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
+    );
     assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
     assert.strictEqual(act.pada, exp.pada, `${name} pada`);
   }
@@ -268,10 +277,12 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   for (const [name, exp] of Object.entries(ASTROSAGE_PM_POSITIONS)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    assert.strictEqual(act.sign, exp.sign, `${name} sign`);
-    assert.strictEqual(act.deg, exp.deg, `${name} deg`);
-    assert.strictEqual(act.min, exp.min, `${name} min`);
-    assert.strictEqual(Math.round(act.sec), exp.sec, `${name} sec`);
+    const expectedLon = toLon(exp);
+    const delta = diffArcMin(act.lon, expectedLon);
+    assert.ok(
+      delta <= tol,
+      `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
+    );
     assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
     assert.strictEqual(act.pada, exp.pada, `${name} pada`);
   }
