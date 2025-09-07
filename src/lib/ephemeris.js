@@ -14,31 +14,21 @@ swe.ready.then(() => {
 // Signs are numbered 1–12 (1 = Aries, 12 = Pisces).
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
-  let sign = Math.floor(norm / 30) + 1; // 1..12
-  let rem = norm % 30;
-  let deg = Math.floor(rem);
-  rem = (rem - deg) * 60;
-  let min = Math.floor(rem);
+  const sign = Math.trunc(norm / 30) + 1; // 1..12
+  const rem = norm % 30;
+  const deg = Math.trunc(rem);
+  const remMin = (rem - deg) * 60;
+  const min = Math.trunc(remMin);
   // AstroSage truncates fractional seconds instead of rounding.
-  let sec = Math.floor((rem - min) * 60);
-  if (sec === 60) {
-    sec = 0;
-    min += 1;
-  }
-  if (min === 60) {
-    min = 0;
-    deg += 1;
-  }
-  if (deg === 30) {
-    deg = 0;
-    sign += 1;
-    if (sign === 13) sign = 1;
-  }
+  const sec = Math.trunc((remMin - min) * 60);
   return { sign, deg, min, sec };
 }
 
 function toUTC({ datetime, zone }) {
-  const dt = DateTime.fromISO(datetime, { zone }).toUTC();
+  // AstroSage truncates timestamps to whole seconds before converting to UT.
+  const dt = DateTime.fromISO(datetime, { zone })
+    .startOf('second')
+    .toUTC();
   return dt.toJSDate();
 }
 
