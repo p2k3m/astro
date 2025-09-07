@@ -46,15 +46,15 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
   // Expected house placement for each planet
   const planets = Object.fromEntries(result.planets.map((p) => [p.name, p]));
   const expectedHouses = {
-    sun: 3,
-    moon: 9,
-    mars: 4,
-    mercury: 3,
+    sun: 2,
+    moon: 8,
+    mars: 3,
+    mercury: 2,
     jupiter: 2,
-    venus: 3,
-    saturn: 2,
-    rahu: 9,
-    ketu: 3,
+    venus: 2,
+    saturn: 1,
+    rahu: 8,
+    ketu: 2,
   };
   for (const [name, house] of Object.entries(expectedHouses)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -108,11 +108,11 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     'Su',
     'Ur',
     'Ne',
-    'Ke',
-    'Ma(Ex)',
-    'Mo',
-    'Ra',
-    'Sa',
+    'Ke(Ex)',
+    'Ma',
+    'Mo(Ex)',
+    'Ra(Ex)',
+    'Sa(Ex)',
   ];
   for (const lbl of expectedLabels) {
     assert.ok(labels.includes(lbl), `missing label ${lbl}`);

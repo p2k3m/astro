@@ -36,21 +36,21 @@ test('planet positions match AstroSage for sample chart', async () => {
     nodeType: 'mean',
   });
   const planets = Object.fromEntries(data.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
   const expected = {
-    sun: 3,
-    moon: 9,
-    mars: 4,
-    mercury: 3,
+    sun: 2,
+    moon: 8,
+    mars: 3,
+    mercury: 2,
     jupiter: 2,
-    venus: 3,
-    saturn: 2,
-    uranus: 3,
+    venus: 2,
+    saturn: 1,
+    uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 9,
-    ketu: 3,
+    rahu: 8,
+    ketu: 2,
   };
   const PLANET_ABBR = {
     sun: 'Su',

@@ -13,20 +13,20 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   );
   assert.strictEqual(res.signInHouse[1], res.ascSign);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   const expected = {
-    sun: 3,
-    moon: 9,
-    mercury: 3,
-    venus: 3,
-    mars: 4,
+    sun: 2,
+    moon: 8,
+    mercury: 2,
+    venus: 2,
+    mars: 3,
     jupiter: 2,
-    saturn: 2,
-    uranus: 3,
+    saturn: 1,
+    uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 9,
-    ketu: 3,
+    rahu: 8,
+    ketu: 2,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -51,18 +51,18 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   }
 
   const expectedDMS = {
-    sun: { deg: 8, min: 23, sec: 12 },
-    moon: { deg: 7, min: 13, sec: 9 },
-    mercury: { deg: 14, min: 36, sec: 31 },
-    venus: { deg: 15, min: 1, sec: 51 },
-    mars: { deg: 22, min: 46, sec: 5 },
-    jupiter: { deg: 24, min: 41, sec: 18 },
-    saturn: { deg: 0, min: 9, sec: 23 },
-    uranus: { deg: 5, min: 6, sec: 3 },
-    neptune: { deg: 26, min: 4, sec: 59 },
-    pluto: { deg: 28, min: 25, sec: 21 },
-    rahu: { deg: 7, min: 13, sec: 9 },
-    ketu: { deg: 7, min: 13, sec: 9 },
+    sun: { deg: 14, min: 46, sec: 24 },
+    moon: { deg: 13, min: 36, sec: 21 },
+    mercury: { deg: 20, min: 59, sec: 44 },
+    venus: { deg: 21, min: 25, sec: 3 },
+    mars: { deg: 29, min: 9, sec: 17 },
+    jupiter: { deg: 1, min: 4, sec: 30 },
+    saturn: { deg: 6, min: 32, sec: 35 },
+    uranus: { deg: 11, min: 29, sec: 15 },
+    neptune: { deg: 2, min: 28, sec: 11 },
+    pluto: { deg: 4, min: 48, sec: 33 },
+    rahu: { deg: 13, min: 36, sec: 21 },
+    ketu: { deg: 13, min: 36, sec: 21 },
   };
   for (const [name, exp] of Object.entries(expectedDMS)) {
     const p = planets[name];

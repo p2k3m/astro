@@ -48,5 +48,5 @@ test('Darbhanga chart summary lists nakshatra and pada', async () => {
     return `${abbr} ${signName} ${degStr} ${p.nakshatra} ${p.pada}`;
   });
   const moonRow = rows.find((r) => r.startsWith('Mo'));
-  assert.ok(moonRow && moonRow.includes('Ardra 1'));
+  assert.ok(moonRow && moonRow.includes('Rohini 2'));
 });

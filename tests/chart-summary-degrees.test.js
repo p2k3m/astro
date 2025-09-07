@@ -48,18 +48,18 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     return `${abbr} ${signName} ${degStr}`;
   });
   assert.deepStrictEqual(rows, [
-    'Su Sagittarius 8°23′12″',
-    'Mo Gemini 7°13′09″',
-    'Me(C) Sagittarius 14°36′31″',
-    'Ve(C) Sagittarius 15°01′51″',
-    'Ma(Ex) Capricorn 22°46′05″',
-    'Ju Scorpio 24°41′18″',
-    'Sa Scorpio 0°09′23″',
-    'Ur Sagittarius 5°06′03″',
-    'Ne Sagittarius 26°04′59″',
-    'Pl Libra 28°25′21″',
-    'Ra Gemini 7°13′09″',
-    'Ke Sagittarius 7°13′09″',
+    'Su Scorpio 14°46′24″',
+    'Mo(Ex) Taurus 13°36′21″',
+    'Me(C) Scorpio 20°59′44″',
+    'Ve(C) Scorpio 21°25′03″',
+    'Ma Sagittarius 29°09′17″',
+    'Ju Scorpio 1°04′30″',
+    'Sa(Ex) Libra 6°32′35″',
+    'Ur Scorpio 11°29′15″',
+    'Ne Sagittarius 2°28′11″',
+    'Pl Libra 4°48′33″',
+    'Ra(Ex) Taurus 13°36′21″',
+    'Ke(Ex) Scorpio 13°36′21″',
   ]);
 });
 

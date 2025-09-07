@@ -18,10 +18,10 @@ test('Jupiter and Saturn longitudes and speeds match Swiss Ephemeris', async () 
   const jupiter = swe.swe_calc_ut(jd, swe.SE_JUPITER, flag);
   const saturn = swe.swe_calc_ut(jd, swe.SE_SATURN, flag);
 
-  // Expected values generated from the Swiss Ephemeris
-  assert.ok(Math.abs(jupiter.longitude - 240.3848576) < 1e-6);
-  assert.ok(Math.abs(saturn.longitude - 212.6125048) < 1e-6);
-  assert.ok(Math.abs(jupiter.longitudeSpeed - 0.19965599999522965) < 1e-8);
-  assert.ok(Math.abs(saturn.longitudeSpeed - 0.07502399998656983) < 1e-8);
+  // Expected values generated from the Swiss Ephemeris (Lahiri sidereal)
+  assert.ok(Math.abs(jupiter.longitude - 216.7701699) < 1e-6);
+  assert.ok(Math.abs(saturn.longitude - 188.9978171) < 1e-6);
+  assert.ok(Math.abs(jupiter.longitudeSpeed - 0.19958399999950416) < 1e-8);
+  assert.ok(Math.abs(saturn.longitudeSpeed - 0.07487999999511885) < 1e-8);
 });
 
