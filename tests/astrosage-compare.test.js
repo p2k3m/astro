@@ -3,22 +3,32 @@ import test from 'node:test';
 import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
-
-// Degrees and nakshatra data for the reference chart obtained from AstroSage
-const ASTROSAGE_AM_POSITIONS = {
-  sun: { deg: 14, min: 46, sec: 24, nakshatra: 'Anuradha', pada: 4 },
-  moon: { deg: 13, min: 36, sec: 21, nakshatra: 'Rohini', pada: 2 },
-  mars: { deg: 29, min: 9, sec: 17, nakshatra: 'Uttara Ashadha', pada: 1 },
-  mercury: { deg: 20, min: 59, sec: 43, nakshatra: 'Jyeshtha', pada: 2 },
-  jupiter: { deg: 1, min: 4, sec: 29, nakshatra: 'Vishakha', pada: 4 },
-  venus: { deg: 21, min: 25, sec: 3, nakshatra: 'Jyeshtha', pada: 2 },
-  saturn: { deg: 6, min: 32, sec: 35, nakshatra: 'Chitra', pada: 4 },
-  uranus: { deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },
-  neptune: { deg: 2, min: 28, sec: 10, nakshatra: 'Mula', pada: 1 },
-  pluto: { deg: 4, min: 48, sec: 32, nakshatra: 'Chitra', pada: 4 },
-  rahu: { deg: 11, min: 53, sec: 16, nakshatra: 'Ardra', pada: 2 },
-  ketu: { deg: 11, min: 53, sec: 16, nakshatra: 'Mula', pada: 4 },
+import { longitudeToNakshatra } from '../src/lib/nakshatra.js';
+// Reference longitudes from AstroSage. Nakshatra/pada are derived
+// programmatically to avoid manual duplication.
+const ASTROSAGE_AM_LONGITUDES = {
+  sun: { sign: 8, deg: 14, min: 46, sec: 24 },
+  moon: { sign: 2, deg: 13, min: 36, sec: 21 },
+  mars: { sign: 9, deg: 29, min: 9, sec: 17 },
+  mercury: { sign: 8, deg: 20, min: 59, sec: 43 },
+  jupiter: { sign: 8, deg: 1, min: 4, sec: 29 },
+  venus: { sign: 8, deg: 21, min: 25, sec: 3 },
+  saturn: { sign: 7, deg: 6, min: 32, sec: 35 },
+  uranus: { sign: 8, deg: 11, min: 29, sec: 15 },
+  neptune: { sign: 9, deg: 2, min: 28, sec: 10 },
+  pluto: { sign: 7, deg: 4, min: 48, sec: 32 },
+  rahu: { sign: 3, deg: 11, min: 53, sec: 16 },
+  ketu: { sign: 9, deg: 11, min: 53, sec: 16 },
 };
+
+const ASTROSAGE_AM_POSITIONS = Object.fromEntries(
+  Object.entries(ASTROSAGE_AM_LONGITUDES).map(([name, pos]) => {
+    const { sign, deg, min, sec } = pos;
+    const lon = (sign - 1) * 30 + deg + min / 60 + sec / 3600;
+    const { nakshatra, pada } = longitudeToNakshatra(lon);
+    return [name, { deg, min, sec, nakshatra, pada }];
+  }),
+);
 
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const { computePositions } = await astro;
