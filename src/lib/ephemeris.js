@@ -39,7 +39,7 @@ function toUTC({ datetime, zone }) {
 }
 
 async function compute_positions(
-  { datetime, tz, lat, lon, sidMode, nodeType },
+  { datetime, tz, lat, lon, sidMode, nodeType = 'mean' },
   sweInst = swe
 ) {
   await sweInst.ready;

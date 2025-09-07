@@ -9,6 +9,7 @@ test('Pushkar Mishra chart positions', async () => {
     tz: 'Asia/Kolkata',
     lat: 26.152,
     lon: 85.897,
+    nodeType: 'mean',
   });
 
   const ascLon = res.ascendant.lon;

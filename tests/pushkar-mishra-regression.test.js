@@ -30,6 +30,7 @@ test('Pushkar Mishra positions regression', async () => {
     tz: 'Asia/Kolkata',
     lat: 26.152,
     lon: 85.897,
+    nodeType: 'mean',
   });
 
   const bodies = { ascendant: { ...res.ascendant } };
