@@ -180,7 +180,7 @@ async function computePositions(
   dtISOWithZone,
   lat,
   lon,
-  { sidMode, nodeType, houseSystem } = {}
+  { sidMode, nodeType, houseSystem, nakshatraAbbr } = {}
 ) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
@@ -193,6 +193,7 @@ async function computePositions(
     sidMode,
     nodeType,
     houseSystem,
+    nakshatraAbbr,
   });
 
   const ascSign = base.ascSign;

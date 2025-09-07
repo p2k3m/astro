@@ -37,6 +37,7 @@ async function compute_positions(
     sidMode,
     nodeType = 'mean',
     houseSystem = 'W',
+    nakshatraAbbr = false,
   },
   sweInst = swe
 ) {
@@ -74,7 +75,8 @@ async function compute_positions(
     raw.ascendant
   );
   const { nakshatra: ascNakshatra, pada: ascPada } = longitudeToNakshatra(
-    raw.ascendant
+    raw.ascendant,
+    { useAbbreviations: nakshatraAbbr }
   );
   const houses = raw.houses;
 
@@ -124,7 +126,9 @@ async function compute_positions(
         : lonToSignDeg(lon);
     const retro = data.longitudeSpeed < -speedThreshold;
     const house = getHouse(lon);
-    const { nakshatra, pada } = longitudeToNakshatra(lon);
+    const { nakshatra, pada } = longitudeToNakshatra(lon, {
+      useAbbreviations: nakshatraAbbr,
+    });
     planets.push({
       name,
       sign,
@@ -141,7 +145,10 @@ async function compute_positions(
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
   const { sign: kSign, deg: kDeg, min: kMin, sec: kSec } = lonToSignDeg(ketuLon);
-  const { nakshatra: kNakshatra, pada: kPada } = longitudeToNakshatra(ketuLon);
+  const { nakshatra: kNakshatra, pada: kPada } = longitudeToNakshatra(
+    ketuLon,
+    { useAbbreviations: nakshatraAbbr }
+  );
   planets.push({
     name: 'ketu',
     sign: kSign,
