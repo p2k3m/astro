@@ -19,7 +19,7 @@ function lonToSignDeg(longitude) {
   let deg = Math.floor(rem);
   rem = (rem - deg) * 60;
   let min = Math.floor(rem);
-  let sec = Math.floor((rem - min) * 60);
+  let sec = Math.round((rem - min) * 60);
   return { sign, deg, min, sec };
 }
 
