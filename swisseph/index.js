@@ -373,10 +373,8 @@ async function init(options) {
         __syscall_readlinkat: () => 0,
       };
       const wasi = new WASI({ version: 'preview1' });
-      const { instance } = await WebAssembly.instantiate(buffer, {
-        env,
-        wasi_snapshot_preview1: wasi.wasiImport,
-      });
+      const imports = { env, wasi_snapshot_preview1: wasi.wasiImport };
+      const { instance } = await WebAssembly.instantiate(buffer, imports);
       wasmModule = instance.exports;
     } else {
       if (
@@ -414,15 +412,24 @@ async function init(options) {
           __syscall_readlinkat: () => 0,
         };
 
-        const wasiSnapshot =
+        const wasiStub =
           typeof WASI === 'function'
             ? new WASI({ version: 'preview1' }).wasiImport
             : {
                 fd_write: () => 0,
+                fd_read: () => 0,
                 fd_close: () => 0,
+                fd_seek: () => 0,
+                fd_fdstat_get: () => 0,
+                fd_fdstat_set_flags: () => 0,
+                fd_prestat_get: () => 0,
+                fd_prestat_dir_name: () => 0,
+                random_get: () => 0,
+                environ_get: () => 0,
+                environ_sizes_get: () => 0,
                 proc_exit: (code) => console.warn('WASI exit', code),
               };
-        const imports = { env, wasi_snapshot_preview1: wasiSnapshot };
+        const imports = { env, wasi_snapshot_preview1: wasiStub };
 
         const { instance } = await WebAssembly.instantiateStreaming(
           response,
