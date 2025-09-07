@@ -1,9 +1,7 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import { longitudeToNakshatra } from '../src/lib/nakshatra.js';
-
 test('Pushkar Mishra chart positions', async () => {
-  const { compute_positions, lonToSignDeg } = await import('../src/lib/ephemeris.js');
+  const { compute_positions } = await import('../src/lib/ephemeris.js');
   const res = await compute_positions({
     datetime: '1982-12-01T03:50',
     tz: 'Asia/Kolkata',
@@ -11,16 +9,13 @@ test('Pushkar Mishra chart positions', async () => {
     lon: 85.897,
     nodeType: 'mean',
   });
-
-  const ascLon = res.ascendant.lon;
-  const { sign, deg, min, sec } = lonToSignDeg(ascLon);
-  const { nakshatra, pada } = longitudeToNakshatra(ascLon);
-  assert.strictEqual(sign, 7); // Libra
-  assert.strictEqual(deg, 19);
-  assert.strictEqual(min, 25);
-  assert.ok(Math.abs(sec - 57) <= 1);
-  assert.strictEqual(nakshatra, 'Swati');
-  assert.strictEqual(pada, 4);
+  const asc = res.ascendant;
+  assert.strictEqual(asc.sign, 7); // Libra
+  assert.strictEqual(asc.deg, 19);
+  assert.strictEqual(asc.min, 25);
+  assert.ok(Math.abs(asc.sec - 57) <= 1);
+  assert.strictEqual(asc.nakshatra, 'Swati');
+  assert.strictEqual(asc.pada, 4);
   const actual = Object.fromEntries(
     res.planets.map((p) => {
       return [

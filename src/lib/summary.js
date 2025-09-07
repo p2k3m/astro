@@ -32,7 +32,11 @@ function formatDMS(p) {
 }
 
 export function summarizeChart(data) {
-  const ascendant = SIGN_NAMES[data.ascSign - 1];
+  const ascSignName = SIGN_NAMES[data.ascSign - 1];
+  let ascendant = ascSignName;
+  if (data.ascendant?.nakshatra && data.ascendant?.pada) {
+    ascendant += ` ${data.ascendant.nakshatra} ${data.ascendant.pada}`;
+  }
   const moon = data.planets.find((p) => p.name === 'moon');
   const moonSign = SIGN_NAMES[(moon?.sign ?? 1) - 1]; // 1-based sign numbers
   // keep index 0 empty so houses are 1‑indexed

@@ -1,7 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import * as swe from '../swisseph/index.js';
-import { longitudeToNakshatra } from '../src/lib/nakshatra.js';
 
 // Verified values from AstroSage for Pushkar Mishra birth chart
 const expected = {
@@ -36,11 +35,7 @@ test('Pushkar Mishra positions regression', async () => {
     houseSystem: 'W',
   });
 
-  const bodies = { ascendant: { ...res.ascendant } };
-  const asc = bodies.ascendant;
-  const { nakshatra, pada } = longitudeToNakshatra(asc.lon);
-  asc.nakshatra = nakshatra;
-  asc.pada = pada;
+  const bodies = { ascendant: res.ascendant };
   for (const p of res.planets) bodies[p.name] = p;
 
   for (const [name, exp] of Object.entries(expected)) {

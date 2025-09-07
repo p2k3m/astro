@@ -85,6 +85,9 @@ async function compute_positions(
   const { sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec } = lonToSignDeg(
     raw.ascendant
   );
+  const { nakshatra: ascNakshatra, pada: ascPada } = longitudeToNakshatra(
+    raw.ascendant
+  );
   const houses = raw.houses;
 
   function getHouse(lon) {
@@ -168,7 +171,15 @@ async function compute_positions(
   // ascSign and each planet.sign use 1–12 numbering (1 = Aries).
   return {
     ascSign,
-    ascendant: { lon: raw.ascendant, sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec },
+    ascendant: {
+      lon: raw.ascendant,
+      sign: ascSign,
+      deg: ascDeg,
+      min: ascMin,
+      sec: ascSec,
+      nakshatra: ascNakshatra,
+      pada: ascPada,
+    },
     houses,
     planets,
   };

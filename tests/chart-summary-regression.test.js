@@ -11,7 +11,7 @@ test('Chart summary for reference chart matches expected output', async () => {
   assert.strictEqual(data.signInHouse[1], data.ascSign);
   const summaryData = summarizeChart(data);
   assert.deepStrictEqual(summaryData, {
-    ascendant: 'Libra',
+    ascendant: 'Libra Swati 4',
     moonSign: 'Gemini',
     houses: [
       '',
