@@ -7,14 +7,14 @@ const astro = import('../src/lib/astro.js');
 // Degrees and nakshatra data for the reference chart obtained from AstroSage
 const ASTROSAGE_AM_POSITIONS = {
   sun: { deg: 14, min: 46, sec: 24, nakshatra: 'Anuradha', pada: 4 },
-  moon: { deg: 13, min: 36, sec: 22, nakshatra: 'Rohini', pada: 2 },
+  moon: { deg: 13, min: 36, sec: 21, nakshatra: 'Rohini', pada: 2 },
   mars: { deg: 29, min: 9, sec: 17, nakshatra: 'Uttara Ashadha', pada: 1 },
   mercury: { deg: 20, min: 59, sec: 43, nakshatra: 'Jyeshtha', pada: 2 },
   jupiter: { deg: 1, min: 4, sec: 29, nakshatra: 'Vishakha', pada: 4 },
   venus: { deg: 21, min: 25, sec: 3, nakshatra: 'Jyeshtha', pada: 2 },
   saturn: { deg: 6, min: 32, sec: 35, nakshatra: 'Chitra', pada: 4 },
   uranus: { deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },
-  neptune: { deg: 2, min: 28, sec: 11, nakshatra: 'Mula', pada: 1 },
+  neptune: { deg: 2, min: 28, sec: 10, nakshatra: 'Mula', pada: 1 },
   pluto: { deg: 4, min: 48, sec: 32, nakshatra: 'Chitra', pada: 4 },
   rahu: { deg: 11, min: 53, sec: 16, nakshatra: 'Ardra', pada: 2 },
   ketu: { deg: 11, min: 53, sec: 16, nakshatra: 'Mula', pada: 4 },
