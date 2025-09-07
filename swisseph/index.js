@@ -13,6 +13,7 @@ if (typeof globalThis.self === 'undefined') {
 // `swetest` executable can be invoked.
 let swetestPath = null;
 let execFileSync;
+let ephePath = '';
 if (typeof process !== 'undefined' && process.versions?.node) {
   const [child, url, path, fs] = await Promise.all([
     import('node:child_process'),
@@ -63,8 +64,10 @@ export const SE_GREG_CAL = 1;
 // Selected sidereal mode (default Lahiri). Updated via swe_set_sid_mode.
 let currentSidMode = SE_SIDM_LAHIRI;
 
-// no-op setters for path and sidereal mode
-function js_swe_set_ephe_path() {}
+// track ephemeris path for swetest and no-op in JS
+function js_swe_set_ephe_path(path) {
+  ephePath = path || '';
+}
 function js_swe_set_sid_mode(mode) {
   currentSidMode = mode ?? SE_SIDM_LAHIRI;
 }
@@ -343,6 +346,7 @@ function swetestCalcUt(jd, planetId, flags) {
         bodyCode = String(planetId);
     }
     const args = [`-j${j}`, `-p${bodyCode}`, '-fPl', '-g,', '-head'];
+    if (ephePath) args.push(`-edir${ephePath}`);
     if (flags & SEFLG_SIDEREAL) {
       const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
       args.push(`-sid${mode}`);
@@ -370,6 +374,7 @@ function swetestCalcUt(jd, planetId, flags) {
 function swetestHousesEx(jd, lat, lon, hsys, flags) {
   if (!swetestPath) throw new Error('swetest not available');
   const args = [`-j${jd}`, `-house${lon},${lat},${hsys}`, '-fPl', '-g,', '-head'];
+  if (ephePath) args.push(`-edir${ephePath}`);
   if (flags & SEFLG_SIDEREAL) {
     const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
     args.push(`-sid${mode}`);
