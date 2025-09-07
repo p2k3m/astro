@@ -19,7 +19,8 @@ function lonToSignDeg(longitude) {
   let deg = Math.floor(rem);
   rem = (rem - deg) * 60;
   let min = Math.floor(rem);
-  let sec = Math.round((rem - min) * 60);
+  // AstroSage truncates fractional seconds instead of rounding.
+  let sec = Math.floor((rem - min) * 60);
   if (sec === 60) {
     sec = 0;
     min += 1;
