@@ -41,8 +41,7 @@ export default function ChartSummary({ data }) {
     if (p.exalted) flags.push('(Ex)');
     // Ensure combust planets render with a (C) marker alongside other flags.
     abbr += flags.join('');
-    const signNum = p.sign + 1;
-    const signName = SIGN_NAMES[signNum - 1];
+    const signName = SIGN_NAMES[p.sign - 1];
     const degStr = formatDMS(p);
     const nakshatra = p.nakshatra;
     const pada = p.pada;
