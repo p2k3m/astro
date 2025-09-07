@@ -57,15 +57,19 @@ Alternatively, point `src/lib/offlineGeocoder.js` to a locally hosted [Nominatim
 ## Calculation Options
 
 Chart computation helpers such as `calculateChart` and the `/api/positions` endpoint
-accept two optional settings:
+accept these optional settings:
 
 - `sidMode` – numeric code passed to Swiss Ephemeris' `swe_set_sid_mode`.
   Defaults to `swe.SE_SIDM_LAHIRI` when omitted.
+- `houseSystem` – single-letter code for the desired house system passed to
+  `swe_houses_ex`. The default `'W'` uses whole-sign houses to match AstroSage's
+  Rāśi chart.
 - `nodeType` – `'true'` or `'mean'` to select whether lunar nodes are computed
-  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. The default is `'true'`.
+  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. The default is `'mean'`.
 
-If these options are not provided, the traditional Lahiri ayanamsa and true node
-are used.
+When these options are not provided the calculation assumes Lahiri ayanamsa,
+whole-sign houses and the mean lunar node, which mirrors AstroSage's
+configuration for the reference charts used in this project.
 
 ## Deployment
 

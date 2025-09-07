@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
+import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
 
@@ -29,7 +30,11 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async () => {
   const { computePositions, renderNorthIndian } = await astro;
-  const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
+  const result = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'mean',
+  });
 
   // Ascendant sign
   assert.strictEqual(result.ascSign, 7);

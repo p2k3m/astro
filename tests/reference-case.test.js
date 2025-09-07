@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
+import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
 
@@ -29,7 +30,11 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('reference charts for Darbhanga on 1982-12-01 match expected placements', async () => {
   const { computePositions, renderNorthIndian } = await astro;
-  const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
+  const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'mean',
+  });
   assert.strictEqual(am.ascSign, 7);
   const amPlanets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
   assert.strictEqual(amPlanets.sun.sign, 7);
@@ -68,7 +73,11 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
     4
   );
 
-  const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897);
+  const pm = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'mean',
+  });
   assert.strictEqual(pm.ascSign, 2);
   const pmPlanets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(pmPlanets.sun.sign, 7);
