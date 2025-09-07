@@ -7,6 +7,30 @@ if (typeof globalThis.self === 'undefined') {
   globalThis.self = globalThis;
 }
 
+// Attempt to locate an external `swetest` binary either on the PATH or built
+// locally from the C sources. If unavailable, computations fall back to the
+// JavaScript approximation below.
+import { execFileSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
+
+let swetestPath = null;
+try {
+  execFileSync('swetest', ['-h'], { stdio: 'ignore' });
+  swetestPath = 'swetest';
+} catch (e) {
+  try {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const local = path.join(__dirname, 'swetest');
+    fs.accessSync(local, fs.constants.X_OK);
+    execFileSync(local, ['-h'], { stdio: 'ignore' });
+    swetestPath = local;
+  } catch {
+    swetestPath = null;
+  }
+}
+
 // Constants mimicking a subset of Swiss Ephemeris
 export const SE_SUN = 0;
 export const SE_MOON = 1;
@@ -262,6 +286,28 @@ function js_swe_calc_ut(jd, planetId, flags) {
   return { longitude: lon, longitudeSpeed: speed, flags: ret };
 }
 
+function swetestCalcUt(jd, planetId, flags) {
+  if (!swetestPath) throw new Error('swetest not available');
+  const run = (j) => {
+    const out = execFileSync(
+      swetestPath,
+      [`-j${j}`, `-p${planetId}`, '-fPl', '-g,', '-head'],
+      { encoding: 'utf8' },
+    );
+    return parseFloat(out.split(',')[1]);
+  };
+  const lon = run(jd);
+  const delta = 1 / 1440;
+  const lonBefore = run(jd - delta);
+  const lonAfter = run(jd + delta);
+  let diff = lonAfter - lonBefore;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  const speed = diff / (2 * delta);
+  const ret = speed <= -1e-5 ? SEFLG_RETROGRADE : 0;
+  return { longitude: lon, longitudeSpeed: speed, flags: ret };
+}
+
 function localSiderealTime(jd, lon) {
   const T = (jd - 2451545.0) / 36525;
   const GMST =
@@ -451,6 +497,13 @@ async function init(options) {
 export const ready = init();
 
 function call(name, args) {
+  if (swetestPath && name === 'swe_calc_ut') {
+    try {
+      return swetestCalcUt(...args);
+    } catch (e) {
+      // fall back to wasm/js
+    }
+  }
   if (wasmModule && typeof wasmModule[name] === 'function') {
     return wasmModule[name](...args);
   }
