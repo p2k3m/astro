@@ -48,8 +48,8 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
       jupiter: 2,
       venus: 2,
       saturn: 1,
-      rahu: 8,
-      ketu: 2,
+      rahu: 9,
+      ketu: 3,
     };
   for (const [name, house] of Object.entries(expectedHouses)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -64,8 +64,8 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     jupiter: false,
     venus: false,
     saturn: false,
-    rahu: false,
-    ketu: false,
+    rahu: true,
+    ketu: true,
   };
   for (const [name, retro] of Object.entries(expectedRetro)) {
     assert.strictEqual(planets[name].retro, retro, `${name} retrograde`);
@@ -103,10 +103,10 @@ test('computePositions matches AstroSage for Darbhanga 1982-12-01 03:50', async 
     'Su',
     'Ur',
     'Ne',
-    'Ke(Ex)',
+    'Ke(R)',
     'Ma',
     'Mo(Ex)',
-    'Ra(Ex)',
+    'Ra(R)',
     'Sa(Ex)',
   ];
   for (const lbl of expectedLabels) {

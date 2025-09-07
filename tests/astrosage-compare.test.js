@@ -35,8 +35,8 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 8,
-    ketu: 2,
+    rahu: 9,
+    ketu: 3,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -50,10 +50,10 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     houseSystem: 'W',
     nodeType: 'mean',
   });
-  assert.strictEqual(pm.ascSign, 2);
-  assert.strictEqual(pm.signInHouse[1], pm.ascSign);
-  assert.strictEqual(pm.signInHouse[6], 7);
-  assert.strictEqual(pm.signInHouse[7], 8);
+    assert.strictEqual(pm.ascSign, 1);
+    assert.strictEqual(pm.signInHouse[1], pm.ascSign);
+    assert.strictEqual(pm.signInHouse[6], 6);
+    assert.strictEqual(pm.signInHouse[7], 7);
 
   const planets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
@@ -64,18 +64,18 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
     }
   }
   const expected = {
-    sun: 7,
-    moon: 1,
-    mars: 8,
-    mercury: 7,
-    jupiter: 7,
-    venus: 7,
-    saturn: 6,
-    uranus: 7,
-    neptune: 8,
-    pluto: 6,
-    rahu: 1,
-    ketu: 7,
+    sun: 8,
+    moon: 2,
+    mars: 9,
+    mercury: 8,
+    jupiter: 8,
+    venus: 8,
+    saturn: 7,
+    uranus: 8,
+    neptune: 9,
+    pluto: 7,
+    rahu: 3,
+    ketu: 9,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);

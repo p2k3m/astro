@@ -13,7 +13,7 @@ test('Pushkar Mishra chart positions', async () => {
   assert.strictEqual(asc.sign, 7); // Libra
   assert.strictEqual(asc.deg, 12);
   assert.strictEqual(asc.min, 17);
-  assert.ok(Math.abs(asc.sec - 3) <= 1);
+  assert.ok(Math.abs(asc.sec - 6) <= 1);
   assert.strictEqual(asc.nakshatra, 'Swati');
   assert.strictEqual(asc.pada, 2);
   const actual = Object.fromEntries(
@@ -42,8 +42,8 @@ test('Pushkar Mishra chart positions', async () => {
     uranus: { sign: 8, deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },
     neptune: { sign: 9, deg: 2, min: 28, sec: 10, nakshatra: 'Mula', pada: 1 },
     pluto: { sign: 7, deg: 4, min: 48, sec: 32, nakshatra: 'Chitra', pada: 4 },
-    rahu: { sign: 2, deg: 13, min: 36, sec: 20, nakshatra: 'Rohini', pada: 2 },
-    ketu: { sign: 8, deg: 13, min: 36, sec: 20, nakshatra: 'Anuradha', pada: 4 },
+    rahu: { sign: 3, deg: 11, min: 53, sec: 16, nakshatra: 'Ardra', pada: 2 },
+    ketu: { sign: 9, deg: 11, min: 53, sec: 16, nakshatra: 'Mula', pada: 4 },
   };
   assert.deepStrictEqual(actual, expected);
 });

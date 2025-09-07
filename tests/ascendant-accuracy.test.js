@@ -11,6 +11,6 @@ test('Ascendant matches AstroSage for London 2023-03-21 00:00 UTC', () => {
     'P',
     swe.SEFLG_SIDEREAL | swe.SEFLG_SWIEPH
   );
-  // AstroSage reference: ~1° Cancer (91.1°)
-  assert.ok(Math.abs(ascendant - 91.10) < 0.5);
+  // AstroSage reference: ~7° Scorpio (217.98°)
+  assert.ok(Math.abs(ascendant - 217.98) < 0.5);
 });

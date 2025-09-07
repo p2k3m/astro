@@ -58,8 +58,8 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     'Ur Scorpio 11°29′15″',
     'Ne Sagittarius 2°28′10″',
     'Pl Libra 4°48′32″',
-    'Ra(Ex) Taurus 13°36′20″',
-    'Ke(Ex) Scorpio 13°36′20″',
+    'Ra(R) Gemini 11°53′16″',
+    'Ke(R) Sagittarius 11°53′16″',
   ]);
 });
 

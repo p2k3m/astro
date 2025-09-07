@@ -331,7 +331,18 @@ function js_swe_calc_ut(jd, planetId, flags) {
 function swetestCalcUt(jd, planetId, flags) {
   if (!swetestPath) throw new Error('swetest not available');
   const run = (j) => {
-    const args = [`-j${j}`, `-p${planetId}`, '-fPl', '-g,', '-head'];
+    let bodyCode;
+    switch (planetId) {
+      case SE_MEAN_NODE:
+        bodyCode = 'm';
+        break;
+      case SE_TRUE_NODE:
+        bodyCode = 't';
+        break;
+      default:
+        bodyCode = String(planetId);
+    }
+    const args = [`-j${j}`, `-p${bodyCode}`, '-fPl', '-g,', '-head'];
     if (flags & SEFLG_SIDEREAL) {
       const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
       args.push(`-sid${mode}`);
@@ -354,6 +365,29 @@ function swetestCalcUt(jd, planetId, flags) {
     flags: ret,
     sidereal: Boolean(flags & SEFLG_SIDEREAL),
   };
+}
+
+function swetestHousesEx(jd, lat, lon, hsys, flags) {
+  if (!swetestPath) throw new Error('swetest not available');
+  const args = [`-j${jd}`, `-house${lon},${lat},${hsys}`, '-fPl', '-g,', '-head'];
+  if (flags & SEFLG_SIDEREAL) {
+    const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
+    args.push(`-sid${mode}`);
+  }
+  const out = execFileSync(swetestPath, args, { encoding: 'utf8' });
+  const lines = out.trim().split(/\r?\n/);
+  const houses = [null];
+  let ascendant;
+  for (const line of lines) {
+    let m = line.match(/^house\s+(\d+)\s*,\s*([\d.+-]+)/);
+    if (m) {
+      houses[Number(m[1])] = parseFloat(m[2]);
+      continue;
+    }
+    m = line.match(/^Ascendant\s*,\s*([\d.+-]+)/);
+    if (m) ascendant = parseFloat(m[1]);
+  }
+  return { ascendant, houses, sidereal: Boolean(flags & SEFLG_SIDEREAL) };
 }
 
 function localSiderealTime(jd, lon) {
@@ -553,7 +587,20 @@ function call(name, args) {
       // fall back to wasm/js
     }
   }
-  if (!res && wasmModule && typeof wasmModule[name] === 'function') {
+  if (swetestPath && name === 'swe_houses_ex') {
+    try {
+      res = swetestHousesEx(...args);
+    } catch (e) {
+      // fall back to wasm/js
+    }
+  }
+  if (
+    !res &&
+    wasmModule &&
+    typeof wasmModule[name] === 'function' &&
+    name !== 'swe_houses_ex' &&
+    name !== 'swe_house_pos'
+  ) {
     res = wasmModule[name](...args);
     if (name === 'swe_calc_ut' && (args[2] & SEFLG_SIDEREAL)) {
       res.sidereal = true;
@@ -567,6 +614,18 @@ function call(name, args) {
     res = {
       ...res,
       longitude: normalizeAngle(res.longitude - ayan),
+      sidereal: true,
+    };
+  }
+  if (name === 'swe_houses_ex' && (args[4] & SEFLG_SIDEREAL) && !res.sidereal) {
+    const ayan = getAyanamsa(args[0]);
+    const houses = res.houses.map((h, i) =>
+      i === 0 ? null : normalizeAngle(h - ayan)
+    );
+    res = {
+      ...res,
+      ascendant: normalizeAngle(res.ascendant - ayan),
+      houses,
       sidereal: true,
     };
   }
