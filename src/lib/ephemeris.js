@@ -14,13 +14,12 @@ swe.ready.then(() => {
 // Signs are numbered 1–12 (1 = Aries, 12 = Pisces).
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
-  const sign = Math.trunc(norm / 30) + 1; // 1..12
-  const rem = norm % 30;
-  const deg = Math.trunc(rem);
-  const remMin = (rem - deg) * 60;
-  const min = Math.trunc(remMin);
-  // AstroSage truncates fractional seconds instead of rounding.
-  const sec = Math.trunc((remMin - min) * 60);
+  // AstroSage truncates fractional components instead of rounding.
+  const totalSeconds = Math.trunc(norm * 3600);
+  const sign = Math.floor(totalSeconds / (30 * 3600)) + 1; // 1..12
+  const deg = Math.floor(totalSeconds / 3600) % 30;
+  const min = Math.floor(totalSeconds / 60) % 60;
+  const sec = totalSeconds % 60;
   return { sign, deg, min, sec };
 }
 
