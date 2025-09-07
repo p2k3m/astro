@@ -74,6 +74,14 @@ export default function ChartSummary({ data }) {
 ChartSummary.propTypes = {
   data: PropTypes.shape({
     ascSign: PropTypes.number.isRequired,
+    ascendant: PropTypes.shape({
+      sign: PropTypes.number,
+      deg: PropTypes.number,
+      min: PropTypes.number,
+      sec: PropTypes.number,
+      nakshatra: PropTypes.string,
+      pada: PropTypes.number,
+    }),
     planets: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,

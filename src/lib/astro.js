@@ -196,6 +196,7 @@ async function computePositions(
   });
 
   const ascSign = base.ascSign;
+  const ascendant = base.ascendant;
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
     const lon = base.houses[h];
@@ -309,7 +310,7 @@ async function computePositions(
     });
   }
 
-  return { ascSign, signInHouse, planets };
+  return { ascSign, ascendant, signInHouse, planets };
 }
 
 function renderNorthIndian(svgEl, data, options = {}) {
