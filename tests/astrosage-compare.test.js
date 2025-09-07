@@ -4,6 +4,22 @@ import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
 
+// Degrees and nakshatra data for the reference chart obtained from AstroSage
+const ASTROSAGE_AM_POSITIONS = {
+  sun: { deg: 14, min: 46, sec: 24, nakshatra: 'Anuradha', pada: 4 },
+  moon: { deg: 13, min: 36, sec: 22, nakshatra: 'Rohini', pada: 2 },
+  mars: { deg: 29, min: 9, sec: 17, nakshatra: 'Uttara Ashadha', pada: 1 },
+  mercury: { deg: 20, min: 59, sec: 43, nakshatra: 'Jyeshtha', pada: 2 },
+  jupiter: { deg: 1, min: 4, sec: 29, nakshatra: 'Vishakha', pada: 4 },
+  venus: { deg: 21, min: 25, sec: 3, nakshatra: 'Jyeshtha', pada: 2 },
+  saturn: { deg: 6, min: 32, sec: 35, nakshatra: 'Chitra', pada: 4 },
+  uranus: { deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },
+  neptune: { deg: 2, min: 28, sec: 11, nakshatra: 'Mula', pada: 1 },
+  pluto: { deg: 4, min: 48, sec: 32, nakshatra: 'Chitra', pada: 4 },
+  rahu: { deg: 11, min: 53, sec: 16, nakshatra: 'Ardra', pada: 2 },
+  ketu: { deg: 11, min: 53, sec: 16, nakshatra: 'Mula', pada: 4 },
+};
+
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const { computePositions } = await astro;
   const am = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
@@ -19,12 +35,18 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   const planets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
-  for (const p of Object.values(planets)) {
-    for (const k of ['deg', 'min', 'sec']) {
-      assert.strictEqual(typeof p[k], 'number', `${p.name} ${k}`);
-    }
+
+  for (const [name, exp] of Object.entries(ASTROSAGE_AM_POSITIONS)) {
+    const act = planets[name];
+    assert.ok(act, `missing ${name}`);
+    assert.strictEqual(act.deg, exp.deg, `${name} deg`);
+    assert.strictEqual(act.min, exp.min, `${name} min`);
+    assert.strictEqual(act.sec, exp.sec, `${name} sec`);
+    assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
+    assert.strictEqual(act.pada, exp.pada, `${name} pada`);
   }
-  const expected = {
+
+  const expectedHouses = {
     sun: 2,
     moon: 8,
     mars: 3,
@@ -38,7 +60,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
     rahu: 9,
     ketu: 3,
   };
-  for (const [name, house] of Object.entries(expected)) {
+  for (const [name, house] of Object.entries(expectedHouses)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
 });
