@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import * as swe from '../../swisseph/index.js';
+import { longitudeToNakshatra } from './nakshatra.js';
 
 const epheUrl = new URL('../../swisseph/ephe/', import.meta.url);
 swe.ready.then(() => {
@@ -112,6 +113,7 @@ async function compute_positions(
         : lonToSignDeg(lon);
     const retro = data.longitudeSpeed < -speedThreshold;
     const house = Math.floor(((lon - ascStart + 360) % 360) / 30) + 1;
+    const { nakshatra, pada } = longitudeToNakshatra(lon);
     planets.push({
       name,
       sign,
@@ -122,10 +124,13 @@ async function compute_positions(
       speed: data.longitudeSpeed,
       retro,
       house,
+      nakshatra,
+      pada,
     });
   }
   const ketuLon = (rahuData.longitude + 180) % 360;
   const { sign: kSign, deg: kDeg, min: kMin, sec: kSec } = lonToSignDeg(ketuLon);
+  const { nakshatra: kNakshatra, pada: kPada } = longitudeToNakshatra(ketuLon);
   planets.push({
     name: 'ketu',
     sign: kSign,
@@ -136,6 +141,8 @@ async function compute_positions(
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < -speedThreshold,
     house: Math.floor(((ketuLon - ascStart + 360) % 360) / 30) + 1,
+    nakshatra: kNakshatra,
+    pada: kPada,
   });
 
   return {

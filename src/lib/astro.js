@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon';
 import { compute_positions } from './ephemeris.js';
-import { longitudeToNakshatra } from './nakshatra.js';
 
 const svgNS = 'http://www.w3.org/2000/svg';
 
@@ -283,7 +282,7 @@ async function computePositions(dtISOWithZone, lat, lon, { sidMode, nodeType } =
     }
     const exalt = exaltedSign[p.name];
     const exalted = exalt !== undefined && sign === exalt;
-    const { nakshatra, pada } = longitudeToNakshatra(lon);
+    const { nakshatra, pada } = p;
     planets.push({
       name: p.name,
       sign,
