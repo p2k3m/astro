@@ -44,7 +44,9 @@ export default function ChartSummary({ data }) {
     const signNum = p.sign + 1;
     const signName = SIGN_NAMES[signNum - 1];
     const degStr = formatDMS(p);
-    return { abbr, signName, degStr };
+    const nakshatra = p.nakshatra;
+    const pada = p.pada;
+    return { abbr, signName, degStr, nakshatra, pada };
   });
   return (
     <div className="backdrop-blur-md bg-amber-50 border border-amber-200 rounded-xl p-6 text-amber-900 mt-4">
@@ -52,11 +54,14 @@ export default function ChartSummary({ data }) {
       <p>Moon sign: {moonSign}</p>
       <table className="mt-4 text-left">
         <tbody>
-          {planetRows.map(({ abbr, signName, degStr }) => (
+          {planetRows.map(({ abbr, signName, degStr, nakshatra, pada }) => (
             <tr key={abbr}>
               <td className="pr-2">{abbr}</td>
-              <td>
+              <td className="pr-2">
                 {signName} {degStr}
+              </td>
+              <td>
+                {nakshatra} {pada}
               </td>
             </tr>
           ))}
@@ -80,6 +85,8 @@ ChartSummary.propTypes = {
         retro: PropTypes.bool,
         combust: PropTypes.bool,
         exalted: PropTypes.bool,
+        nakshatra: PropTypes.string,
+        pada: PropTypes.number,
       })
     ).isRequired,
   }).isRequired,
