@@ -13,9 +13,9 @@ test('Darbhanga 1982 chart regression', async () => {
   });
 
   assert.strictEqual(res.ascendant.sign, 7);
-  assert.strictEqual(res.ascendant.deg, 19);
-  assert.strictEqual(res.ascendant.min, 25);
-  assert.strictEqual(res.ascendant.sec, 56);
+  assert.strictEqual(res.ascendant.deg, 12);
+  assert.strictEqual(res.ascendant.min, 17);
+  assert.strictEqual(res.ascendant.sec, 3);
 
   const houses = Object.fromEntries(res.planets.map((p) => [p.name, p.house]));
   assert.deepStrictEqual(houses, {

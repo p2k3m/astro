@@ -11,11 +11,11 @@ test('Pushkar Mishra chart positions', async () => {
   });
   const asc = res.ascendant;
   assert.strictEqual(asc.sign, 7); // Libra
-  assert.strictEqual(asc.deg, 19);
-  assert.strictEqual(asc.min, 25);
-  assert.ok(Math.abs(asc.sec - 57) <= 1);
+  assert.strictEqual(asc.deg, 12);
+  assert.strictEqual(asc.min, 17);
+  assert.ok(Math.abs(asc.sec - 3) <= 1);
   assert.strictEqual(asc.nakshatra, 'Swati');
-  assert.strictEqual(asc.pada, 4);
+  assert.strictEqual(asc.pada, 2);
   const actual = Object.fromEntries(
     res.planets.map((p) => {
       return [

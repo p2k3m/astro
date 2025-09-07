@@ -7,6 +7,11 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   const { computePositions } = await astro;
   const res = await computePositions('1982-12-01T03:50+05:30', 26.15216, 85.89707);
   assert.strictEqual(res.ascSign, 7);
+  assert.strictEqual(res.ascendant.deg, 12);
+  assert.strictEqual(res.ascendant.min, 17);
+  assert.ok(Math.abs(res.ascendant.sec - 3) <= 1);
+  assert.strictEqual(res.ascendant.nakshatra, 'Swati');
+  assert.strictEqual(res.ascendant.pada, 2);
   assert.deepStrictEqual(
     res.signInHouse.slice(1),
     [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
