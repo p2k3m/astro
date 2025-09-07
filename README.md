@@ -80,7 +80,11 @@ accept these optional settings:
   `swe_houses_ex`. The default `'W'` uses whole-sign houses to match AstroSage's
   Rāśi chart.
 - `nodeType` – `'true'` or `'mean'` to select whether lunar nodes are computed
-  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. The default is `'mean'`.
+  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. `'mean'` uses the smoothed average
+  position (AstroSage's default) while `'true'` includes the node's small
+  oscillation. For the reference Darbhanga chart both options place Rahu and
+  Ketu in Gemini/Sagittarius, though the longitudes differ by about a degree.
+  The default is 'mean'.
 
 When these options are not provided the calculation assumes Lahiri ayanamsa,
 whole-sign houses and the mean lunar node, which mirrors AstroSage's
