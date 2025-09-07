@@ -36,7 +36,7 @@ test('planet positions match AstroSage for sample chart', async () => {
     nodeType: 'mean',
   });
   const planets = Object.fromEntries(data.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
   const expected = {
     sun: 3,

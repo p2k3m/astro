@@ -5,7 +5,7 @@ import { computePositions } from '../src/lib/astro.js';
 test('Saturn is direct on 1982-12-01', async () => {
   const res = await computePositions('1982-12-01T00:00+00:00', 0, 0);
   const saturn = res.planets.find((p) => p.name === 'saturn');
-  assert.strictEqual(saturn.sign, 7, 'saturn sign');
+  assert.strictEqual(saturn.sign, 8, 'saturn sign');
   assert.ok(!saturn.retro, 'saturn should be direct');
 });
 

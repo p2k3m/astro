@@ -42,7 +42,7 @@ test('all text elements render inside their house polygons', async () => {
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) signInHouse[h] = h;
   const codes = ['aa', 'bb', 'cc', 'dd', 'ee', 'ff', 'gg', 'hh', 'ii', 'jj', 'kk', 'll'];
-  const planets = codes.map((name, i) => ({ name, sign: i, house: i + 1, deg: 0 }));
+  const planets = codes.map((name, i) => ({ name, sign: i + 1, house: i + 1, deg: 0 }));
   const expected = Object.fromEntries(codes.map((c, i) => [c, i + 1]));
   const data = { ascSign: 1, signInHouse, planets };
 

@@ -13,7 +13,7 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   );
   assert.strictEqual(res.signInHouse[1], res.ascSign);
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
+  assert.strictEqual(planets.saturn.sign, 8, 'saturn sign');
   const expected = {
     sun: 3,
     moon: 9,

@@ -15,6 +15,12 @@ A single-page React application that renders an accurate North Indian style D1 (
 - Renders responsive North Indian (diamond-style) chart.
 - Dark, glassmorphic UI with Tailwind CSS.
 
+## Zodiac sign numbering
+
+All modules use 1–12 numbering for zodiac signs (1 = Aries, 12 = Pisces).
+Earlier revisions used 0-based indices; tests and UI helpers now follow the
+1-based convention consistently.
+
 ## Technology Stack
 
 - React + Vite
