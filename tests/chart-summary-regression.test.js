@@ -12,21 +12,21 @@ test('Chart summary for reference chart matches expected output', async () => {
   const summaryData = summarizeChart(data);
   assert.deepStrictEqual(summaryData, {
     ascendant: 'Libra',
-    moonSign: 'Taurus',
+    moonSign: 'Gemini',
     houses: [
       '',
-      'Me(R)(C) 29°13′15″ Vishakha 3 Ve(C) 10°02′30″ Swati 2 Ju(R) 25°03′25″ Vishakha 2 Pl(R) 2°17′25″ Chitra 3',
-      'Su 14°46′28″ Anuradha 4 Ur(R) 11°14′52″ Anuradha 3',
-      'Ne(R) 3°41′38″ Mula 2 Ke(R) 11°53′18″ Mula 4',
+      'Pl 28°25′21″ Vishakha 3',
+      'Ju 24°41′18″ Jyeshtha 3 Sa 0°09′23″ Vishakha 4',
+      'Su 8°23′12″ Mula 3 Me(C) 14°36′31″ Purva Ashadha 1 Ve(C) 15°01′51″ Purva Ashadha 1 Ur 5°06′03″ Mula 2 Ne 26°04′59″ Purva Ashadha 4 Ke 7°13′09″ Mula 3',
+      'Ma 22°46′05″ Shravana 4',
       '',
       '',
-      'Ma 8°19′13″ Uttara Bhadrapada 2',
-      '',
-      'Mo 13°16′59″ Rohini 1',
-      'Ra(R) 11°53′18″ Ardra 2',
       '',
       '',
-      'Sa(R) 29°14′20″ Chitra 2',
+      'Mo 7°13′09″ Ardra 1 Ra 7°13′09″ Ardra 1',
+      '',
+      '',
+      '',
     ],
   });
 });

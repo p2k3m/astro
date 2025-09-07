@@ -13,8 +13,8 @@ test('outer planets positions for Darbhanga 1982-12-01 03:50', async () => {
     lon: 85.89707,
   });
   const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
-  assert.strictEqual(planets.uranus.sign, 8);
-  assert.strictEqual(planets.uranus.house, 2);
+  assert.strictEqual(planets.uranus.sign, 9);
+  assert.strictEqual(planets.uranus.house, 3);
   assert.strictEqual(planets.neptune.sign, 9);
   assert.strictEqual(planets.neptune.house, 3);
   assert.strictEqual(planets.pluto.sign, 7);

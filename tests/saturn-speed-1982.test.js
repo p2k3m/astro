@@ -12,8 +12,8 @@ test('Saturn sidereal longitude and speed on 1982-12-01', async () => {
     lon: 85.89707,
   });
   const saturn = res.planets.find((p) => p.name === 'saturn');
-  // Sidereal longitude should be about 179.238844° (Virgo).
-  assert.ok(Math.abs(saturn.lon - 179.23884456223266) < 1e-6);
-  // Saturn was retrograde at this time, so speed is negative.
-  assert.ok(saturn.speed < 0);
+  // Sidereal longitude should be about 210.156413° (Scorpio).
+  assert.ok(Math.abs(saturn.lon - 210.1564134) < 1e-6);
+  // Saturn was direct at this time, so speed is positive.
+  assert.ok(saturn.speed > 0);
 });

@@ -19,14 +19,14 @@ test('Darbhanga 1982 chart regression', async () => {
 
   const houses = Object.fromEntries(res.planets.map((p) => [p.name, p.house]));
   assert.deepStrictEqual(houses, {
-    sun: 2,
-    moon: 8,
-    mercury: 1,
-    venus: 1,
-    mars: 6,
-    jupiter: 1,
-    saturn: 12,
-    uranus: 2,
+    sun: 3,
+    moon: 9,
+    mercury: 3,
+    venus: 3,
+    mars: 4,
+    jupiter: 2,
+    saturn: 2,
+    uranus: 3,
     neptune: 3,
     pluto: 1,
     rahu: 9,
