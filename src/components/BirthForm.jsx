@@ -15,6 +15,7 @@ export default function BirthForm({ onSubmit, loading }) {
     lat: null,
     lon: null,
     timezone: 'Asia/Calcutta',
+    nakshatraAbbr: false,
   });
   const [suggestions, setSuggestions] = useState([]);
   const timezones = Intl.supportedValuesOf('timeZone');
@@ -51,7 +52,8 @@ export default function BirthForm({ onSubmit, loading }) {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, type, value, checked } = e.target;
+    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
   const parsedDate = form.date ? DateTime.fromJSDate(form.date).toISODate() : null;
@@ -86,6 +88,7 @@ export default function BirthForm({ onSubmit, loading }) {
       lat: form.lat,
       lon: form.lon,
       timezone: form.timezone,
+      nakshatraAbbr: form.nakshatraAbbr,
     });
   };
 
@@ -196,6 +199,19 @@ export default function BirthForm({ onSubmit, loading }) {
             </option>
           ))}
         </select>
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="nakshatraAbbr"
+          name="nakshatraAbbr"
+          checked={form.nakshatraAbbr}
+          onChange={handleChange}
+          className="h-4 w-4"
+        />
+        <label htmlFor="nakshatraAbbr" className="select-none">
+          Use nakshatra abbreviations
+        </label>
       </div>
       <button type="submit" disabled={!valid || loading} className={buttonClasses}>
         {loading ? 'Calculating...' : 'Generate Chart'}

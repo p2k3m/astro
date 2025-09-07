@@ -56,7 +56,7 @@ async function getEphemeris() {
 }
 
 app.get('/api/positions', async (req, res) => {
-  const { datetime, tz, lat, lon, sidMode, nodeType } = req.query;
+  const { datetime, tz, lat, lon, sidMode, nodeType, nakshatraAbbr } = req.query;
   if (!datetime || !tz || !lat || !lon) {
     return res
       .status(400)
@@ -80,6 +80,7 @@ app.get('/api/positions', async (req, res) => {
       lon: lonNum,
       sidMode: sidModeNum,
       nodeType,
+      nakshatraAbbr: nakshatraAbbr === 'true' || nakshatraAbbr === '1',
     });
     res.json(result);
   } catch (err) {
