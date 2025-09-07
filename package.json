@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server/index.cjs",
+    "server": "node server/index.js",
     "test": "node --test",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "postinstall": "node swisseph/build-swetest.js"

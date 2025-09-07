@@ -1,6 +1,7 @@
-const fs = require('fs');
-const express = require('../express/index.cjs');
-const path = require('path');
+import fs from 'fs';
+import express from '../express/index.cjs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 // Placeholder for the Swiss Ephemeris library which will be loaded dynamically.
 let swisseph;
@@ -8,13 +9,9 @@ let swisseph;
 // --- Initialization ---
 
 // Define the path to the Swiss Ephemeris files.
-// '__dirname' is automatically available in CommonJS modules.
-const ephemerisPath = path.join(
-  __dirname,
-  '..',
-  'swisseph',
-  'ephe'
-);
+// Compute __dirname since it's not available in ES modules.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ephemerisPath = path.join(__dirname, '..', 'swisseph', 'ephe');
 
 // Check if the ephemeris directory exists. If not, log a detailed error and exit.
 if (!fs.existsSync(ephemerisPath)) {
@@ -75,7 +72,7 @@ app.get('/api/positions', async (req, res) => {
 });
 
 // Export the app for testing purposes.
-module.exports = app;
+export default app;
 
 (async () => {
   try {
@@ -87,7 +84,7 @@ module.exports = app;
 
     // Start the server only after Swiss Ephemeris is configured and only if this
     // file is executed directly.
-    if (require.main === module) {
+    if (import.meta.url === pathToFileURL(process.argv[1]).href) {
       app.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);
       });
