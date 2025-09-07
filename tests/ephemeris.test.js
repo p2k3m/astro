@@ -62,7 +62,7 @@ test('applies sidereal mode, converts to UTC, and uses provided coordinates', as
     jd: 0,
     lat: 26.152,
     lon: 85.897,
-    hsys: 'P',
+    hsys: 'W',
     flag: fakeSwe.SEFLG_SWIEPH | fakeSwe.SEFLG_SPEED | fakeSwe.SEFLG_SIDEREAL,
   });
 });

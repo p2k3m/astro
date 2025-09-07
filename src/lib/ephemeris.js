@@ -39,7 +39,15 @@ function toUTC({ datetime, zone }) {
 }
 
 async function compute_positions(
-  { datetime, tz, lat, lon, sidMode, nodeType = 'mean' },
+  {
+    datetime,
+    tz,
+    lat,
+    lon,
+    sidMode,
+    nodeType = 'mean',
+    houseSystem = 'W',
+  },
   sweInst = swe
 ) {
   await sweInst.ready;
@@ -68,17 +76,27 @@ async function compute_positions(
   );
   const flag =
     sweInst.SEFLG_SWIEPH | sweInst.SEFLG_SPEED | sweInst.SEFLG_SIDEREAL;
-  const raw = sweInst.swe_houses_ex(jd, Number(lat), Number(lon), 'P', flag);
+  const raw = sweInst.swe_houses_ex(jd, Number(lat), Number(lon), houseSystem, flag);
   if (typeof raw?.ascendant === 'undefined') {
     throw new Error('Could not compute houses from swisseph.');
   }
   const { sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec } = lonToSignDeg(
     raw.ascendant
   );
-  const ascStart = Math.floor(raw.ascendant / 30) * 30;
-  const houses = [null];
-  for (let i = 1; i <= 12; i++) {
-    houses[i] = (ascStart + (i - 1) * 30) % 360;
+  const houses = raw.houses;
+
+  function getHouse(lon) {
+    for (let h = 1; h <= 12; h++) {
+      const start = houses[h];
+      let end = h === 12 ? houses[1] + 360 : houses[h + 1];
+      let l = lon;
+      if (end < start) {
+        end += 360;
+        if (l < start) l += 360;
+      }
+      if (l >= start && l < end) return h;
+    }
+    return 1;
   }
 
   const nodeCode =
@@ -112,7 +130,7 @@ async function compute_positions(
         ? { sign: rSign, deg: rDeg, min: rMin, sec: rSec }
         : lonToSignDeg(lon);
     const retro = data.longitudeSpeed < -speedThreshold;
-    const house = Math.floor(((lon - ascStart + 360) % 360) / 30) + 1;
+    const house = getHouse(lon);
     const { nakshatra, pada } = longitudeToNakshatra(lon);
     planets.push({
       name,
@@ -140,7 +158,7 @@ async function compute_positions(
     lon: ketuLon,
     speed: rahuData.longitudeSpeed,
     retro: rahuData.longitudeSpeed < -speedThreshold,
-    house: Math.floor(((ketuLon - ascStart + 360) % 360) / 30) + 1,
+    house: getHouse(ketuLon),
     nakshatra: kNakshatra,
     pada: kPada,
   });

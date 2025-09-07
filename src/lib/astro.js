@@ -173,7 +173,12 @@ function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
 }
 
-async function computePositions(dtISOWithZone, lat, lon, { sidMode, nodeType } = {}) {
+async function computePositions(
+  dtISOWithZone,
+  lat,
+  lon,
+  { sidMode, nodeType, houseSystem } = {}
+) {
   const dt = DateTime.fromISO(dtISOWithZone, { setZone: true });
   if (!dt.isValid) throw new Error('Invalid datetime');
 
@@ -184,14 +189,15 @@ async function computePositions(dtISOWithZone, lat, lon, { sidMode, nodeType } =
     lon,
     sidMode,
     nodeType,
+    houseSystem,
   });
 
   const ascSign = base.ascSign;
   const signInHouse = [null];
   for (let h = 1; h <= 12; h++) {
-    // In a whole-sign system the sign of each subsequent house simply advances
-    // by one from the ascendant sign.
-    signInHouse[h] = ((ascSign + h - 2 + 12) % 12) + 1;
+    const lon = base.houses[h];
+    const norm = ((lon % 360) + 360) % 360;
+    signInHouse[h] = Math.floor(norm / 30) + 1;
   }
   if (process.env.DEBUG_HOUSES) {
     console.log('signInHouse:', signInHouse);

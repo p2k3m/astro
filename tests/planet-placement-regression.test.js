@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
+import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
 
@@ -29,7 +30,11 @@ const doc = { createElementNS: (ns, tag) => new Element(tag) };
 
 test('planet positions match AstroSage for sample chart', async () => {
   const { computePositions, renderNorthIndian, HOUSE_BBOXES } = await astro;
-  const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897);
+  const data = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'mean',
+  });
   const planets = Object.fromEntries(data.planets.map((p) => [p.name, p]));
   assert.strictEqual(planets.saturn.sign, 5, 'saturn sign');
   assert.ok(planets.saturn.retro, 'saturn retro');
