@@ -41,6 +41,15 @@ npm run dev:all
 2. Install dependencies with `npm install`.
 3. Start the app with `npm run dev:all` to run the backend and Vite dev server simultaneously.
 
+### Swiss Ephemeris executable
+
+During `npm install` the project tries to build the Swiss Ephemeris `swetest`
+utility from the sources in `swisseph/` using `make`. If the build succeeds or a
+compatible `swetest` is already available in your `PATH`, it will be used for
+high precision calculations. When the build fails (for example, on systems
+without a C toolchain) the app falls back to a bundled JavaScript
+approximation, so installation still completes.
+
 ### Preparing the offline location dataset
 
 The app looks for a `public/cities.json` file containing objects with `name`, `lat` and `lon` fields. You can build this file from the [GeoNames](https://www.geonames.org/) database:

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "server": "node server/index.cjs",
     "test": "node --test",
-    "dev:all": "concurrently \"npm run server\" \"npm run dev\""
+    "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
+    "postinstall": "node swisseph/build-swetest.js"
   },
   "dependencies": {
     "express": "^4.18.2",
