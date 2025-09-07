@@ -336,9 +336,11 @@ async function init(options) {
   if (wasmModule) return wasmModule;
   try {
     if (typeof process === 'object') {
+      const fsMod = 'node:fs/promises';
+      const wasiMod = 'wasi';
       const [{ readFile }, { WASI }] = await Promise.all([
-        import(/* @vite-ignore */ 'fs/promises'),
-        import(/* @vite-ignore */ 'wasi'),
+        import(/* @vite-ignore */ fsMod),
+        import(/* @vite-ignore */ wasiMod),
       ]);
       const wasmPath = new URL('./wasm/swe.wasm', import.meta.url);
       const buffer = await readFile(wasmPath);
