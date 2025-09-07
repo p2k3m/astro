@@ -15,6 +15,7 @@ export default function BirthForm({ onSubmit, loading }) {
     lat: null,
     lon: null,
     timezone: 'Asia/Calcutta',
+    nodeType: 'mean',
     nakshatraAbbr: false,
   });
   const [suggestions, setSuggestions] = useState([]);
@@ -88,6 +89,7 @@ export default function BirthForm({ onSubmit, loading }) {
       lat: form.lat,
       lon: form.lon,
       timezone: form.timezone,
+      nodeType: form.nodeType,
       nakshatraAbbr: form.nakshatraAbbr,
     });
   };
@@ -198,6 +200,18 @@ export default function BirthForm({ onSubmit, loading }) {
               {tz}
             </option>
           ))}
+        </select>
+      </div>
+      <div>
+        <label className="block mb-1">Node Type</label>
+        <select
+          name="nodeType"
+          value={form.nodeType}
+          onChange={handleChange}
+          className="w-full p-2 rounded bg-slate-800 border border-slate-700"
+        >
+          <option value="mean">Mean</option>
+          <option value="true">True</option>
         </select>
       </div>
       <div className="flex items-center gap-2">
