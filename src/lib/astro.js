@@ -19,7 +19,7 @@ const SIGN_BOX_CENTERS = [
   { cx: 0.25, cy: 0.125 }, // Pisces
 ];
 
-// Sign label helpers. By default signs are labelled 1-12.
+// Sign label helpers. Signs are numbered 1–12 (1 = Aries).
 const SIGN_NUMBERS = Array.from({ length: 12 }, (_, i) => String(i + 1));
 const SIGN_ABBREVIATIONS = [
   'Ar',
@@ -65,6 +65,7 @@ const PLANET_ABBR = {
   ketu: 'Ke',
 };
 
+// Retrieve a sign label by 0-based index (0 = Aries).
 function getSignLabel(index, { useAbbreviations = false } = {}) {
   const labels = useAbbreviations ? SIGN_ABBREVIATIONS : SIGN_NUMBERS;
   return labels[index] ?? String(index + 1);
@@ -173,6 +174,8 @@ function diamondPath(cx, cy, size = BOX_SIZE) {
   return `M ${cx} ${cy - size} L ${cx + size} ${cy} L ${cx} ${cy + size} L ${cx - size} ${cy} Z`;
 }
 
+// Wrapper around compute_positions that normalises output for the UI.
+// All sign values use 1-12 numbering (1 = Aries).
 async function computePositions(
   dtISOWithZone,
   lat,
@@ -212,17 +215,17 @@ async function computePositions(
     venus: 10,
     saturn: 15,
   };
-  // exaltation signs (0 = Aries)
+  // Exaltation signs using 1-12 numbering (1 = Aries).
   const exaltedSign = {
-    sun: 0,
-    moon: 1,
-    mars: 9,
-    mercury: 5,
-    jupiter: 3,
-    venus: 11,
-    saturn: 6,
-    rahu: 1,
-    ketu: 7,
+    sun: 1,
+    moon: 2,
+    mars: 10,
+    mercury: 6,
+    jupiter: 4,
+    venus: 12,
+    saturn: 7,
+    rahu: 2,
+    ketu: 8,
   };
 
   const planets = [];
@@ -251,12 +254,12 @@ async function computePositions(
   const sunLon = getCorrectedLon(sun);
 
   for (const p of base.planets) {
-    let sign = p.sign - 1;
+    let sign = p.sign;
     let d = p.deg;
     let m = p.min;
     let s = p.sec;
     if (typeof p.csign === 'number') {
-      sign = p.csign - 1;
+      sign = p.csign;
       d = p.cdeg;
       m = p.cmin;
       s = p.csec;

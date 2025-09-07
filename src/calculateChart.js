@@ -4,9 +4,11 @@ import { DateTime } from 'luxon';
 import { getTimezoneName } from './lib/timezone.js';
 import { computePositions } from './lib/astro.js';
 
+// Convert an ecliptic longitude into a zodiac sign and degree components.
+// Signs are numbered 1–12 where 1 = Aries and 12 = Pisces.
 export function longitudeToSign(longitude) {
   longitude = ((longitude % 360) + 360) % 360;
-  const sign = Math.floor(longitude / 30); // 0..11
+  const sign = Math.floor(longitude / 30) + 1; // 1..12
   let rem = longitude % 30;
   let deg = Math.floor(rem);
   rem = (rem - deg) * 60;

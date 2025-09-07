@@ -37,13 +37,13 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   });
   assert.strictEqual(am.ascSign, 7);
   const amPlanets = Object.fromEntries(am.planets.map((p) => [p.name, p]));
-  assert.strictEqual(amPlanets.sun.sign, 8);
+  assert.strictEqual(amPlanets.sun.sign, 9);
   assert.strictEqual(amPlanets.sun.house, 3);
-  assert.strictEqual(amPlanets.moon.sign, 2);
+  assert.strictEqual(amPlanets.moon.sign, 3);
   assert.strictEqual(amPlanets.moon.house, 9);
-  assert.strictEqual(amPlanets.jupiter.sign, 7);
+  assert.strictEqual(amPlanets.jupiter.sign, 8);
   assert.strictEqual(amPlanets.jupiter.house, 2);
-  assert.strictEqual(amPlanets.saturn.sign, 7);
+  assert.strictEqual(amPlanets.saturn.sign, 8);
   assert.strictEqual(amPlanets.saturn.house, 2);
   // Ensure Mars and Rahu mirror updated placements
   assert.strictEqual(amPlanets.mars.house, 4);
@@ -80,9 +80,9 @@ test('reference charts for Darbhanga on 1982-12-01 match expected placements', a
   });
   assert.strictEqual(pm.ascSign, 2);
   const pmPlanets = Object.fromEntries(pm.planets.map((p) => [p.name, p]));
-  assert.strictEqual(pmPlanets.sun.sign, 8);
+  assert.strictEqual(pmPlanets.sun.sign, 9);
   assert.strictEqual(pmPlanets.sun.house, 8);
-  assert.strictEqual(pmPlanets.moon.sign, 2);
+  assert.strictEqual(pmPlanets.moon.sign, 3);
   assert.strictEqual(pmPlanets.moon.house, 2);
   assert.strictEqual(pmPlanets.jupiter.house, 7);
   assert.strictEqual(pmPlanets.saturn.house, 7);

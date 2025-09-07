@@ -10,6 +10,8 @@ swe.ready.then(() => {
   } catch {}
 });
 
+// Convert a longitude into sign and DMS components.
+// Signs are numbered 1–12 (1 = Aries, 12 = Pisces).
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
   let sign = Math.floor(norm / 30) + 1; // 1..12
@@ -163,6 +165,7 @@ async function compute_positions(
     pada: kPada,
   });
 
+  // ascSign and each planet.sign use 1–12 numbering (1 = Aries).
   return {
     ascSign,
     ascendant: { lon: raw.ascendant, sign: ascSign, deg: ascDeg, min: ascMin, sec: ascSec },

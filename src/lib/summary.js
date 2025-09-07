@@ -34,7 +34,7 @@ function formatDMS(p) {
 export function summarizeChart(data) {
   const ascendant = SIGN_NAMES[data.ascSign - 1];
   const moon = data.planets.find((p) => p.name === 'moon');
-  const moonSign = SIGN_NAMES[moon?.sign ?? 0];
+  const moonSign = SIGN_NAMES[(moon?.sign ?? 1) - 1]; // 1-based sign numbers
   // keep index 0 empty so houses are 1‑indexed
   const houses = Array(13).fill('');
   for (let h = 1; h <= 12; h += 1) {
