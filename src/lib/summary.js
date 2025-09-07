@@ -53,7 +53,8 @@ export function summarizeChart(data) {
         if (p.nakshatra && p.pada) {
           extra = ` ${p.nakshatra} ${p.pada}`;
         }
-        return `${abbr} ${degStr}${extra}`;
+        const signName = SIGN_NAMES[(p.sign ?? 1) - 1];
+        return `${signName} ${abbr} ${degStr}${extra}`;
       })
       .join(' ');
   }
