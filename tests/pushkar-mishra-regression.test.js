@@ -21,7 +21,7 @@ const expected = {
 
 const toArcminutes = ({ sign, deg, min, sec }) => ((sign - 1) * 30 + deg) * 60 + min + sec / 60;
 
-const TOLERANCE = 0.5; // arcminutes
+const TOLERANCE = 0.05; // arcminutes
 
 test('Pushkar Mishra positions regression', async () => {
   const { compute_positions } = await import('../src/lib/ephemeris.js');
