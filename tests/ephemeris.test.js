@@ -87,6 +87,7 @@ test('house cusps and retrograde flags', async () => {
     SE_NEPTUNE: 9,
     SE_PLUTO: 10,
     SE_TRUE_NODE: 7,
+    SE_MEAN_NODE: 7,
     swe_julday: () => 0,
     swe_houses_ex: () => ({
       ascendant: 123,
