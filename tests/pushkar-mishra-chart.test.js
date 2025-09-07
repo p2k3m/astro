@@ -22,8 +22,17 @@ test('Pushkar Mishra chart positions', async () => {
   assert.strictEqual(pada, 4);
   const actual = Object.fromEntries(
     res.planets.map((p) => {
-      const { nakshatra, pada } = longitudeToNakshatra(p.lon);
-      return [p.name, { sign: p.sign, deg: p.deg, min: p.min, sec: p.sec, nakshatra, pada }];
+      return [
+        p.name,
+        {
+          sign: p.sign,
+          deg: p.deg,
+          min: p.min,
+          sec: p.sec,
+          nakshatra: p.nakshatra,
+          pada: p.pada,
+        },
+      ];
     })
   );
   const expected = {
