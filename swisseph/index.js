@@ -363,11 +363,10 @@ function localSiderealTime(jd, lon) {
     360.98564736629 * (jd - 2451545.0) +
     0.000387933 * T * T -
     (T * T * T) / 38710000;
-  // Swiss Ephemeris uses geographic longitudes that are positive east of
-  // Greenwich.  The sidereal-time formula above assumes the same convention,
-  // which means we subtract the east-positive longitude to obtain the local
-  // sidereal time.
-  return normalizeAngle(GMST - lon);
+  // Swiss Ephemeris uses geographic longitudes positive east of Greenwich.
+  // To convert Greenwich sidereal time to the local value we therefore add
+  // the east-positive longitude.
+  return normalizeAngle(GMST + lon);
 }
 
 function obliquity(jd) {
@@ -379,12 +378,14 @@ function ascendantTropical(jd, lat, lon) {
   const lst = localSiderealTime(jd, lon) * DEG2RAD;
   const eps = obliquity(jd) * DEG2RAD;
   const phi = lat * DEG2RAD;
-  // Standard ascendant formula valid for all latitudes
+  // Standard ascendant formula valid for all latitudes. After computing the
+  // arctangent we add 180° to obtain the ecliptic longitude measured from
+  // Aries 0°.
   const asc = Math.atan2(
     -Math.cos(lst),
-    Math.sin(lst) * Math.cos(eps) - Math.tan(phi) * Math.sin(eps)
+    Math.sin(lst) * Math.cos(eps) + Math.tan(phi) * Math.sin(eps)
   );
-  return normalizeAngle(asc * RAD2DEG);
+  return normalizeAngle(asc * RAD2DEG + 180);
 }
 
 function js_swe_houses_ex(jd, lat, lon, hsys, flags) {

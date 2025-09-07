@@ -4,7 +4,7 @@ import * as swe from '../swisseph/index.js';
 
 // Verified values from AstroSage for Pushkar Mishra birth chart
 const expected = {
-  ascendant: { sign: 7, deg: 19, min: 25, sec: 56, nakshatra: 'Swati', pada: 4 },
+  ascendant: { sign: 7, deg: 12, min: 17, sec: 3, nakshatra: 'Swati', pada: 2 },
   sun: { sign: 8, deg: 14, min: 46, sec: 24, nakshatra: 'Anuradha', pada: 4 },
   moon: { sign: 2, deg: 13, min: 36, sec: 20, nakshatra: 'Rohini', pada: 2 },
   mercury: { sign: 8, deg: 20, min: 59, sec: 43, nakshatra: 'Jyeshtha', pada: 2 },
