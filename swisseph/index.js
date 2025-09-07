@@ -9,25 +9,31 @@ if (typeof globalThis.self === 'undefined') {
 
 // Attempt to locate an external `swetest` binary either on the PATH or built
 // locally from the C sources. If unavailable, computations fall back to the
-// JavaScript approximation below.
-import { execFileSync } from 'child_process';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
-
+// JavaScript approximation below. Only perform this lookup in Node.js where the
+// `swetest` executable can be invoked.
 let swetestPath = null;
-try {
-  execFileSync('swetest', ['-h'], { stdio: 'ignore' });
-  swetestPath = 'swetest';
-} catch (e) {
+let execFileSync;
+if (typeof process !== 'undefined' && process.versions?.node) {
+  const [child, url, path, fs] = await Promise.all([
+    import('node:child_process'),
+    import('node:url'),
+    import('node:path'),
+    import('node:fs'),
+  ]);
+  execFileSync = child.execFileSync;
   try {
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const local = path.join(__dirname, 'swetest');
-    fs.accessSync(local, fs.constants.X_OK);
-    execFileSync(local, ['-h'], { stdio: 'ignore' });
-    swetestPath = local;
-  } catch {
-    swetestPath = null;
+    execFileSync('swetest', ['-h'], { stdio: 'ignore' });
+    swetestPath = 'swetest';
+  } catch (e) {
+    try {
+      const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+      const local = path.join(__dirname, 'swetest');
+      fs.accessSync(local, fs.constants.X_OK);
+      execFileSync(local, ['-h'], { stdio: 'ignore' });
+      swetestPath = local;
+    } catch {
+      swetestPath = null;
+    }
   }
 }
 
