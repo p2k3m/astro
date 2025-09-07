@@ -106,3 +106,30 @@ test('Darbhanga 1982-12-01 03:50: Mercury and Venus in house 2, Jupiter in house
     assert.strictEqual(planets[name].house, house, `${name} house`);
   }
 });
+
+// Using the "true" node accounts for the lunar node's small oscillation.
+// AstroSage labels this option "True Node". For the reference chart the
+// nodes should still fall in Gemini (Rahu) and Sagittarius (Ketu).
+test('Darbhanga 1982-12-01 03:50 true node matches AstroSage', async () => {
+  const { computePositions } = await astro;
+  const res = await computePositions('1982-12-01T03:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'true',
+  });
+  const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
+  assert.strictEqual(planets.rahu.sign, 3); // Gemini
+  assert.strictEqual(planets.ketu.sign, 9); // Sagittarius
+});
+
+test('Darbhanga 1982-12-01 15:50 true node matches AstroSage', async () => {
+  const { computePositions } = await astro;
+  const res = await computePositions('1982-12-01T15:50+05:30', 26.152, 85.897, {
+    sidMode: swe.SE_SIDM_LAHIRI,
+    houseSystem: 'W',
+    nodeType: 'true',
+  });
+  const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
+  assert.strictEqual(planets.rahu.sign, 3); // Gemini
+  assert.strictEqual(planets.ketu.sign, 9); // Sagittarius
+});

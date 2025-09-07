@@ -5,6 +5,11 @@ import * as swe from '../swisseph/index.js';
 
 const ephemeris = import('../src/lib/ephemeris.js');
 
+// Swiss Ephemeris supports two flavours of the lunar nodes:
+// the smoothed "mean" node and the oscillating "true" node.
+// This test verifies that our wrapper swaps the underlying
+// Swiss Ephemeris call based on the `nodeType` option.
+
 test('changing nodeType updates lunar node longitude', async () => {
   const { compute_positions } = await ephemeris;
 

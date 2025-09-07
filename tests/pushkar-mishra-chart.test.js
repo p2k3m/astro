@@ -48,3 +48,19 @@ test('Pushkar Mishra chart positions', async () => {
   assert.deepStrictEqual(actual, expected);
 });
 
+// Switching to the "true" node should adjust the lunar nodes by about a
+// degree while keeping them in Gemini/Sagittarius for this chart.
+test('Pushkar Mishra chart with true node', async () => {
+  const { compute_positions } = await import('../src/lib/ephemeris.js');
+  const res = await compute_positions({
+    datetime: '1982-12-01T03:50',
+    tz: 'Asia/Kolkata',
+    lat: 26.152,
+    lon: 85.897,
+    nodeType: 'true',
+  });
+  const planets = Object.fromEntries(res.planets.map((p) => [p.name, p]));
+  assert.strictEqual(planets.rahu.sign, 3); // Gemini
+  assert.strictEqual(planets.ketu.sign, 9); // Sagittarius
+});
+
