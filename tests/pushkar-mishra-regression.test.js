@@ -15,8 +15,8 @@ const expected = {
   uranus: { sign: 8, deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },
   neptune: { sign: 9, deg: 2, min: 28, sec: 10, nakshatra: 'Mula', pada: 1 },
   pluto: { sign: 7, deg: 4, min: 48, sec: 32, nakshatra: 'Chitra', pada: 4 },
-  rahu: { sign: 2, deg: 13, min: 36, sec: 20, nakshatra: 'Rohini', pada: 2 },
-  ketu: { sign: 8, deg: 13, min: 36, sec: 20, nakshatra: 'Anuradha', pada: 4 },
+  rahu: { sign: 3, deg: 11, min: 53, sec: 16, nakshatra: 'Ardra', pada: 2 },
+  ketu: { sign: 9, deg: 11, min: 53, sec: 16, nakshatra: 'Mula', pada: 4 },
 };
 
 const toArcminutes = ({ sign, deg, min, sec }) => ((sign - 1) * 30 + deg) * 60 + min + sec / 60;

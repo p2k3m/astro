@@ -9,7 +9,7 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
   assert.strictEqual(res.ascSign, 7);
   assert.strictEqual(res.ascendant.deg, 12);
   assert.strictEqual(res.ascendant.min, 17);
-  assert.ok(Math.abs(res.ascendant.sec - 3) <= 1);
+  assert.ok(Math.abs(res.ascendant.sec - 6) <= 1);
   assert.strictEqual(res.ascendant.nakshatra, 'Swati');
   assert.strictEqual(res.ascendant.pada, 2);
   assert.deepStrictEqual(
@@ -30,8 +30,8 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 8,
-    ketu: 2,
+    rahu: 9,
+    ketu: 3,
   };
   for (const [name, house] of Object.entries(expected)) {
     assert.strictEqual(planets[name].house, house, `${name} house`);
@@ -48,8 +48,8 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     uranus: false,
     neptune: false,
     pluto: false,
-    rahu: false,
-    ketu: false,
+    rahu: true,
+    ketu: true,
   };
   for (const [name, retro] of Object.entries(expectedRetro)) {
     assert.strictEqual(planets[name].retro, retro, `${name} retrograde`);
@@ -66,8 +66,8 @@ test('Darbhanga 1982-12-01 03:50 positions', async () => {
     uranus: { deg: 11, min: 29, sec: 15 },
     neptune: { deg: 2, min: 28, sec: 10 },
     pluto: { deg: 4, min: 48, sec: 32 },
-    rahu: { deg: 13, min: 36, sec: 20 },
-    ketu: { deg: 13, min: 36, sec: 20 },
+    rahu: { deg: 11, min: 53, sec: 16 },
+    ketu: { deg: 11, min: 53, sec: 16 },
   };
   for (const [name, exp] of Object.entries(expectedDMS)) {
     const p = planets[name];

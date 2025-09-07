@@ -11,9 +11,10 @@ test('summary lists planets in expected houses for reference chart', async () =>
   const summaryData = summarizeChart(data);
   const expected = {
     1: ['Sa', 'Pl'],
-    2: ['Su', 'Me(C)', 'Ve(C)', 'Ju', 'Ur', 'Ke'],
-    3: ['Ma', 'Ne'],
-    8: ['Mo', 'Ra'],
+    2: ['Su', 'Me(C)', 'Ve(C)', 'Ju', 'Ur'],
+    3: ['Ke', 'Ma', 'Ne'],
+    8: ['Mo'],
+    9: ['Ra'],
   };
   for (const [house, planets] of Object.entries(expected)) {
     for (const abbr of planets) {

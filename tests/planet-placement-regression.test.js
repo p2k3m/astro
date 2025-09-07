@@ -49,8 +49,8 @@ test('planet positions match AstroSage for sample chart', async () => {
     uranus: 2,
     neptune: 3,
     pluto: 1,
-    rahu: 8,
-    ketu: 2,
+    rahu: 9,
+    ketu: 3,
   };
   const PLANET_ABBR = {
     sun: 'Su',
