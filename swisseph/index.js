@@ -414,11 +414,15 @@ async function init(options) {
           __syscall_readlinkat: () => 0,
         };
 
-        const imports = { env };
-        if (typeof WASI === 'function') {
-          const wasi = new WASI({ version: 'preview1' });
-          imports.wasi_snapshot_preview1 = wasi.wasiImport;
-        }
+        const wasiSnapshot =
+          typeof WASI === 'function'
+            ? new WASI({ version: 'preview1' }).wasiImport
+            : {
+                fd_write: () => 0,
+                fd_close: () => 0,
+                proc_exit: (code) => console.warn('WASI exit', code),
+              };
+        const imports = { env, wasi_snapshot_preview1: wasiSnapshot };
 
         const { instance } = await WebAssembly.instantiateStreaming(
           response,
