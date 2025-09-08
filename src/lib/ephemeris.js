@@ -22,13 +22,14 @@ function lonToSignDeg(longitude) {
   let totalSec = Math.trunc(norm * 3600);
   totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
-  const sign = Math.floor(totalSec / (30 * 3600)) + 1; // 1..12
+  // Break the total seconds down, truncating at each step to match AstroSage.
+  const sign = Math.trunc(totalSec / (30 * 3600)) + 1; // 1..12
   totalSec %= 30 * 3600;
 
-  const deg = Math.floor(totalSec / 3600);
+  const deg = Math.trunc(totalSec / 3600);
   totalSec %= 3600;
 
-  const min = Math.floor(totalSec / 60);
+  const min = Math.trunc(totalSec / 60);
   const sec = totalSec % 60;
 
   return { sign, deg, min, sec };
