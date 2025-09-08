@@ -16,6 +16,17 @@ test('lonToSignDeg truncates fractional seconds per AstroSage', async () => {
   });
 });
 
+test('lonToSignDeg normalizes longitudes greater than 360°', async () => {
+  const lonToSignDeg = await getFn();
+  const base = 14 + 46 / 60 + 57.5 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(base + 360), {
+    sign: 1,
+    deg: 14,
+    min: 46,
+    sec: 57,
+  });
+});
+
 test('lonToSignDeg does not round up near sign change', async () => {
   const lonToSignDeg = await getFn();
   const lon = 29 + 59 / 60 + 59.9999 / 3600;
