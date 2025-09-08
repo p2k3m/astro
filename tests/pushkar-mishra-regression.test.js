@@ -31,7 +31,7 @@ const expected = {
     sign: 2,
     deg: 13,
     min: 36,
-    sec: 22,
+    sec: 21,
     lon: 43.606102,
     nakshatra: 'Rohini',
     pada: 2,
