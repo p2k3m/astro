@@ -16,17 +16,21 @@ function lonToSignDeg(longitude) {
   // Normalise longitude to the 0–360° range.
   let norm = ((longitude % 360) + 360) % 360;
 
-  // Break the longitude down step by step. AstroSage truncates fractional
-  // arcseconds rather than rounding.
-  let sign = Math.floor(norm / 30) + 1; // 1..12
-  norm %= 30;
+  // Break the longitude down step by step. AstroSage rounds fractional
+  // arcseconds to the nearest integer.
+  // Convert the normalised longitude to total arcseconds, round, then
+  // decompose back into sign/degree/minute/second components.
+  let totalSec = Math.round(norm * 3600 + 1e-9); // guard against float error
+  totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
-  let deg = Math.floor(norm);
-  norm = (norm - deg) * 60;
+  let sign = Math.floor(totalSec / (30 * 3600)) + 1; // 1..12
+  totalSec %= 30 * 3600;
 
-  let min = Math.floor(norm);
-  norm = (norm - min) * 60;
-  let sec = Math.floor(norm + 1e-9); // guard against float error
+  let deg = Math.floor(totalSec / 3600);
+  totalSec %= 3600;
+
+  let min = Math.floor(totalSec / 60);
+  let sec = totalSec % 60;
 
   return { sign, deg, min, sec };
 }
