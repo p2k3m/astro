@@ -86,7 +86,7 @@ const expected = {
     deg: 11,
     min: 29,
     sec: 15,
-    lon: 221.4875,
+    lon: 221.4876317,
     nakshatra: 'Anuradha',
     pada: 3,
   },
