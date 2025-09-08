@@ -21,7 +21,9 @@ function lonToSignDeg(longitude) {
   // fractional part of 0.5 seconds or greater rounds up to the next second.
   // A tiny epsilon compensates for floating-point noise that could otherwise
   // push values like 57.5″ slightly below the 0.5″ threshold.
-  let totalSec = Math.round(norm * 3600 + 1e-9);
+  // Use explicit half-up rounding via `Math.floor(value + 0.5)` to mirror the
+  // behaviour observed on AstroSage.
+  let totalSec = Math.floor(norm * 3600 + 0.5 + 1e-9);
   totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
   // Break the total seconds down using integer division.
