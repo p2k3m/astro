@@ -73,23 +73,23 @@ app.get('/api/positions', async (req, res) => {
 // Export the app for testing purposes.
 export default app;
 
-(async () => {
-  try {
-    const swisseph = await import('../swisseph/index.js');
-    await swisseph.ready;
-    swisseph.swe_set_ephe_path(ephemerisPath);
-    swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
-    console.log('Swiss Ephemeris path configured successfully.');
+// --- Swiss Ephemeris Setup ---
 
-    // Start the server only after Swiss Ephemeris is configured and only if this
-    // file is executed directly.
-    if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-      app.listen(PORT, () => {
-        console.log(`Server listening on port ${PORT}`);
-      });
-    }
-  } catch (err) {
-    console.error('Failed to configure Swiss Ephemeris:', err);
-    process.exit(1);
+try {
+  const swisseph = await import('../swisseph/index.js');
+  await swisseph.ready;
+  swisseph.swe_set_ephe_path(ephemerisPath);
+  swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
+  console.log('Swiss Ephemeris path configured successfully.');
+
+  // Start the server only after Swiss Ephemeris is configured and only if this
+  // file is executed directly.
+  if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
   }
-})();
+} catch (err) {
+  console.error('Failed to configure Swiss Ephemeris:', err);
+  process.exit(1);
+}
