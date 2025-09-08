@@ -16,6 +16,17 @@ test('lonToSignDeg truncates fractional seconds per AstroSage', async () => {
   });
 });
 
+test('lonToSignDeg does not round up near sign change', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = 29 + 59 / 60 + 59.9999 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 29,
+    min: 59,
+    sec: 59,
+  });
+});
+
 test('lonToSignDeg truncates near sign boundary without overflow', async () => {
   const lonToSignDeg = await getFn();
   const lon = 29 + 59 / 60 + 59.9 / 3600;
