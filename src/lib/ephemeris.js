@@ -68,11 +68,12 @@ async function compute_positions(
   } catch {}
 
   const date = toUTC({ datetime, zone: tz });
+  // `toUTC` already truncates to whole seconds, so mirror AstroSage by
+  // ignoring any sub-second fragments when calculating UT.
   const ut =
     date.getUTCHours() +
     date.getUTCMinutes() / 60 +
-    date.getUTCSeconds() / 3600 +
-    date.getUTCMilliseconds() / 3600000;
+    date.getUTCSeconds() / 3600;
   const jd = sweInst.swe_julday(
     date.getUTCFullYear(),
     date.getUTCMonth() + 1,
