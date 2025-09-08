@@ -60,6 +60,17 @@ test('lonToSignDeg rounds and normalizes negative longitudes', async () => {
   });
 });
 
+test('lonToSignDeg rounds negative longitudes across sign boundary', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = -(29 + 59 / 60 + 59.5 / 3600); // -> 330°0′0.5″ -> 330°0′1″
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 12,
+    deg: 0,
+    min: 0,
+    sec: 1,
+  });
+});
+
 test('lonToSignDeg rounds near 360° to Aries', async () => {
   const lonToSignDeg = await getFn();
   const lon = 359 + 59 / 60 + 59.9 / 3600;
