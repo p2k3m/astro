@@ -1,17 +1,40 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import * as swe from '../swisseph/index.js';
-import fs from 'node:fs';
-
 const astro = import('../src/lib/astro.js');
+
 // Reference positions from AstroSage in absolute degrees with their
-// nakshatra and pada loaded from an external fixture so the expected
-// values do not depend on repository calculations.
-const ref = JSON.parse(
-  fs.readFileSync(new URL('./fixtures/astrosage-positions.json', import.meta.url))
-);
-const ASTROSAGE_AM_TABLE = ref.am;
-const ASTROSAGE_PM_TABLE = ref.pm;
+// nakshatra and pada. Keeping the table inline makes the expectations
+// explicit and avoids relying on repository calculations.
+const ASTROSAGE_AM_TABLE = {
+  sun: { lon: 224.773889, nakshatra: 'Anuradha', pada: 4 },
+  moon: { lon: 43.615, nakshatra: 'Rohini', pada: 2 },
+  mars: { lon: 269.155, nakshatra: 'Uttara Ashadha', pada: 1 },
+  mercury: { lon: 230.996111, nakshatra: 'Jyeshtha', pada: 2 },
+  jupiter: { lon: 211.074722, nakshatra: 'Vishakha', pada: 4 },
+  venus: { lon: 231.418333, nakshatra: 'Jyeshtha', pada: 2 },
+  saturn: { lon: 186.543056, nakshatra: 'Chitra', pada: 4 },
+  uranus: { lon: 221.4875, nakshatra: 'Anuradha', pada: 3 },
+  neptune: { lon: 242.469444, nakshatra: 'Mula', pada: 1 },
+  pluto: { lon: 184.808889, nakshatra: 'Chitra', pada: 4 },
+  rahu: { lon: 71.887778, nakshatra: 'Ardra', pada: 2 },
+  ketu: { lon: 251.887778, nakshatra: 'Mula', pada: 4 },
+};
+
+const ASTROSAGE_PM_TABLE = {
+  sun: { lon: 225.280556, nakshatra: 'Anuradha', pada: 4 },
+  moon: { lon: 51.051111, nakshatra: 'Rohini', pada: 4 },
+  mars: { lon: 269.541111, nakshatra: 'Uttara Ashadha', pada: 1 },
+  mercury: { lon: 231.775, nakshatra: 'Jyeshtha', pada: 2 },
+  jupiter: { lon: 211.183889, nakshatra: 'Vishakha', pada: 4 },
+  venus: { lon: 232.046111, nakshatra: 'Jyeshtha', pada: 2 },
+  saturn: { lon: 186.595, nakshatra: 'Chitra', pada: 4 },
+  uranus: { lon: 221.518333, nakshatra: 'Anuradha', pada: 3 },
+  neptune: { lon: 242.487778, nakshatra: 'Mula', pada: 1 },
+  pluto: { lon: 184.825278, nakshatra: 'Chitra', pada: 4 },
+  rahu: { lon: 71.861111, nakshatra: 'Ardra', pada: 2 },
+  ketu: { lon: 251.861111, nakshatra: 'Mula', pada: 4 },
+};
 
 // Absolute difference between two longitudes in arcminutes.  Using arcminutes
 // keeps the comparison unit small so we can assert very tight tolerances.
