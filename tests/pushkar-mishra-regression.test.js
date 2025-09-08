@@ -135,8 +135,7 @@ const LON_TOLERANCE = 0.0003; // degrees (~1 arcsecond)
 test('Pushkar Mishra positions regression', async () => {
   const { compute_positions } = await import('../src/lib/ephemeris.js');
   const res = await compute_positions({
-    datetime: '1982-12-01T03:50',
-    tz: 'Asia/Kolkata',
+    datetime: '1982-12-01T03:50+05:30',
     lat: 26.152,
     lon: 85.897,
     nodeType: 'mean',
