@@ -7,7 +7,7 @@ async function getFn() {
 
 test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
   const lonToSignDeg = await getFn();
-  const lon = 14 + 46 / 60 + 57.99 / 3600;
+  const lon = 14 + 46 / 60 + 57.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 1,
     deg: 14,
@@ -16,14 +16,25 @@ test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
   });
 });
 
-test('lonToSignDeg rounds near sign boundary', async () => {
+test('lonToSignDeg rounds up exactly at half-second near sign boundary', async () => {
   const lonToSignDeg = await getFn();
-  const lon = 29 + 59 / 60 + 59.99 / 3600;
+  const lon = 29 + 59 / 60 + 59.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 2,
     deg: 0,
     min: 0,
     sec: 0,
+  });
+});
+
+test('lonToSignDeg does not round up when below half-second near sign boundary', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = 29 + 59 / 60 + 59.49 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 29,
+    min: 59,
+    sec: 59,
   });
 });
 

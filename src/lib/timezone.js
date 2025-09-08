@@ -72,6 +72,9 @@ export function toUTC({ datetime, zone }) {
       DateTimeObj = req('luxon').DateTime;
     }
   }
-  const dt = DateTimeObj.fromISO(datetime, { zone });
+  // AstroSage truncates timestamps to whole seconds before converting to UT.
+  const dt = DateTimeObj.fromISO(datetime, { zone })
+    .startOf('second')
+    .toUTC();
   return dt.toJSDate();
 }
