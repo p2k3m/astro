@@ -27,6 +27,17 @@ test('lonToSignDeg rounds 0.5″ upward', async () => {
   });
 });
 
+test('lonToSignDeg rounds fractions below 0.5″ downward', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = 14 + 46 / 60 + 57.4 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 14,
+    min: 46,
+    sec: 57,
+  });
+});
+
 test('lonToSignDeg handles floating-point noise at 0.5″', async () => {
   const lonToSignDeg = await getFn();
   const up = 14 + 46 / 60 + (57.5 + 1e-6) / 3600;
