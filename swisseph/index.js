@@ -428,17 +428,18 @@ function ascendantTropical(jd, lat, lon) {
 }
 
 function js_swe_houses_ex(jd, lat, lon, hsys, flags) {
+  // Compute the ascendant and house cusps in the tropical zodiac. When
+  // `SEFLG_SIDEREAL` is specified, the `call` wrapper later converts these
+  // positions to sidereal by subtracting the ayanāṃśa. This avoids
+  // double-application of the ayanāṃśa which previously produced
+  // ~24° offsets compared to Swiss Ephemeris and AstroSage results.
   const ascTropical = ascendantTropical(jd, lat, lon);
-  const ascSid = siderealLongitude(jd, ascTropical);
-  // Derive whole-sign house cusps: each house begins at the start of its
-  // corresponding zodiac sign.  House 1 starts at the beginning of the
-  // ascendant's sign, with subsequent houses spaced every 30°.
-  const signStart = Math.floor(ascSid / 30) * 30;
+  const signStart = Math.floor(ascTropical / 30) * 30;
   const houses = [null];
   for (let i = 0; i < 12; i++) {
     houses.push(normalizeAngle(signStart + i * 30));
   }
-  return { ascendant: ascSid, houses };
+  return { ascendant: ascTropical, houses };
 }
 
 // Determine the house position of a planet given its ecliptic longitude.
