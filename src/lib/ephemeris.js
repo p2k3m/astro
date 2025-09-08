@@ -13,17 +13,37 @@ swe.ready.then(() => {
 // Convert a longitude into sign and DMS components.
 // Signs are numbered 1–12 (1 = Aries, 12 = Pisces).
 function lonToSignDeg(longitude) {
-  const norm = ((longitude % 360) + 360) % 360;
-  // AstroSage rounds fractional seconds, carrying any overflow into minutes,
-  // degrees, and sign boundaries. Convert the longitude to total arcseconds
-  // and round to the nearest second before decomposing.
-  // Add a tiny epsilon before rounding to avoid floating-point edge cases
-  // around half-second values (e.g., 59.5" being represented as 59.499999").
-  let totalSeconds = Math.round(norm * 3600 + 1e-9) % (360 * 3600);
-  const sign = Math.floor(totalSeconds / (30 * 3600)) + 1; // 1..12
-  const deg = Math.floor((totalSeconds % (30 * 3600)) / 3600);
-  const min = Math.floor((totalSeconds % 3600) / 60);
-  const sec = totalSeconds % 60;
+  // Normalise longitude to the 0–360° range.
+  let norm = ((longitude % 360) + 360) % 360;
+
+  // Break the longitude down step by step so we can emulate AstroSage’s
+  // rounding behaviour exactly: seconds are rounded to the nearest integer
+  // and any overflow is carried up through minutes, degrees and finally
+  // into the sign itself.
+  let sign = Math.floor(norm / 30) + 1; // 1..12
+  norm %= 30;
+
+  let deg = Math.floor(norm);
+  norm = (norm - deg) * 60;
+
+  let min = Math.floor(norm);
+  // Add a tiny epsilon before rounding to sidestep floating point cases such
+  // as 59.5" being represented as 59.499999" which would round down.
+  let sec = Math.round((norm - min) * 60 + 1e-9);
+
+  if (sec === 60) {
+    sec = 0;
+    min += 1;
+  }
+  if (min === 60) {
+    min = 0;
+    deg += 1;
+  }
+  if (deg === 30) {
+    deg = 0;
+    sign = sign === 12 ? 1 : sign + 1;
+  }
+
   return { sign, deg, min, sec };
 }
 
