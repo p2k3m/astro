@@ -6,6 +6,7 @@ const astro = import('../src/lib/astro.js');
 // Reference positions from AstroSage in absolute degrees with their
 // corresponding nakshatra and pada. Keeping the data inline keeps the
 // expectations explicit and avoids relying on repository calculations.
+// The test fails on any mismatch to ensure ongoing alignment.
 const CASES = [
   {
     label: 'Darbhanga 1982-12-01 03:50',
@@ -49,7 +50,8 @@ const CASES = [
 // arcminutes keeps the comparison unit small so we can assert very tight
 // tolerances.
 const deltaArcminutes = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
-const tol = 0.05; // allowable difference in arcminutes (~3 arcseconds)
+// Allowable difference in arcminutes (~3 arcseconds)
+const tol = 0.05;
 
 for (const { label, datetime, expected } of CASES) {
   test(`${label} matches AstroSage`, async () => {
