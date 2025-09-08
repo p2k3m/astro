@@ -16,6 +16,14 @@ test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
   });
 });
 
+test('lonToSignDeg handles floating-point noise at 0.5″', async () => {
+  const lonToSignDeg = await getFn();
+  const up = 14 + 46 / 60 + (57.5 + 1e-6) / 3600;
+  const down = 14 + 46 / 60 + (57.5 - 1e-6) / 3600;
+  assert.strictEqual(lonToSignDeg(up).sec, 58);
+  assert.strictEqual(lonToSignDeg(down).sec, 57);
+});
+
 test('lonToSignDeg normalizes longitudes greater than 360°', async () => {
   const lonToSignDeg = await getFn();
   const base = 14 + 46 / 60 + 57.5 / 3600;
