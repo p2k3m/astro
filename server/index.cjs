@@ -67,8 +67,9 @@ app.get('/api/positions', async (req, res) => {
 module.exports = app;
 
 // --- Swiss Ephemeris Setup ---
+// The Swiss Ephemeris library is loaded dynamically when the server starts.
 
-(async () => {
+async function startServer() {
   try {
     const swisseph = await import('../swisseph/index.js');
     await swisseph.ready;
@@ -87,4 +88,6 @@ module.exports = app;
     console.error('Failed to configure Swiss Ephemeris:', err);
     process.exit(1);
   }
-})();
+}
+
+startServer();
