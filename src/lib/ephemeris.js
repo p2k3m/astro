@@ -17,21 +17,11 @@ function lonToSignDeg(longitude) {
   let norm = ((longitude % 360) + 360) % 360;
 
   // Convert the normalised longitude to total arcseconds and round to the
-  // nearest whole arcsecond. Investigations of AstroSage output show that it
-  // uses *banker's rounding* (round half to even) when converting fractional
-  // seconds. A tiny epsilon compensates for floating-point noise that could
-  // otherwise push values like 57.5″ slightly below the 0.5″ threshold.
-  let totalSec = norm * 3600;
-  const floor = Math.floor(totalSec);
-  const frac = totalSec - floor;
-  if (frac > 0.5 + 1e-9) {
-    totalSec = floor + 1;
-  } else if (frac < 0.5 - 1e-9) {
-    totalSec = floor;
-  } else {
-    // Exactly halfway (within epsilon): round to the nearest even integer.
-    totalSec = floor + (floor % 2);
-  }
+  // nearest whole arcsecond. AstroSage rounds halves upward ("half away from
+  // zero"), so 0.5″ becomes 1″. A tiny epsilon compensates for floating-point
+  // noise that could otherwise push values like 57.5″ slightly below the 0.5″
+  // threshold.
+  let totalSec = Math.round(norm * 3600 + 1e-9);
   totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
   // Break the total seconds down using integer division.

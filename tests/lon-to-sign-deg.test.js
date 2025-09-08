@@ -16,14 +16,14 @@ test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
   });
 });
 
-test("lonToSignDeg uses banker's rounding for 0.5″", async () => {
+test('lonToSignDeg rounds 0.5″ upward', async () => {
   const lonToSignDeg = await getFn();
   const lon = 14 + 46 / 60 + 58.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 1,
     deg: 14,
     min: 46,
-    sec: 58,
+    sec: 59,
   });
 });
 
@@ -81,12 +81,12 @@ test('lonToSignDeg rounds and normalizes negative longitudes', async () => {
 
 test('lonToSignDeg rounds negative longitudes across sign boundary', async () => {
   const lonToSignDeg = await getFn();
-  const lon = -(29 + 59 / 60 + 59.5 / 3600); // -> 330°0′0.5″ -> 330°0′0″
+  const lon = -(29 + 59 / 60 + 59.5 / 3600); // -> 330°0′0.5″ -> 330°0′1″
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 12,
     deg: 0,
     min: 0,
-    sec: 0,
+    sec: 1,
   });
 });
 
