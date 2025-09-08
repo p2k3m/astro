@@ -13,8 +13,9 @@ const ref = JSON.parse(
 const ASTROSAGE_AM_TABLE = ref.am;
 const ASTROSAGE_PM_TABLE = ref.pm;
 
-// Absolute difference between two longitudes in arcminutes.
-const diffArcMin = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
+// Absolute difference between two longitudes in arcminutes.  Using arcminutes
+// keeps the comparison unit small so we can assert very tight tolerances.
+const deltaArcminutes = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
 const tol = 0.05; // allowable difference in arcminutes (~3 arcseconds)
 
 test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
@@ -36,7 +37,7 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   for (const [name, exp] of Object.entries(ASTROSAGE_AM_TABLE)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    const delta = diffArcMin(act.lon, exp.lon);
+    const delta = deltaArcminutes(act.lon, exp.lon);
     assert.ok(
       delta <= tol,
       `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
@@ -83,7 +84,7 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   for (const [name, exp] of Object.entries(ASTROSAGE_PM_TABLE)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    const delta = diffArcMin(act.lon, exp.lon);
+    const delta = deltaArcminutes(act.lon, exp.lon);
     assert.ok(
       delta <= tol,
       `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
