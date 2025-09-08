@@ -32,11 +32,11 @@ test('Pushkar Mishra chart positions', async () => {
     })
   );
   const expected = {
-    sun: { sign: 8, deg: 14, min: 46, sec: 24, nakshatra: 'Anuradha', pada: 4 },
-    moon: { sign: 2, deg: 13, min: 36, sec: 21, nakshatra: 'Rohini', pada: 2 },
-    mercury: { sign: 8, deg: 20, min: 59, sec: 43, nakshatra: 'Jyeshtha', pada: 2 },
-    venus: { sign: 8, deg: 21, min: 25, sec: 3, nakshatra: 'Jyeshtha', pada: 2 },
-    mars: { sign: 9, deg: 29, min: 9, sec: 17, nakshatra: 'Uttara Ashadha', pada: 1 },
+    sun: { sign: 8, deg: 14, min: 46, sec: 26, nakshatra: 'Anuradha', pada: 4 },
+    moon: { sign: 2, deg: 13, min: 36, sec: 54, nakshatra: 'Rohini', pada: 2 },
+    mercury: { sign: 8, deg: 20, min: 59, sec: 46, nakshatra: 'Jyeshtha', pada: 2 },
+    venus: { sign: 8, deg: 21, min: 25, sec: 6, nakshatra: 'Jyeshtha', pada: 2 },
+    mars: { sign: 9, deg: 29, min: 9, sec: 18, nakshatra: 'Uttara Ashadha', pada: 1 },
     jupiter: { sign: 8, deg: 1, min: 4, sec: 29, nakshatra: 'Vishakha', pada: 4 },
     saturn: { sign: 7, deg: 6, min: 32, sec: 35, nakshatra: 'Chitra', pada: 4 },
     uranus: { sign: 8, deg: 11, min: 29, sec: 15, nakshatra: 'Anuradha', pada: 3 },

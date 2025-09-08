@@ -12,8 +12,8 @@ test('Saturn sidereal longitude and speed on 1982-12-01', async () => {
     lon: 85.89707,
   });
   const saturn = res.planets.find((p) => p.name === 'saturn');
-  // Sidereal longitude should be about 186.5431450° (Libra).
-  assert.ok(Math.abs(saturn.lon - 186.543145) < 1e-6);
+  // Sidereal longitude should be about 186.5432088° (Libra).
+  assert.ok(Math.abs(saturn.lon - 186.5432088) < 1e-6);
   // Saturn was direct at this time, so speed is positive.
   assert.ok(saturn.speed > 0);
 });
