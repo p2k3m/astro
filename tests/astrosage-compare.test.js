@@ -3,222 +3,39 @@ import test from 'node:test';
 import * as swe from '../swisseph/index.js';
 
 const astro = import('../src/lib/astro.js');
-// Reference positions from AstroSage. These values are hard-coded so the
-// expected degrees and nakshatras do not depend on repository calculations.
-const ASTROSAGE_AM_POSITIONS = {
-  sun: {
-    sign: 8,
-    deg: 14,
-    min: 46,
-    sec: 26,
-    nakshatra: 'Anuradha',
-    pada: 4,
-  },
-  moon: {
-    sign: 2,
-    deg: 13,
-    min: 36,
-    sec: 54,
-    nakshatra: 'Rohini',
-    pada: 2,
-  },
-  mars: {
-    sign: 9,
-    deg: 29,
-    min: 9,
-    sec: 18,
-    nakshatra: 'Uttara Ashadha',
-    pada: 1,
-  },
-  mercury: {
-    sign: 8,
-    deg: 20,
-    min: 59,
-    sec: 46,
-    nakshatra: 'Jyeshtha',
-    pada: 2,
-  },
-  jupiter: {
-    sign: 8,
-    deg: 1,
-    min: 4,
-    sec: 29,
-    nakshatra: 'Vishakha',
-    pada: 4,
-  },
-  venus: {
-    sign: 8,
-    deg: 21,
-    min: 25,
-    sec: 6,
-    nakshatra: 'Jyeshtha',
-    pada: 2,
-  },
-  saturn: {
-    sign: 7,
-    deg: 6,
-    min: 32,
-    sec: 35,
-    nakshatra: 'Chitra',
-    pada: 4,
-  },
-  uranus: {
-    sign: 8,
-    deg: 11,
-    min: 29,
-    sec: 15,
-    nakshatra: 'Anuradha',
-    pada: 3,
-  },
-  neptune: {
-    sign: 9,
-    deg: 2,
-    min: 28,
-    sec: 10,
-    nakshatra: 'Mula',
-    pada: 1,
-  },
-  pluto: {
-    sign: 7,
-    deg: 4,
-    min: 48,
-    sec: 32,
-    nakshatra: 'Chitra',
-    pada: 4,
-  },
-  rahu: {
-    sign: 3,
-    deg: 11,
-    min: 53,
-    sec: 16,
-    nakshatra: 'Ardra',
-    pada: 2,
-  },
-  ketu: {
-    sign: 9,
-    deg: 11,
-    min: 53,
-    sec: 16,
-    nakshatra: 'Mula',
-    pada: 4,
-  },
+// Reference positions from AstroSage in absolute degrees with their
+// nakshatra and pada. These values are hard-coded so the expected
+// degrees and nakshatras do not depend on repository calculations.
+const ASTROSAGE_AM_TABLE = {
+  sun: { lon: 224.773889, nakshatra: 'Anuradha', pada: 4 },
+  moon: { lon: 43.615, nakshatra: 'Rohini', pada: 2 },
+  mars: { lon: 269.155, nakshatra: 'Uttara Ashadha', pada: 1 },
+  mercury: { lon: 230.996111, nakshatra: 'Jyeshtha', pada: 2 },
+  jupiter: { lon: 211.074722, nakshatra: 'Vishakha', pada: 4 },
+  venus: { lon: 231.418333, nakshatra: 'Jyeshtha', pada: 2 },
+  saturn: { lon: 186.543056, nakshatra: 'Chitra', pada: 4 },
+  uranus: { lon: 221.4875, nakshatra: 'Anuradha', pada: 3 },
+  neptune: { lon: 242.469444, nakshatra: 'Mula', pada: 1 },
+  pluto: { lon: 184.808889, nakshatra: 'Chitra', pada: 4 },
+  rahu: { lon: 71.887778, nakshatra: 'Ardra', pada: 2 },
+  ketu: { lon: 251.887778, nakshatra: 'Mula', pada: 4 },
 };
 
-const ASTROSAGE_PM_POSITIONS = {
-  sun: {
-    sign: 8,
-    deg: 15,
-    min: 16,
-    sec: 50,
-    nakshatra: 'Anuradha',
-    pada: 4,
-  },
-  moon: {
-    sign: 2,
-    deg: 21,
-    min: 3,
-    sec: 4,
-    nakshatra: 'Rohini',
-    pada: 4,
-  },
-  mars: {
-    sign: 9,
-    deg: 29,
-    min: 32,
-    sec: 28,
-    nakshatra: 'Uttara Ashadha',
-    pada: 1,
-  },
-  mercury: {
-    sign: 8,
-    deg: 21,
-    min: 46,
-    sec: 30,
-    nakshatra: 'Jyeshtha',
-    pada: 2,
-  },
-  jupiter: {
-    sign: 8,
-    deg: 1,
-    min: 11,
-    sec: 2,
-    nakshatra: 'Vishakha',
-    pada: 4,
-  },
-  venus: {
-    sign: 8,
-    deg: 22,
-    min: 2,
-    sec: 46,
-    nakshatra: 'Jyeshtha',
-    pada: 2,
-  },
-  saturn: {
-    sign: 7,
-    deg: 6,
-    min: 35,
-    sec: 42,
-    nakshatra: 'Chitra',
-    pada: 4,
-  },
-  uranus: {
-    sign: 8,
-    deg: 11,
-    min: 31,
-    sec: 6,
-    nakshatra: 'Anuradha',
-    pada: 3,
-  },
-  neptune: {
-    sign: 9,
-    deg: 2,
-    min: 29,
-    sec: 16,
-    nakshatra: 'Mula',
-    pada: 1,
-  },
-  pluto: {
-    sign: 7,
-    deg: 4,
-    min: 49,
-    sec: 31,
-    nakshatra: 'Chitra',
-    pada: 4,
-  },
-  rahu: {
-    sign: 3,
-    deg: 11,
-    min: 51,
-    sec: 40,
-    nakshatra: 'Ardra',
-    pada: 2,
-  },
-  ketu: {
-    sign: 9,
-    deg: 11,
-    min: 51,
-    sec: 40,
-    nakshatra: 'Mula',
-    pada: 4,
-  },
+const ASTROSAGE_PM_TABLE = {
+  sun: { lon: 225.280556, nakshatra: 'Anuradha', pada: 4 },
+  moon: { lon: 51.051111, nakshatra: 'Rohini', pada: 4 },
+  mars: { lon: 269.541111, nakshatra: 'Uttara Ashadha', pada: 1 },
+  mercury: { lon: 231.775, nakshatra: 'Jyeshtha', pada: 2 },
+  jupiter: { lon: 211.183889, nakshatra: 'Vishakha', pada: 4 },
+  venus: { lon: 232.046111, nakshatra: 'Jyeshtha', pada: 2 },
+  saturn: { lon: 186.595, nakshatra: 'Chitra', pada: 4 },
+  uranus: { lon: 221.518333, nakshatra: 'Anuradha', pada: 3 },
+  neptune: { lon: 242.487778, nakshatra: 'Mula', pada: 1 },
+  pluto: { lon: 184.825278, nakshatra: 'Chitra', pada: 4 },
+  rahu: { lon: 71.861111, nakshatra: 'Ardra', pada: 2 },
+  ketu: { lon: 251.861111, nakshatra: 'Mula', pada: 4 },
 };
 
-// Convert sign/degree/minute/second structure to absolute longitude in degrees.
-const toLon = (p) =>
-  (p.sign - 1) * 30 + p.deg + p.min / 60 + p.sec / 3600;
-// Table of expected AstroSage longitudes and nakshatra/pada.
-const ASTROSAGE_AM_TABLE = Object.fromEntries(
-  Object.entries(ASTROSAGE_AM_POSITIONS).map(([name, pos]) => [
-    name,
-    { lon: toLon(pos), nakshatra: pos.nakshatra, pada: pos.pada },
-  ]),
-);
-const ASTROSAGE_PM_TABLE = Object.fromEntries(
-  Object.entries(ASTROSAGE_PM_POSITIONS).map(([name, pos]) => [
-    name,
-    { lon: toLon(pos), nakshatra: pos.nakshatra, pada: pos.pada },
-  ]),
-);
 // Absolute difference between two longitudes in arcminutes.
 const diffArcMin = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
 const tol = 0.05; // allowable difference in arcminutes (~3 arcseconds)
