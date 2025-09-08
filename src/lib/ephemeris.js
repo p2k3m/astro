@@ -14,9 +14,9 @@ swe.ready.then(() => {
 // Signs are numbered 1–12 (1 = Aries, 12 = Pisces).
 function lonToSignDeg(longitude) {
   const norm = ((longitude % 360) + 360) % 360;
-  // AstroSage rounds seconds and carries overflows up through minutes and
-  // degrees, wrapping at sign boundaries.
-  let totalSeconds = Math.round(norm * 3600) % (360 * 3600);
+  // AstroSage truncates fractional seconds rather than rounding. Discard any
+  // fractional component without carrying overflows to minutes or degrees.
+  let totalSeconds = Math.floor(norm * 3600) % (360 * 3600);
   const sign = Math.floor(totalSeconds / (30 * 3600)) + 1; // 1..12
   const deg = Math.floor((totalSeconds % (30 * 3600)) / 3600);
   const min = Math.floor((totalSeconds % 3600) / 60);
