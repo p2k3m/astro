@@ -3,8 +3,7 @@ import express from '../express/index.cjs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-// Placeholder for the Swiss Ephemeris library which will be loaded dynamically.
-let swisseph;
+// The Swiss Ephemeris library is loaded dynamically when the server starts.
 
 // --- Initialization ---
 
@@ -76,7 +75,7 @@ export default app;
 
 (async () => {
   try {
-    swisseph = await import('../swisseph/index.js');
+    const swisseph = await import('../swisseph/index.js');
     await swisseph.ready;
     swisseph.swe_set_ephe_path(ephemerisPath);
     swisseph.swe_set_sid_mode(swisseph.SE_SIDM_LAHIRI, 0, 0);
