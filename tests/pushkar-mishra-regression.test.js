@@ -130,7 +130,7 @@ const expected = {
 
 const toArcminutes = ({ sign, deg, min, sec }) => ((sign - 1) * 30 + deg) * 60 + min + sec / 60;
 
-const TOLERANCE = 0.05; // arcminutes (~3 arcseconds)
+const TOLERANCE = 0.01; // arcminutes (~0.6 arcseconds)
 const LON_TOLERANCE = 0.0003; // degrees (~1 arcsecond)
 
 test('Pushkar Mishra positions regression', async () => {
