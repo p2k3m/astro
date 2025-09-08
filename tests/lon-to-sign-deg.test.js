@@ -26,3 +26,14 @@ test('lonToSignDeg does not round up at sign boundary', async () => {
     sec: 59,
   });
 });
+
+test('lonToSignDeg normalizes and truncates negative longitudes', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = -(0.5 / 3600); // -0°0′0.5″ -> 359°59′59.5″
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 12,
+    deg: 29,
+    min: 59,
+    sec: 59,
+  });
+});
