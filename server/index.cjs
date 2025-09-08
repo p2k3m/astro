@@ -68,7 +68,7 @@ module.exports = app;
 
 // --- Swiss Ephemeris Setup ---
 
-async function init() {
+(async () => {
   try {
     const swisseph = await import('../swisseph/index.js');
     await swisseph.ready;
@@ -87,6 +87,4 @@ async function init() {
     console.error('Failed to configure Swiss Ephemeris:', err);
     process.exit(1);
   }
-}
-
-init();
+})();
