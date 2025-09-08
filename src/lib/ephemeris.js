@@ -17,7 +17,9 @@ function lonToSignDeg(longitude) {
   // AstroSage rounds fractional seconds, carrying any overflow into minutes,
   // degrees, and sign boundaries. Convert the longitude to total arcseconds
   // and round to the nearest second before decomposing.
-  let totalSeconds = Math.round(norm * 3600) % (360 * 3600);
+  // Add a tiny epsilon before rounding to avoid floating-point edge cases
+  // around half-second values (e.g., 59.5" being represented as 59.499999").
+  let totalSeconds = Math.round(norm * 3600 + 1e-9) % (360 * 3600);
   const sign = Math.floor(totalSeconds / (30 * 3600)) + 1; // 1..12
   const deg = Math.floor((totalSeconds % (30 * 3600)) / 3600);
   const min = Math.floor((totalSeconds % 3600) / 60);
