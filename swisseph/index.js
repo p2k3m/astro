@@ -345,7 +345,7 @@ function swetestCalcUt(jd, planetId, flags) {
       default:
         bodyCode = String(planetId);
     }
-    const args = [`-j${j}`, `-p${bodyCode}`, '-fPl', '-g,', '-head'];
+    const args = [`-j${j}`, '-ut', `-p${bodyCode}`, '-fPl', '-g,', '-head'];
     if (ephePath) args.push(`-edir${ephePath}`);
     if (flags & SEFLG_SIDEREAL) {
       const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
@@ -373,7 +373,7 @@ function swetestCalcUt(jd, planetId, flags) {
 
 function swetestHousesEx(jd, lat, lon, hsys, flags) {
   if (!swetestPath) throw new Error('swetest not available');
-  const args = [`-j${jd}`, `-house${lon},${lat},${hsys}`, '-fPl', '-g,', '-head'];
+  const args = [`-j${jd}`, '-ut', `-house${lon},${lat},${hsys}`, '-fPl', '-g,', '-head'];
   if (ephePath) args.push(`-edir${ephePath}`);
   if (flags & SEFLG_SIDEREAL) {
     const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;

@@ -48,11 +48,11 @@ test('Darbhanga chart summary lists degrees and signs', async () => {
     return `${abbr} ${signName} ${degStr}`;
   });
   assert.deepStrictEqual(rows, [
-    'Su Scorpio 14°46′24″',
-    'Mo(Ex) Taurus 13°36′21″',
-    'Me(C) Scorpio 20°59′43″',
-    'Ve(C) Scorpio 21°25′03″',
-    'Ma Sagittarius 29°09′17″',
+    'Su Scorpio 14°46′26″',
+    'Mo(Ex) Taurus 13°36′54″',
+    'Me(C) Scorpio 20°59′46″',
+    'Ve(C) Scorpio 21°25′06″',
+    'Ma Sagittarius 29°09′18″',
     'Ju Scorpio 1°04′29″',
     'Sa(Ex) Libra 6°32′35″',
     'Ur Scorpio 11°29′15″',
