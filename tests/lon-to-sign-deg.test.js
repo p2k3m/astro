@@ -5,29 +5,29 @@ async function getFn() {
   return (await import('../src/lib/ephemeris.js')).lonToSignDeg;
 }
 
-test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
+test('lonToSignDeg truncates fractional seconds per AstroSage', async () => {
   const lonToSignDeg = await getFn();
   const lon = 14 + 46 / 60 + 57.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 1,
     deg: 14,
     min: 46,
-    sec: 58,
+    sec: 57,
   });
 });
 
-test('lonToSignDeg rounds up exactly at half-second near sign boundary', async () => {
+test('lonToSignDeg truncates near sign boundary without overflow', async () => {
   const lonToSignDeg = await getFn();
   const lon = 29 + 59 / 60 + 59.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 2,
-    deg: 0,
-    min: 0,
-    sec: 0,
+    sign: 1,
+    deg: 29,
+    min: 59,
+    sec: 59,
   });
 });
 
-test('lonToSignDeg does not round up when below half-second near sign boundary', async () => {
+test('lonToSignDeg truncates when below one second of sign boundary', async () => {
   const lonToSignDeg = await getFn();
   const lon = 29 + 59 / 60 + 59.49 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
@@ -38,24 +38,24 @@ test('lonToSignDeg does not round up when below half-second near sign boundary',
   });
 });
 
-test('lonToSignDeg normalizes and rounds negative longitudes', async () => {
+test('lonToSignDeg normalizes and truncates negative longitudes', async () => {
   const lonToSignDeg = await getFn();
   const lon = -(0.5 / 3600); // -0°0′0.5″ -> 359°59′59.5″
   assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 0,
-    min: 0,
-    sec: 0,
+    sign: 12,
+    deg: 29,
+    min: 59,
+    sec: 59,
   });
 });
 
-test('lonToSignDeg carries overflow across 360° when rounding', async () => {
+test('lonToSignDeg truncates near 360° without overflow', async () => {
   const lonToSignDeg = await getFn();
   const lon = 359 + 59 / 60 + 59.5 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 0,
-    min: 0,
-    sec: 0,
+    sign: 12,
+    deg: 29,
+    min: 59,
+    sec: 59,
   });
 });
