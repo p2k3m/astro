@@ -16,21 +16,20 @@ function lonToSignDeg(longitude) {
   // Normalise longitude to the 0–360° range.
   let norm = ((longitude % 360) + 360) % 360;
 
-  // Break the longitude down step by step. AstroSage rounds fractional
-  // arcseconds to the nearest integer.
-  // Convert the normalised longitude to total arcseconds, round, then
-  // decompose back into sign/degree/minute/second components.
-  let totalSec = Math.round(norm * 3600 + 1e-9); // guard against float error
+  // Convert the normalised longitude to total arcseconds. AstroSage rounds
+  // fractional arcseconds to the nearest integer, so emulate that with
+  // integer math to avoid floating point quirks.
+  let totalSec = Math.trunc(norm * 3600 + 0.5 + 1e-9);
   totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
-  let sign = Math.floor(totalSec / (30 * 3600)) + 1; // 1..12
+  const sign = Math.floor(totalSec / (30 * 3600)) + 1; // 1..12
   totalSec %= 30 * 3600;
 
-  let deg = Math.floor(totalSec / 3600);
+  const deg = Math.floor(totalSec / 3600);
   totalSec %= 3600;
 
-  let min = Math.floor(totalSec / 60);
-  let sec = totalSec % 60;
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
 
   return { sign, deg, min, sec };
 }
@@ -38,7 +37,7 @@ function lonToSignDeg(longitude) {
 function toUTC({ datetime, zone }) {
   // AstroSage truncates timestamps to whole seconds before converting to UT.
   const dt = DateTime.fromISO(datetime, { zone })
-    .startOf('second')
+    .set({ millisecond: 0 })
     .toUTC();
   return dt.toJSDate();
 }
@@ -195,4 +194,4 @@ async function compute_positions(
   };
 }
 
-export { lonToSignDeg, compute_positions };
+export { lonToSignDeg, toUTC, compute_positions };

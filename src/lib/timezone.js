@@ -74,7 +74,7 @@ export function toUTC({ datetime, zone }) {
   }
   // AstroSage truncates timestamps to whole seconds before converting to UT.
   const dt = DateTimeObj.fromISO(datetime, { zone })
-    .startOf('second')
+    .set({ millisecond: 0 })
     .toUTC();
   return dt.toJSDate();
 }
