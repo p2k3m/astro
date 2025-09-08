@@ -1,5 +1,11 @@
 import assert from 'node:assert';
 import test from 'node:test';
+test('toUTC uses offset in ISO timestamp when no zone given', async () => {
+  const { toUTC } = await import('../src/lib/ephemeris.js');
+  const date = toUTC({ datetime: '2024-05-15T12:34:56.789+05:30' });
+  assert.strictEqual(date.getUTCMilliseconds(), 0);
+  assert.strictEqual(date.toISOString(), '2024-05-15T07:04:56.000Z');
+});
 test('toUTC drops sub-second fragments before converting', async () => {
   const { toUTC } = await import('../src/lib/ephemeris.js');
   const date = toUTC({
