@@ -2,7 +2,8 @@ import assert from 'node:assert';
 import test from 'node:test';
 import * as swe from '../swisseph/index.js';
 
-// Verified values from AstroSage for Pushkar Mishra birth chart
+// Verified values from AstroSage for Pushkar Mishra birth chart.
+// Longitudes checked against Swiss Ephemeris 2.10.03 using Lahiri ayanamsa.
 const expected = {
   ascendant: {
     sign: 7,
