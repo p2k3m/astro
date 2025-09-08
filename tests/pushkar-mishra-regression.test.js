@@ -31,7 +31,7 @@ const expected = {
     sign: 2,
     deg: 13,
     min: 36,
-    sec: 21,
+    sec: 22,
     lon: 43.606102,
     nakshatra: 'Rohini',
     pada: 2,
@@ -94,7 +94,7 @@ const expected = {
     sign: 9,
     deg: 2,
     min: 28,
-    sec: 10,
+    sec: 11,
     lon: 242.469592,
     nakshatra: 'Mula',
     pada: 1,
@@ -130,7 +130,7 @@ const expected = {
 
 const toArcminutes = ({ sign, deg, min, sec }) => ((sign - 1) * 30 + deg) * 60 + min + sec / 60;
 
-const TOLERANCE = 0.05; // arcminutes (stricter than previous 0.5)
+const TOLERANCE = 0.05; // arcminutes (~3 arcseconds)
 const LON_TOLERANCE = 0.0003; // degrees (~1 arcsecond)
 
 test('Pushkar Mishra positions regression', async () => {
