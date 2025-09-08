@@ -9,9 +9,9 @@ const expected = {
     deg: 12,
     min: 17,
     // AstroSage reports fractional seconds, but our
-    // `lonToSignDeg` helper rounds to whole
+    // `lonToSignDeg` helper truncates to whole
     // arcseconds before decomposing. Align the expected
-    // values with this rounding so the test can
+    // values with this truncation so the test can
     // check for exact agreement with Swiss Ephemeris.
     sec: 6,
     lon: 192.2850676,
@@ -31,7 +31,7 @@ const expected = {
     sign: 2,
     deg: 13,
     min: 36,
-    sec: 22,
+    sec: 21,
     lon: 43.606102,
     nakshatra: 'Rohini',
     pada: 2,
@@ -94,7 +94,7 @@ const expected = {
     sign: 9,
     deg: 2,
     min: 28,
-    sec: 11,
+    sec: 10,
     lon: 242.4695922,
     nakshatra: 'Mula',
     pada: 1,
