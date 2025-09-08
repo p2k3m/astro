@@ -206,6 +206,19 @@ const ASTROSAGE_PM_POSITIONS = {
 // Convert sign/degree/minute/second structure to absolute longitude in degrees.
 const toLon = (p) =>
   (p.sign - 1) * 30 + p.deg + p.min / 60 + p.sec / 3600;
+// Table of expected AstroSage longitudes and nakshatra/pada.
+const ASTROSAGE_AM_TABLE = Object.fromEntries(
+  Object.entries(ASTROSAGE_AM_POSITIONS).map(([name, pos]) => [
+    name,
+    { lon: toLon(pos), nakshatra: pos.nakshatra, pada: pos.pada },
+  ]),
+);
+const ASTROSAGE_PM_TABLE = Object.fromEntries(
+  Object.entries(ASTROSAGE_PM_POSITIONS).map(([name, pos]) => [
+    name,
+    { lon: toLon(pos), nakshatra: pos.nakshatra, pada: pos.pada },
+  ]),
+);
 // Absolute difference between two longitudes in arcminutes.
 const diffArcMin = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
 const tol = 0.05; // allowable difference in arcminutes (~3 arcseconds)
@@ -226,11 +239,10 @@ test('Darbhanga 1982-12-01 03:50 matches AstroSage', async () => {
   assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
 
-  for (const [name, exp] of Object.entries(ASTROSAGE_AM_POSITIONS)) {
+  for (const [name, exp] of Object.entries(ASTROSAGE_AM_TABLE)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    const expectedLon = toLon(exp);
-    const delta = diffArcMin(act.lon, expectedLon);
+    const delta = diffArcMin(act.lon, exp.lon);
     assert.ok(
       delta <= tol,
       `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
@@ -274,11 +286,10 @@ test('Darbhanga 1982-12-01 15:50 matches AstroSage', async () => {
   assert.strictEqual(planets.saturn.sign, 7, 'saturn sign');
   assert.ok(!planets.saturn.retro, 'saturn retro');
 
-  for (const [name, exp] of Object.entries(ASTROSAGE_PM_POSITIONS)) {
+  for (const [name, exp] of Object.entries(ASTROSAGE_PM_TABLE)) {
     const act = planets[name];
     assert.ok(act, `missing ${name}`);
-    const expectedLon = toLon(exp);
-    const delta = diffArcMin(act.lon, expectedLon);
+    const delta = diffArcMin(act.lon, exp.lon);
     assert.ok(
       delta <= tol,
       `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
