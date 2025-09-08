@@ -57,8 +57,14 @@ export const SEFLG_SWIEPH = 1 << 1;
 export const SEFLG_SIDEREAL = 1 << 2;
 export const SEFLG_RETROGRADE = 1 << 3;
 
-export const SE_SIDM_LAHIRI = 0; // id for Lahiri mode
-export const SE_SIDM_FAGAN_BRADLEY = 1; // secondary mode for tests
+// Sidereal mode identifiers follow the Swiss Ephemeris enumeration where
+// 0 = Fagan/Bradley and 1 = Lahiri. The previous implementation inverted
+// these values which produced the correct result for Lahiri only because a
+// compensating offset was applied when invoking the `swetest` binary. To stay
+// compatible with upstream and avoid surprising behaviour in other sidereal
+// modes, use the proper numbering here and remove the manual offset.
+export const SE_SIDM_FAGAN_BRADLEY = 0;
+export const SE_SIDM_LAHIRI = 1;
 export const SE_GREG_CAL = 1;
 
 // Selected sidereal mode (default Lahiri). Updated via swe_set_sid_mode.
@@ -348,7 +354,7 @@ function swetestCalcUt(jd, planetId, flags) {
     const args = [`-j${j}`, '-ut', `-p${bodyCode}`, '-fPl', '-g,', '-head'];
     if (ephePath) args.push(`-edir${ephePath}`);
     if (flags & SEFLG_SIDEREAL) {
-      const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
+      const mode = currentSidMode ?? SE_SIDM_LAHIRI;
       args.push(`-sid${mode}`);
     }
     const out = execFileSync(swetestPath, args, { encoding: 'utf8' });
@@ -376,7 +382,7 @@ function swetestHousesEx(jd, lat, lon, hsys, flags) {
   const args = [`-j${jd}`, '-ut', `-house${lon},${lat},${hsys}`, '-fPl', '-g,', '-head'];
   if (ephePath) args.push(`-edir${ephePath}`);
   if (flags & SEFLG_SIDEREAL) {
-    const mode = (currentSidMode ?? SE_SIDM_LAHIRI) + 1;
+    const mode = currentSidMode ?? SE_SIDM_LAHIRI;
     args.push(`-sid${mode}`);
   }
   const out = execFileSync(swetestPath, args, { encoding: 'utf8' });
