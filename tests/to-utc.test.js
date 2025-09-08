@@ -16,6 +16,16 @@ test('toUTC drops sub-second fragments before converting', async () => {
   assert.strictEqual(date.toISOString(), '2024-05-15T07:04:56.000Z');
 });
 
+test('toUTC truncates half-second values', async () => {
+  const { toUTC } = await import('../src/lib/ephemeris.js');
+  const date = toUTC({
+    datetime: '2024-05-15T12:34:56.500',
+    zone: 'Asia/Kolkata',
+  });
+  assert.strictEqual(date.getUTCMilliseconds(), 0);
+  assert.strictEqual(date.toISOString(), '2024-05-15T07:04:56.000Z');
+});
+
 test('toUTC truncates without overflowing to next minute', async () => {
   const { toUTC } = await import('../src/lib/ephemeris.js');
   const date = toUTC({
