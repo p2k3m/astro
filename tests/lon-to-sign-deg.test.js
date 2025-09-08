@@ -48,3 +48,14 @@ test('lonToSignDeg normalizes and rounds negative longitudes', async () => {
     sec: 0,
   });
 });
+
+test('lonToSignDeg carries overflow across 360° when rounding', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = 359 + 59 / 60 + 59.5 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 0,
+    min: 0,
+    sec: 0,
+  });
+});
