@@ -7,7 +7,12 @@ const astro = import('../src/lib/astro.js');
 // corresponding nakshatra and pada. Keeping the data inline keeps the
 // expectations explicit and avoids relying on repository calculations.
 // The test fails on any mismatch to ensure ongoing alignment.
-const CASES = [
+//
+// The table below was built by manually transcribing the values from
+// AstroSage.  Each entry contains the expected longitude along with the
+// derived nakshatra and pada so we can cross-check both the raw degree
+// and the categorical placement.
+const ASTROSAGE_TABLE = [
   {
     label: 'Darbhanga 1982-12-01 03:50',
     datetime: '1982-12-01T03:50+05:30',
@@ -53,7 +58,7 @@ const deltaArcminutes = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
 // Allowable difference in arcminutes (~3 arcseconds)
 const tol = 0.05;
 
-for (const { label, datetime, expected } of CASES) {
+for (const { label, datetime, expected } of ASTROSAGE_TABLE) {
   test(`${label} matches AstroSage`, async () => {
     const { computePositions } = await astro;
     const res = await computePositions(datetime, 26.152, 85.897, {
