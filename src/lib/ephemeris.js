@@ -37,9 +37,11 @@ function lonToSignDeg(longitude) {
 
 function toUTC({ datetime, zone }) {
   // AstroSage truncates timestamps to whole seconds before converting to UT.
-  const dt = DateTime.fromISO(datetime, { zone })
-    .startOf('second')
-    .toUTC();
+  // If no explicit zone is provided, respect any offset embedded in the ISO
+  // timestamp. This mirrors typical usage where callers pass
+  // `YYYY-MM-DDTHH:mm+HH:mm` without a separate time zone argument.
+  const opts = zone ? { zone } : { setZone: true };
+  const dt = DateTime.fromISO(datetime, opts).startOf('second').toUTC();
   return dt.toJSDate();
 }
 
