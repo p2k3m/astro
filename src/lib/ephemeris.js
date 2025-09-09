@@ -18,21 +18,21 @@ function lonToSignDeg(longitude) {
 
   // Convert the normalised longitude to total arcseconds and round to the
   // nearest whole arcsecond. AstroSage rounds halves upward ("half away from
-  // zero"), so 0.5″ becomes 1″. Performing the rounding manually with
-  // `Math.trunc(x + 0.5)` makes the intent explicit. A tiny epsilon compensates
-  // for floating-point noise that could otherwise push values like 57.5″
-  // slightly below the 0.5″ threshold.
-  let totalSec = Math.trunc(norm * 3600 + 0.5 + 1e-9);
+  // zero"), so 0.5″ becomes 1″. `Math.round` mirrors this behaviour for
+  // positive numbers once the longitude has been normalised. A tiny epsilon
+  // compensates for floating-point noise that could otherwise push values like
+  // 57.5″ slightly below the 0.5″ threshold.
+  let totalSec = Math.round(norm * 3600 + 1e-9);
   totalSec = ((totalSec % (360 * 3600)) + 360 * 3600) % (360 * 3600);
 
   // Break the total seconds down using integer division.
-  const sign = Math.trunc(totalSec / (30 * 3600)) + 1; // 1..12
+  const sign = Math.floor(totalSec / (30 * 3600)) + 1; // 1..12
   totalSec %= 30 * 3600;
 
-  const deg = Math.trunc(totalSec / 3600);
+  const deg = Math.floor(totalSec / 3600);
   totalSec %= 3600;
 
-  const min = Math.trunc(totalSec / 60);
+  const min = Math.floor(totalSec / 60);
   const sec = totalSec % 60;
 
   return { sign, deg, min, sec };

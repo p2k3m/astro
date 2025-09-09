@@ -68,6 +68,17 @@ test('lonToSignDeg normalizes longitudes less than -360°', async () => {
   });
 });
 
+test('lonToSignDeg rounds up across minute boundary', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = 14 + 59 / 60 + 59.5 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 15,
+    min: 0,
+    sec: 0,
+  });
+});
+
 test('lonToSignDeg rounds down just below sign boundary', async () => {
   const lonToSignDeg = await getFn();
   const lon = 29 + 59 / 60 + 59.4 / 3600;
