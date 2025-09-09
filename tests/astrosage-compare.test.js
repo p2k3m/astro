@@ -56,7 +56,7 @@ const ASTROSAGE_TABLE = [
 // tolerances.
 const deltaArcminutes = (a, b) => Math.abs(((a - b + 540) % 360) - 180) * 60;
 // Allowable difference in arcminutes (~3 arcseconds)
-const tol = 0.05;
+const arcminuteTol = 0.05; // ≈0.05'
 
 for (const { label, datetime, expected } of ASTROSAGE_TABLE) {
   test(`${label} matches AstroSage`, async () => {
@@ -72,7 +72,7 @@ for (const { label, datetime, expected } of ASTROSAGE_TABLE) {
       assert.ok(act, `missing ${name}`);
       const delta = deltaArcminutes(act.lon, exp.lon);
       assert.ok(
-        delta <= tol,
+        delta <= arcminuteTol,
         `${name} lon diff ${delta.toFixed(3)}' exceeds tolerance`,
       );
       assert.strictEqual(act.nakshatra, exp.nakshatra, `${name} nakshatra`);
