@@ -46,6 +46,19 @@ test('lonToSignDeg handles floating-point noise at 0.5″', async () => {
   assert.strictEqual(lonToSignDeg(down).sec, 57);
 });
 
+test('lonToSignDeg handles floating-point noise at 0.5″ for negative values', async () => {
+  const lonToSignDeg = await getFn();
+  const up = -(0.5 - 1e-6) / 3600;
+  const down = -(0.5 + 1e-6) / 3600;
+  assert.deepStrictEqual(lonToSignDeg(up), { sign: 1, deg: 0, min: 0, sec: 0 });
+  assert.deepStrictEqual(lonToSignDeg(down), {
+    sign: 12,
+    deg: 29,
+    min: 59,
+    sec: 59,
+  });
+});
+
 test('lonToSignDeg normalizes longitudes greater than 360°', async () => {
   const lonToSignDeg = await getFn();
   const base = 14 + 46 / 60 + 57.5 / 3600;
