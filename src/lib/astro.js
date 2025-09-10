@@ -110,20 +110,20 @@ function buildChartPaths(scale = 1) {
   ];
 
   // House polygons derived from chart geometry
-  // Order corresponds to houses 1–12 progressing anti-clockwise
+  // Order corresponds to houses 1–12 progressing clockwise
   const housePolygons = [
     [P1, MT, P3, O], // 1st house (top centre)
-    [TL, MT, P1], // 2nd
-    [ML, TL, P1], // 3rd
-    [ML, P1, O, P4], // 4th
-    [BL, ML, P4], // 5th
-    [MB, BL, P4], // 6th
+    [MT, TR, P3], // 2nd (top right)
+    [TR, MR, P3], // 3rd
+    [P3, MR, P2, O], // 4th
+    [MR, BR, P2], // 5th
+    [BR, MB, P2], // 6th
     [P2, MB, P4, O], // 7th
-    [BR, MB, P2], // 8th
-    [MR, BR, P2], // 9th
-    [P3, MR, P2, O], // 10th
-    [TR, MR, P3], // 11th
-    [MT, TR, P3], // 12th
+    [MB, BL, P4], // 8th
+    [BL, ML, P4], // 9th
+    [ML, P1, O, P4], // 10th
+    [ML, TL, P1], // 11th
+    [TL, MT, P1], // 12th (top left)
   ].map((poly) => poly.map(([x, y]) => [x * scale, y * scale]));
 
   return { outer, inner, diagonals, housePolygons };
