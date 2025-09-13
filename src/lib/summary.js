@@ -1,4 +1,5 @@
 import { SIGN_NAMES } from './astro.js';
+import { NAKSHATRA_NAME_TO_ABBR } from './nakshatra.js';
 
 const PLANET_ABBR = {
   sun: 'Su',
@@ -31,11 +32,15 @@ function formatDMS(p) {
   return `${d}°${String(m).padStart(2, '0')}′${String(s).padStart(2, '0')}″`;
 }
 
-export function summarizeChart(data) {
+export function summarizeChart(data, { useNakshatraAbbr = false } = {}) {
   const ascSignName = SIGN_NAMES[data.ascSign - 1];
   let ascendant = ascSignName;
   if (data.ascendant?.nakshatra && data.ascendant?.pada) {
-    ascendant += ` ${data.ascendant.nakshatra} ${data.ascendant.pada}`;
+    const nak = useNakshatraAbbr
+      ? NAKSHATRA_NAME_TO_ABBR[data.ascendant.nakshatra] ||
+        data.ascendant.nakshatra
+      : data.ascendant.nakshatra;
+    ascendant += ` ${nak} ${data.ascendant.pada}`;
   }
   const moon = data.planets.find((p) => p.name === 'moon');
   const moonSign = SIGN_NAMES[(moon?.sign ?? 1) - 1]; // 1-based sign numbers
@@ -51,7 +56,10 @@ export function summarizeChart(data) {
         const degStr = formatDMS(p);
         let extra = '';
         if (p.nakshatra && p.pada) {
-          extra = ` ${p.nakshatra} ${p.pada}`;
+          const nak = useNakshatraAbbr
+            ? NAKSHATRA_NAME_TO_ABBR[p.nakshatra] || p.nakshatra
+            : p.nakshatra;
+          extra = ` ${nak} ${p.pada}`;
         }
         const signName = SIGN_NAMES[(p.sign ?? 1) - 1];
         return `${signName} ${abbr} ${degStr}${extra}`;
