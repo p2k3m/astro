@@ -1,3 +1,4 @@
+import '../src/polyfills/crypto.js';
 import fs from 'fs';
 import express from '../express/index.cjs';
 import path from 'path';
