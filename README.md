@@ -30,7 +30,7 @@ Earlier revisions used 0-based indices; tests and UI helpers now follow the
 
 ## Prerequisites
 
-- Node.js 18 or newer and npm
+- Node.js 20 or newer and npm
 
 ## Local Setup & Installation
 
