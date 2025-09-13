@@ -15,4 +15,6 @@ test('computePositions returns nakshatra abbreviations when requested', async ()
   assert.strictEqual(mercury.nakshatra, 'Jyes');
   const moon = data.planets.find((p) => p.name === 'moon');
   assert.strictEqual(moon.nakshatra, 'Rohi');
+  const mars = data.planets.find((p) => p.name === 'mars');
+  assert.strictEqual(mars.nakshatra, 'UtSha');
 });

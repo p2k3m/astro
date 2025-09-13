@@ -28,8 +28,9 @@ const NAKSHATRA_NAMES = [
   'Revati',
 ];
 
-// Common four-letter abbreviations corresponding to the full names above.
-// These provide short but still recognisable labels for UI display.
+// AstroSage-style abbreviations corresponding to the full names above.
+// These match the labels used in AstroSage charts, offering familiar
+// short forms for users who prefer that formatting.
 const NAKSHATRA_ABBREVIATIONS = [
   'Aswi',
   'Bhar',
@@ -41,8 +42,8 @@ const NAKSHATRA_ABBREVIATIONS = [
   'Push',
   'Ashl',
   'Magh',
-  'PPhl',
-  'UPhl',
+  'PuPha',
+  'UtPha',
   'Hast',
   'Chit',
   'Swat',
@@ -50,13 +51,13 @@ const NAKSHATRA_ABBREVIATIONS = [
   'Anur',
   'Jyes',
   'Mula',
-  'PAsa',
-  'UAsa',
+  'PuSha',
+  'UtSha',
   'Shra',
   'Dhan',
   'Shat',
-  'PBha',
-  'UBha',
+  'PuBha',
+  'UtBha',
   'Reva',
 ];
 
