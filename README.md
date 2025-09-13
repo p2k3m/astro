@@ -76,15 +76,17 @@ accept these optional settings:
 
 - `sidMode` – numeric code passed to Swiss Ephemeris' `swe_set_sid_mode`.
   Defaults to `swe.SE_SIDM_LAHIRI` when omitted.
-- `houseSystem` – single-letter code for the desired house system passed to
-  `swe_houses_ex`. The default `'W'` uses whole-sign houses to match AstroSage's
+- `houseSystem` – single-letter code (`A`–`Y`) for the desired house system
+  passed to `swe_houses_ex`. Examples include `'W'` (whole sign, default), `'P'`
+  (Placidus), `'O'` (Porphyry), `'K'` (Koch), `'R'` (Regiomontanus), `'C'`
+  (Campanus), `'A'`/`'E'` (Equal), `'V'` (Vehlow), `'X'` (Meridian), `'G'`
+  (Gauquelin) and `'T'` (Topocentric). The default `'W'` matches AstroSage's
   Rāśi chart.
-- `nodeType` – `'true'` or `'mean'` to select whether lunar nodes are computed
-  using `SE_TRUE_NODE` or `SE_MEAN_NODE`. `'mean'` uses the smoothed average
-  position (AstroSage's default) while `'true'` includes the node's small
+- `nodeType` – `'mean'` or `'true'` to select whether lunar nodes are computed
+  using `SE_MEAN_NODE` (default, AstroSage's setting) or `SE_TRUE_NODE`. `'mean'`
+  uses the smoothed average position while `'true'` includes the node's small
   oscillation. For the reference Darbhanga chart both options place Rahu and
   Ketu in Gemini/Sagittarius, though the longitudes differ by about a degree.
-  The default is 'mean'.
 
 When these options are not provided the calculation assumes Lahiri ayanamsa,
 whole-sign houses and the mean lunar node, which mirrors AstroSage's
