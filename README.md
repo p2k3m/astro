@@ -32,6 +32,14 @@ Earlier revisions used 0-based indices; tests and UI helpers now follow the
 
 - Node.js 20 or newer and npm
 
+### Web Crypto polyfill
+
+Older Node.js releases did not expose the Web Crypto API on `globalThis`. To
+support such environments the project includes a tiny polyfill that assigns
+`require('node:crypto').webcrypto` when `globalThis.crypto` is missing. Node.js
+20 provides `globalThis.crypto` out of the box so the polyfill has no effect
+there.
+
 ## Local Setup & Installation
 
 ```bash
