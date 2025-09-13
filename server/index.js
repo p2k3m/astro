@@ -26,6 +26,35 @@ if (!fs.existsSync(ephemerisPath)) {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const VALID_NODE_TYPES = new Set(['mean', 'true']);
+const VALID_HOUSE_SYSTEMS = new Set([
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+]);
+
 // --- API Endpoints ---
 
 let ephemerisModule;
@@ -37,7 +66,16 @@ async function getEphemeris() {
 }
 
 app.get('/api/positions', async (req, res) => {
-  const { datetime, tz, lat, lon, sidMode, nodeType, nakshatraAbbr } = req.query;
+  const {
+    datetime,
+    tz,
+    lat,
+    lon,
+    sidMode,
+    houseSystem,
+    nodeType,
+    nakshatraAbbr,
+  } = req.query;
   if (!datetime || !tz || !lat || !lon) {
     return res
       .status(400)
@@ -52,6 +90,14 @@ app.get('/api/positions', async (req, res) => {
     if (!Number.isFinite(lonNum)) {
       return res.status(400).json({ error: 'Invalid longitude parameter' });
     }
+    const node = nodeType ? nodeType.toLowerCase() : undefined;
+    if (nodeType && !VALID_NODE_TYPES.has(node)) {
+      return res.status(400).json({ error: 'Invalid nodeType parameter' });
+    }
+    const house = houseSystem ? houseSystem.toUpperCase() : undefined;
+    if (houseSystem && !VALID_HOUSE_SYSTEMS.has(house)) {
+      return res.status(400).json({ error: 'Invalid houseSystem parameter' });
+    }
     const { compute_positions } = await getEphemeris();
     const sidModeNum = sidMode ? parseInt(sidMode, 10) : undefined;
     const result = await compute_positions({
@@ -60,7 +106,8 @@ app.get('/api/positions', async (req, res) => {
       lat: latNum,
       lon: lonNum,
       sidMode: sidModeNum,
-      nodeType,
+      nodeType: node,
+      houseSystem: house,
       nakshatraAbbr: nakshatraAbbr === 'true' || nakshatraAbbr === '1',
     });
     res.json(result);
