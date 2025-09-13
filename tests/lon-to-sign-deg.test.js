@@ -5,31 +5,9 @@ async function getFn() {
   return (await import('../src/lib/ephemeris.js')).lonToSignDeg;
 }
 
-test('lonToSignDeg rounds fractional seconds per AstroSage', async () => {
+test('lonToSignDeg floors fractional seconds per AstroSage', async () => {
   const lonToSignDeg = await getFn();
   const lon = 14 + 46 / 60 + 57.5 / 3600;
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 14,
-    min: 46,
-    sec: 58,
-  });
-});
-
-test('lonToSignDeg rounds 0.5″ upward', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = 14 + 46 / 60 + 58.5 / 3600;
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 14,
-    min: 46,
-    sec: 59,
-  });
-});
-
-test('lonToSignDeg rounds fractions below 0.5″ downward', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = 14 + 46 / 60 + 57.4 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 1,
     deg: 14,
@@ -38,24 +16,47 @@ test('lonToSignDeg rounds fractions below 0.5″ downward', async () => {
   });
 });
 
-test('lonToSignDeg handles floating-point noise at 0.5″', async () => {
+test('lonToSignDeg floors 0.5″ across minute boundary', async () => {
   const lonToSignDeg = await getFn();
-  const up = 14 + 46 / 60 + (57.5 + 1e-6) / 3600;
-  const down = 14 + 46 / 60 + (57.5 - 1e-6) / 3600;
-  assert.strictEqual(lonToSignDeg(up).sec, 58);
-  assert.strictEqual(lonToSignDeg(down).sec, 57);
+  const lon = 14 + 59 / 60 + 59.5 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 14,
+    min: 59,
+    sec: 59,
+  });
 });
 
-test('lonToSignDeg handles floating-point noise at 0.5″ for negative values', async () => {
+test('lonToSignDeg floors 0.5″ across sign boundary', async () => {
   const lonToSignDeg = await getFn();
-  const up = -(0.5 - 1e-6) / 3600;
-  const down = -(0.5 + 1e-6) / 3600;
-  assert.deepStrictEqual(lonToSignDeg(up), { sign: 1, deg: 0, min: 0, sec: 0 });
-  assert.deepStrictEqual(lonToSignDeg(down), {
+  const lon = 29 + 59 / 60 + 59.5 / 3600;
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 1,
+    deg: 29,
+    min: 59,
+    sec: 59,
+  });
+});
+
+test('lonToSignDeg floors negative longitudes with 0.5″', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = -(0.5 / 3600);
+  assert.deepStrictEqual(lonToSignDeg(lon), {
     sign: 12,
     deg: 29,
     min: 59,
     sec: 59,
+  });
+});
+
+test('lonToSignDeg floors negative longitudes across sign boundary', async () => {
+  const lonToSignDeg = await getFn();
+  const lon = -(29 + 59 / 60 + 59.5 / 3600);
+  assert.deepStrictEqual(lonToSignDeg(lon), {
+    sign: 12,
+    deg: 0,
+    min: 0,
+    sec: 0,
   });
 });
 
@@ -66,7 +67,7 @@ test('lonToSignDeg normalizes longitudes greater than 360°', async () => {
     sign: 1,
     deg: 14,
     min: 46,
-    sec: 58,
+    sec: 57,
   });
 });
 
@@ -77,72 +78,18 @@ test('lonToSignDeg normalizes longitudes less than -360°', async () => {
     sign: 1,
     deg: 14,
     min: 46,
-    sec: 58,
+    sec: 57,
   });
 });
 
-test('lonToSignDeg rounds up across minute boundary', async () => {
+test('lonToSignDeg floors near 360° without wrapping', async () => {
   const lonToSignDeg = await getFn();
-  const lon = 14 + 59 / 60 + 59.5 / 3600;
+  const lon = 359 + 59 / 60 + 59.9 / 3600;
   assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 15,
-    min: 0,
-    sec: 0,
-  });
-});
-
-test('lonToSignDeg rounds down just below sign boundary', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = 29 + 59 / 60 + 59.4 / 3600;
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
+    sign: 12,
     deg: 29,
     min: 59,
     sec: 59,
   });
 });
 
-test('lonToSignDeg rounds up across sign boundary', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = 29 + 59 / 60 + 59.5 / 3600;
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 2,
-    deg: 0,
-    min: 0,
-    sec: 0,
-  });
-});
-
-test('lonToSignDeg rounds and normalizes negative longitudes', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = -(0.5 / 3600); // -0°0′0.5″ -> 359°59′59.5″ -> 0°0′0″
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 0,
-    min: 0,
-    sec: 0,
-  });
-});
-
-test('lonToSignDeg rounds negative longitudes across sign boundary', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = -(29 + 59 / 60 + 59.5 / 3600); // -> 330°0′0.5″ -> 330°0′1″
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 12,
-    deg: 0,
-    min: 0,
-    sec: 1,
-  });
-});
-
-test('lonToSignDeg rounds near 360° to Aries', async () => {
-  const lonToSignDeg = await getFn();
-  const lon = 359 + 59 / 60 + 59.9 / 3600;
-  assert.deepStrictEqual(lonToSignDeg(lon), {
-    sign: 1,
-    deg: 0,
-    min: 0,
-    sec: 0,
-  });
-});
